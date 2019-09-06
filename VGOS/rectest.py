@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import socket, os, datetime, time, re
+import socket, os, datetime, time, re, sys
 
 # Get flexbuff info from mk5ad.ctl file
 mk5ad = "/usr2/control/mk5ad.ctl"
@@ -33,6 +33,11 @@ mode = "mode=VDIF_8192-8192-1-2" # 8192 byte UDP packet, 8Gbps data rate in tota
 recsec = 5 # length to record in seconds
 scan_name = "rectest_" + me + "_"+datetime.datetime.utcnow().strftime("%y%m%d_%H%M%S")
 
+print("")
+rtime = fbcmd("rtime?").split(":")
+rtime_space = rtime[2].strip()
+rtime_perc = rtime[3].strip()
+print("jive5ab has " + rtime_space + " of space left, or " + rtime_perc + " of total space.")
 print("")
 print("Will record "+ str(recsec) + " seconds of data to file " + scan_name + "...")
 fbcmd(mode)
