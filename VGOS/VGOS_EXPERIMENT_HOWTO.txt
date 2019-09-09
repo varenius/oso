@@ -1,0 +1,191 @@
+HOW TO PREPARE AND RUN A VGOS EXPERIMENT
+Instructions compiled for experiment VT9248 for antenna OE. Adaptation to other experiments and OW antenna should be obvious.
+
+The telescopes have multiple naming systems. Here is a lookup-table for reference:
+OTT1=South=ONSA13SW=OW=FS1=freja (=elevenfeed from GARD)
+OTT2=North=ONSA13NE=OE=FS2=fulla (=quadridge feed from CALTEC)
+
+# PREPARE SCHEDULE
+There is a script to do this which can be run as
+python /usr2/oper/eskil/eskil.oso.git/VGOS/VGOS_prep.py vt9248
+What is does is
+1) wget --user anonymous ftp://ivs.bkg.bund.de/pub/vlbi/ivsdata/aux/2019/vt9248/vt9248.sked
+2) drudg .sked file for oe/ow (depending on which computer) to get .snp file in /usr2/sched
+3) copy and rename a template .prc file to /usr2/proc/
+4) modify .snp and .prc to remove disk_pos, ready_disk commands, change setupsx to setupbb
+
+It is often good to restart the field-system (FS) to ensure we know the state of things.
+"terminate" stops the FS, "fs" in terminal starts FS.
+
+# START SCHEDULE, halting on row 1
+Assuming we have the schedule .snp and .prc files on disk we can run the first line of the schedule.
+This loads all setups, e.g. sets the DBBC up to test recording etc, but doesn't actually move telescopes.
+"schedule=vt9248oe,#1,1"
+The schedule will start but will halt on row 1. The word HALT will blink in the System status monitor window (if open).
+
+# TEST RECORDING
+Run "python /usr2/oper/eskil/eskil.oso.git/VGOS/rectest.py" in a terminal on the FS computer (not in the FS). 
+It reads the right IPs, ports etc. from the FS config. 
+It should record a few seconds of data assuming the 8Gbps setup is loaded onto the DBBC.
+Warnings are displayed if there are issues with lost packets, data rates etc. No warnings = things may work!
+
+# CHECK POINTING ON CASSIOPEIA A
+"proc=point" to switch from experiment procedure library to the pointing procedure library
+"initp" to set electronics up for measurements
+"antenna=run" to get control to FS
+"casa" to slew to source
+"onsource" to check that we are on source
+"fivept" to check pointing. This scans across target ina z/el and output ends with something like
+2019.246.12:41:27.15#fivpt#xoffset    7.7110   26.8024  -0.00262   0.00611  0.00118  0.00367 1 1 057u casa
+The 3rd and forth column show the offsets fitted for azimuth and elevation. Assuming a target pointing
+accuracy of 0.1*FWHM we want at most (google:) "0.1*1.22*speed of light /15GHz /13m radians in arcseconds" = 38 arcsec
+errors in our pointing model. This is about 0.01 degrees. So if the az/el values are smaller than this, we are OK.
+
+# CLEAR AZELOFFSET
+Note that fivept automatically puts the desired offsets into the FS, so we need to clear them using "azeloff=0d,0d":
+2019.246.12:43:49.30;azeloff
+2019.246.12:43:49.30/azeloff/-0.00293,0.00611
+2019.246.12:44:37.57;azeloff=0d,0d
+2019.246.12:44:37.75#antcn#Answer from OTT-2: 'Ok'
+2019.246.12:44:38.63;azeloff
+2019.246.12:44:38.63/azeloff/0.00000,0.00000
+
+# SEFD, TSYS on CASA
+"onoff" will run for a few minutes, then end with manu VAL lines. We want the last ones: 
+2019.246.12:47:01.39#onoff#VAL casa         8.4 26.9 ia   1 l   2048.00 0.8800 144.7 4304.4 148.685  2.53
+2019.246.12:47:01.39#onoff#VAL casa         8.4 26.9 ib   2 r   2048.00 0.9419 99.97 4305.2 215.327  3.66
+2019.246.12:47:01.39#onoff#VAL casa         8.4 26.9 ic   3 l   5652.00 0.9912 148.2 2071.9  69.902  1.19
+2019.246.12:47:01.39#onoff#VAL casa         8.4 26.9 id   4 r   5652.00 1.0153 137.7 1870.3  67.905  1.15
+2019.246.12:47:01.39#onoff#VAL casa         8.4 26.9 ie   5 l   5652.00 0.9864 143.8 1960.2  68.129  1.16
+2019.246.12:47:01.39#onoff#VAL casa         8.4 26.9 if   6 r   5652.00 0.9935 143.8 1973.5  68.617  1.17
+2019.246.12:47:01.39#onoff#VAL casa         8.4 26.9 ig   7 l   9552.00 1.0577 121.6 1640.9  67.460  1.15
+2019.246.12:47:01.39#onoff#VAL casa         8.4 26.9 ih   8 r   9552.00 1.0123 115.0 1866.0  81.132  1.38
+2019.246.12:47:01.39#onoff#    source       Az   El  De   I P   Center   Comp   Tsys  SEFD  Tcal(j) Tcal(r)
+These are typical values for Tsys, SEFD, Tcal(r). High SEFD in lower band is due to RFI.
+
+# RETURN TO SCHEDULE PROCEDURE FILE
+If we leave the system like this, it cannot run the schedule as the selected procedure file is "point".
+To move back to the schedule one to be able to run e.g. setupbb we run
+"proc=vt9248oe"
+
+# CHECK CABLE DELAY MEASUREMENT SYSTEM (CDMS)
+On FS, run
+"sy = cdms_baseline"
+This will give screen (but not actually logged) output like e.g. 
+CDMS baseline time set to 2019y248d15h08m09s
+We then wait 5 seconds, and then run
+"sy = cdms_delay"
+This may work, or may generate an error. If error, try again in a few seconds until you get something like
+CDMS cable delay measured to be 0.0747716 picoseconds
+and you will also get a CDMS line in the log. 
+Note: the above output is not put in the FS log. The only FS log message for the CDMS stuff is the last output as follows:
+2019.248.15:08:09.57;sy=cdms_baseline
+2019.248.15:08:20.70;sy=cdms_delay
+2019.248.15:08:22.06;"/CDMS/+0.07477164
+
+# CHECK WEATHER
+Weather data can be logged by 
+"wx" which gives e.g. 
+2019.248.16:36:37.23/wx/15.1,1005.3,66.6,11.6,252.2
+
+# START SCHEDULE
+We now want the schedule to continue and the telescopes to drive to source. To resume the schedule (after line 1) we run
+"cont" in the FS. 
+The telescopes will now slew to source (which should be up if you're doing this a couple of hours before the start time)
+To check that all is working with tracking, we run "source", "onsource" and "azeloff" to check that all is well
+2019.248.16:37:49.02;source
+2019.248.16:37:49.02/source/0016+731,001945.790,732730.00,2000.0000,ccw,002057.501,733351.26,2019.6794
+2019.248.16:37:51.95;onsource
+2019.248.16:37:52.94#flagr#flagr/antenna,off-source
+2019.248.16:37:53.14#antcn#Answer from OTT-1: 'Yes'
+2019.248.16:37:53.14/onsource/TRACKING
+2019.248.16:37:54.34#flagr#flagr/antenna,re-acquired
+2019.248.16:37:58.70;azeloff
+2019.248.16:37:58.70/azeloff/0.00000,0.00000
+
+If the output looks reasonable for all steps above, the schedule should run fine!
+
+# SEND READY MESSAGE
+When the telescopes are ready, it is time to send a ready message. This usually contains the pointing, SEFD/Tsys, CDMS and WX output lines above, plus the info about the first source (so the output lines under START SCHEDULE) above. For each telescope. The email (and the other emails below) are usually sent to ivs-vgos-ops@lists.nasa.gov as well as to local interested colleagues.
+
+# SEND START MESSAGE
+When the observation has started, send a start message. Example:
+
+VT9248 ONSA13NE and ONSA13SW start message
+– started recording UT 18:00 on 0016+731 
+– first spectra look good
+
+# MONITOR EXPERIMENT
+The experiment can be monitored on the FS. The two main ways are
+- Check the gv_bpass plot which should auto-update every time checkmk5 is executed. The plot shows the bandpass and sampler statistics.
+The bandpass should be clear and show the phasecal signal. The sampler percentages should be around 18 33 33 18 for 2-bit sampling.
+- Check the flexbuff status by looking at the mk5-messages. For example, the mk5=evlbi? command reports any lost packets. the mk5=rtime? reports the available disk space. These commands are executed periodically through the experiment.
+
+# SEND LOG FILE (until auto-upload in place)
+Upload the logfile to IVS by typing, on the FS, the command
+ncftpput -u ivsincoming -p PASSWORD ivs.bkg.bund.de / /usr2/log/vt9248ow.log
+where PASSWORD should be replaced with the correct password.
+
+# SEND STOP MESSAGE
+When the observation has finished, send a stop message. Example:
+
+ONSA13NE and ONSA13SW finished VT9248:
+ONSA13NE (OE):
+– no known problems
+– the logfile has been sent to IVS
+– data for the fringe test will be sent to Haystack
+ONSA13SW (OW):
+– no known problems
+– the logfile has been sent to IVS
+– data for the fringe test will be sent to Haystack
+
+# CONVERT DATA FROM 8threads8channels TO 1thread64channels
+The data lives on "skirner", which we can get to by "ssh skirner" from FS machines.
+To send data we must first convert the data from 8threads8channels to 1thread64channels.
+One way to get the data (to convert it) is to mount the VBS-filesystem. It needs to be remount to show new files:
+"cd; fusermount -u data ; vbs_fs data  ; cd data"
+this will mount the VBS file system in the /home/oper/data. Looking for the files of the first scan (day 248 time 1800):
+oper@skirner ~ $ ls -lrth /home/oper/data/vt9248*248-1800
+-rw-r--r-- 0 oper oper 30G Sep  5 20:00 /home/oper/data/vt9248_ow_248-1800
+-rw-r--r-- 0 oper oper 29G Sep  5 20:00 /home/oper/data/vt9248_oe_248-1800
+
+We now check for disk space as we need somewhere to process this. 
+"df -h"
+gives space on various units. In our case /mnt/disk0 seems to have some free space. 
+I have created the "/mnt/disk0/test" directory for output data. 
+# Go from 8 threads and 8 channels to 1 thread 64 channels
+vmux -v INFILE 8224 15625 0,1,2,3,4,5,6,7 OUTFILE
+vmux -v /home/oper/data/vt9248_ow_248-1800 8224 15625 0,1,2,3,4,5,6,7 /mnt/disk0/test/vt9248_ow_248-1800_1thread_64ch
+vmux -v /home/oper/data/vt9248_oe_248-1800 8224 15625 0,1,2,3,4,5,6,7 /mnt/disk0/test/vt9248_oe_248-1800_1thread_64ch
+
+# SEND DATA TO HAYTSTACK
+Get two terminal windows on "skirner", let's call them T1 and T2.
+First start tsunamideamon on skirner in T1:
+T1= tsunamid --port 43992 /mnt/disk0/test/vt9248_ow_248-1800_1thread_64ch /mnt/disk0/test/vt9248_oe_248-1800_1thread_64ch
+We now sit and wait here for the transfer to happen in T2.
+
+Now login to Haystack in T2:
+T2= ./Haystack_evlbi1.sh
+then go to directory instructed to by IVS in email
+T2= cd /data-st10/vgos
+Start the tsunami client
+T2= tsunami
+Connect to skirner
+T2= connect 130.242.10.2 43992
+Check that files are available
+T2= dir
+Remote file list:
+  1) /mnt/disk0/test/vt9248_ow_248-1800_1thread_64ch           140730449777344 bytes
+  2) /mnt/disk0/test/vt9248_oe_248-1800_1thread_64ch           140730449777344 bytes
+Set data rate, 200m or 300m is a good choice
+T2= set rate 300m
+Ensure this rate is kept
+T2= set rateadjust no
+Ensure lossless transfer
+T2= set lossless = yes
+Transfer the data
+T2= get *
+transfer happens. Then quit
+T2= bye
+Then quit the tsunamid running in T1 by CTRL+C
+T1=CTLR+C
