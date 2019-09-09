@@ -1,5 +1,6 @@
 HOW TO PREPARE AND RUN A VGOS EXPERIMENT
-Instructions compiled for experiment VT9248 for antenna OE. Adaptation to other experiments and OW antenna should be obvious.
+Instructions compiled for experiment VT9248 for antenna OE. 
+Adaptation to other experiments and OW antenna should be obvious.
 
 The telescopes have multiple naming systems. Here is a lookup-table for reference:
 OTT1=South=ONSA13SW=OW=FS1=freja (=elevenfeed from GARD)
@@ -106,7 +107,10 @@ To check that all is working with tracking, we run "source", "onsource" and "aze
 If the output looks reasonable for all steps above, the schedule should run fine!
 
 # SEND READY MESSAGE
-When the telescopes are ready, it is time to send a ready message. This usually contains the pointing, SEFD/Tsys, CDMS and WX output lines above, plus the info about the first source (so the output lines under START SCHEDULE) above. For each telescope. The email (and the other emails below) are usually sent to ivs-vgos-ops@lists.nasa.gov as well as to local interested colleagues.
+When the telescopes are ready, it is time to send a ready message. This usually contains the pointing, SEFD/Tsys, 
+CDMS and WX output lines above, plus the info about the first source (so the output lines under START SCHEDULE) above. 
+For each telescope. The email (and the other emails below) are usually sent to ivs-vgos-ops@lists.nasa.gov as well as 
+to local interested colleagues.
 
 # SEND START MESSAGE
 When the observation has started, send a start message. Example:
@@ -117,9 +121,12 @@ VT9248 ONSA13NE and ONSA13SW start message
 
 # MONITOR EXPERIMENT
 The experiment can be monitored on the FS. The two main ways are
-- Check the gv_bpass plot which should auto-update every time checkmk5 is executed. The plot shows the bandpass and sampler statistics.
-The bandpass should be clear and show the phasecal signal. The sampler percentages should be around 18 33 33 18 for 2-bit sampling.
-- Check the flexbuff status by looking at the mk5-messages. For example, the mk5=evlbi? command reports any lost packets. the mk5=rtime? reports the available disk space. These commands are executed periodically through the experiment.
+- Check the gv_bpass plot which should auto-update every time checkmk5 is executed. 
+The plot shows the bandpass and sampler statistics.
+The bandpass should be clear and show the phasecal signal. 
+The sampler percentages should be around 18 33 33 18 for 2-bit sampling.
+- Check the flexbuff status by looking at the mk5-messages. For example, the mk5=evlbi? command reports any lost packets. 
+The "mk5=rtime?" reports the available disk space. These commands are executed periodically through the experiment.
 
 # SEND LOG FILE (until auto-upload in place)
 Upload the logfile to IVS by typing, on the FS, the command
