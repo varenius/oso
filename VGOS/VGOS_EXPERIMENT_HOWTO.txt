@@ -128,7 +128,7 @@ The sampler percentages should be around 18 33 33 18 for 2-bit sampling.
 - Check the flexbuff status by looking at the mk5-messages. For example, the mk5=evlbi? command reports any lost packets. 
 The "mk5=rtime?" reports the available disk space. These commands are executed periodically through the experiment.
 
-# SEND LOG FILE (until auto-upload in place)
+# SEND LOG FILE (should happen automatically since 20190911)
 NOTE: This should happen automatically. If for some reason it doesn't, manual upload can be done by typing, 
 on the FS, the command (for experiment vt9248ow)
 ncftpput -u ivsincoming -p PASSWORD ivs.bkg.bund.de / /usr2/log/vt9248ow.log
