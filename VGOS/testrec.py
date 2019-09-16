@@ -31,7 +31,7 @@ def fbcmd(message):
 mode = "mode=VDIF_8192-8192-1-2" # 8192 byte UDP packet, 8Gbps data rate in total, 1 channel, 2 bits
 # See also https://www.jive.nl/~verkout/evlbi/jive5ab-documentation-1.10.pdf sect. 7.1.
 recsec = 5 # length to record in seconds
-scan_name = "rectest_" + me + "_"+datetime.datetime.utcnow().strftime("%y%m%d_%H%M%S")
+scan_name = "testrec_" + me + "_"+datetime.datetime.utcnow().strftime("%y%m%d_%H%M%S")
 
 print("")
 rtime = fbcmd("rtime?").split(":")
