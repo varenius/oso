@@ -52,7 +52,8 @@ Note that fivept automatically puts the desired offsets into the FS, so we need 
 2019.246.12:44:38.63/azeloff/0.00000,0.00000
 
 # SEFD, TSYS on CASA
-"onoff" will run for a few minutes, then end with manu VAL lines. We want the last ones: 
+We now run "onoff" to measure SEFD and TSYS on CasA. After starting onoff, it will run for a few minutes, 
+then end with many VAL lines. We want the last ones: 
 2019.246.12:47:01.39#onoff#VAL casa         8.4 26.9 ia   1 l   2048.00 0.8800 144.7 4304.4 148.685  2.53
 2019.246.12:47:01.39#onoff#VAL casa         8.4 26.9 ib   2 r   2048.00 0.9419 99.97 4305.2 215.327  3.66
 2019.246.12:47:01.39#onoff#VAL casa         8.4 26.9 ic   3 l   5652.00 0.9912 148.2 2071.9  69.902  1.19
