@@ -71,7 +71,9 @@ To move back to the schedule one to be able to run e.g. setupbb we run
 "proc=vt9248oe"
 
 # CHECK CABLE DELAY MEASUREMENT SYSTEM (CDMS)
-On FS, run
+For consistency, we always do the CDMS check at (az,el)=(0,0). So, make antenna go there by:
+"antenna=tra azel az 0 el 0"
+When it has arrived, we do
 "sy = cdms_baseline"
 This will give screen (but not actually logged) output like e.g. 
 CDMS baseline time set to 2019y248d15h08m09s
