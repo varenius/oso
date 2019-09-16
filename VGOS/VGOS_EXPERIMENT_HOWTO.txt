@@ -113,7 +113,7 @@ If the output looks reasonable for all steps above, the schedule should run fine
 When the telescopes are ready, it is time to send a ready message. This usually contains the pointing, SEFD/Tsys, 
 CDMS and WX output lines above, plus the info about the first source (so the output lines under START SCHEDULE) above. 
 For each telescope. The email (and the other emails below) are usually sent to ivs-vgos-ops@lists.nasa.gov as well as 
-to local interested colleagues.
+to local interested colleagues. An example message is at https://github.com/varenius/oso/blob/master/VGOS/VT9259_OW_READY_MESSAGE.txt.
 
 # SEND START MESSAGE
 When the observation has started, send a start message. Example:
