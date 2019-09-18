@@ -24,3 +24,4 @@ for vin in vdifs:
     vmuxcmd = "vmux -v {0} 8224 15625 0,1,2,3,4,5,6,7 {1} &&\n".format(vin, vout)
     of.write(vmuxcmd)
 of.close()
+print(ofname + " written. Remember to remove && from the last line you execute if running bash " + ofname)
