@@ -14,7 +14,7 @@ targets['casa'] = Star(ra_hours=(23, 23, 24), dec_degrees=(58,48.9,0)) # Cas A
 # Define location of observer
 o8 = planets['earth'] + Topos("57.393118 N", "11.917756 E") # Onsala 25m antenna, approximate
 # Define time(s) to observe
-times = ts.utc(2019, 9, 18,range(0,24)) # 24h from start time
+times = ts.utc(2019, 9, 20,range(0,24)) # 24h from start time
 
 # Create figure objects
 azfig, azax = plt.subplots()
