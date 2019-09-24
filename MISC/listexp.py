@@ -9,4 +9,5 @@ for line in open(infile):
         if not exp in exps:
             exps.append(exp)
 print("Found these VBS-experiments on disk:")
-print(exps)
+for exp in exps:
+    print(exp)
