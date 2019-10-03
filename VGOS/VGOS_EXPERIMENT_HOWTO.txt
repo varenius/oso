@@ -25,7 +25,7 @@ This loads all setups, e.g. sets the DBBC up to test recording etc, but doesn't 
 The schedule will start but will halt on row 1. The word HALT will blink in the System status monitor window (if open).
 
 # TEST RECORDING
-Run "python /usr2/oper/eskil/eskil.oso.git/VGOS/rectest.py" in a terminal on the FS computer (not in the FS). 
+Run "python /usr2/oper/eskil/eskil.oso.git/VGOS/testrec.py" in a terminal on the FS computer (not in the FS). 
 It reads the right IPs, ports etc. from the FS config. 
 It should record a few seconds of data assuming the 8Gbps setup is loaded onto the DBBC.
 Warnings are displayed if there are issues with lost packets, data rates etc. No warnings = things may work!
