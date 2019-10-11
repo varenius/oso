@@ -28,8 +28,6 @@ def fbcmd(message):
     sock.close()
     return data
 
-mode = "mode=VDIF_8192-8192-1-2" # 8192 byte UDP packet, 8Gbps data rate in total, 1 channel, 2 bits
-# See also https://www.jive.nl/~verkout/evlbi/jive5ab-documentation-1.10.pdf sect. 7.1.
 recsec = 5 # length to record in seconds
 scan_name = "testrec_" + me + "_"+datetime.datetime.utcnow().strftime("%y%m%d_%H%M%S")
 
@@ -40,7 +38,12 @@ rtime_perc = rtime[3].strip()
 print("jive5ab has " + rtime_space + " of space left, or " + rtime_perc + " of total space.")
 print("")
 print("Will record "+ str(recsec) + " seconds of data to file " + scan_name + "...")
-fbcmd(mode)
+
+#Assume recording mode has already been sent by the FS, otherwise can send manually like this:
+#mode = "mode=VDIF_8192-8192-1-2" # 8192 byte UDP packet, 8Gbps data rate in total, 1 channel, 2 bits
+# See also https://www.jive.nl/~verkout/evlbi/jive5ab-documentation-1.10.pdf sect. 7.1.
+#fbcmd(mode)
+
 fbcmd("record=on:"+scan_name)
 fbcmd("tstat?")
 print("...recording...")
