@@ -6,7 +6,7 @@ mk5ad = "/usr2/control/mk5ad.ctl"
 ip = ""
 port = ""
 me = socket.gethostname()
-DEBUG=False # Print jive5ab return messages, which are parsed for results
+DEBUG=False# Print jive5ab return messages, which are parsed for results
 
 for line in open(mk5ad):
     if not line.startswith("*"):
@@ -22,9 +22,11 @@ def fbcmd(message):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((ip, int(port)))
     sock.send(message)
-    #print('INFO: sent to '+ip+':'+port + ':' + message)
+    if DEBUG:
+        print('INFO: sent to '+ip+':'+port + ':' + message)
     data = sock.recv(1024)
-    #print('INFO: answer: ', data)
+    if DEBUG:
+        print('INFO: answer: ', data)
     sock.close()
     return data
 
