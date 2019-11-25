@@ -41,7 +41,7 @@ def fbcmd(message):
 
 # Run disk2file to extract some time from the current scan selected by scan_set
 fbcmd("scan_set?")
-fbcmd("scan_set= : c : +0.1s")
+fbcmd("scan_set=:-0.2s:+0.2s")
 fbcmd("disk2file=" + disk2fileout + ":::w")
 time.sleep(1) # Wait for disk2file to finish
 
@@ -51,6 +51,8 @@ if disk2file=="active":
     print("disk2file running longer than expected, aborting it!")
     fbcmd("reset=abort")
 
+# Kill any running vmux processes
+os.system("ssh oper@{0} pkill -x vmux".format(ip))
 # Convert from 8 threads 8 channels to 1 thread 64 channels
 os.system("ssh oper@{0} /usr/local/difx-trunk/bin/vmux -q {1} 8224 15625 0,1,2,3,4,5,6,7 {2}".format(ip,disk2fileout,vmuxout))
 # Use m5 tools to create plots from the 64channel-data
