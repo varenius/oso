@@ -196,7 +196,7 @@ T2= set rate 300m
 Ensure this rate is kept
 T2= set rateadjust no
 Ensure lossless transfer
-T2= set lossless = yes
+T2= set lossless yes
 Transfer the data
 T2= get *
 transfer happens. Then quit
