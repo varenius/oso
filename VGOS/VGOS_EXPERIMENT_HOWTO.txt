@@ -191,8 +191,8 @@ T2= dir
 Remote file list:
   1) /mnt/disk0/test/vt9248_ow_248-1800_1thread_64ch           140730449777344 bytes
   2) /mnt/disk0/test/vt9248_oe_248-1800_1thread_64ch           140730449777344 bytes
-Set data rate, 200m or 300m is a good choice
-T2= set rate 300m
+Set data rate to 200m (300m may cause issues)
+T2= set rate 200m
 Ensure this rate is kept
 T2= set rateadjust no
 Ensure lossless transfer
