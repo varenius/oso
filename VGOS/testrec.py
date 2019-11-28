@@ -34,10 +34,13 @@ recsec = 5 # length to record in seconds
 scan_name = "testrec_" + me + "_"+datetime.datetime.utcnow().strftime("%y%m%d_%H%M%S")
 
 print("")
+version = fbcmd("version?").split(":")
+jive5abv = version[2]
+host = version[5]
 rtime = fbcmd("rtime?").split(":")
 rtime_space = rtime[2].strip()
 rtime_perc = rtime[3].strip()
-print("jive5ab has " + rtime_space + " of space left, or " + rtime_perc + " of total space.")
+print("jive5ab version" + jive5abv + "running on" + host + "has " + rtime_space + " of space left, " + rtime_perc + " of total space.")
 print("")
 print("Will record "+ str(recsec) + " seconds of data to file " + scan_name + "...")
 
@@ -48,12 +51,23 @@ print("Will record "+ str(recsec) + " seconds of data to file " + scan_name + ".
 
 fbcmd("record=on:"+scan_name)
 fbcmd("tstat?")
-print("...recording...")
+print("...recording any packets arriving...")
 time.sleep(recsec)
 tstat = fbcmd("tstat?").split(":")
 fbcmd("record=off")
 evlbi = fbcmd("evlbi?").split(":")
-sc = fbcmd("scan_check?:4000000").split(":")
+scraw = fbcmd("scan_check?:4000000")
+if " does not exist" in scraw:
+    print 
+    print "ERROR: No data recorded on disk - investigate !!!" 
+    print "Some (but not all) possible things to check:"
+    print "- No mode= command sent to jive5ab since starting jive5ab?"
+    print "- FiLa10G VDIF output not started? Check with fila10g=sysstat "
+    print "- Bad fibre connection from FiLa to flexbuff?"
+    print "...exiting test... try again after changing something!"
+    print
+    sys.exit(1)
+sc = scraw.split(":")
 print("...done! Checking stats...")
 
 if DEBUG:
