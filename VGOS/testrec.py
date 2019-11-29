@@ -6,7 +6,7 @@ mk5ad = "/usr2/control/mk5ad.ctl"
 ip = ""
 port = ""
 me = socket.gethostname()
-DEBUG=False# Print jive5ab return messages, which are parsed for results
+DEBUG=False # Print jive5ab return messages, which are parsed for results
 
 for line in open(mk5ad):
     if not line.startswith("*"):
@@ -29,8 +29,8 @@ def fbcmd(message):
         print('INFO: answer: ', data)
     sock.close()
     return data
-
-recsec = 5 # length to record in seconds
+# Note recording less than 20 seconds may give weird tstats
+recsec = 20 # length to record in seconds
 scan_name = "testrec_" + me + "_"+datetime.datetime.utcnow().strftime("%y%m%d_%H%M%S")
 
 print("")
@@ -40,9 +40,13 @@ host = version[5]
 rtime = fbcmd("rtime?").split(":")
 rtime_space = rtime[2].strip()
 rtime_perc = rtime[3].strip()
-print("jive5ab version" + jive5abv + "running on" + host + "has " + rtime_space + " of space left, " + rtime_perc + " of total space.")
+print("Found jive5ab version" + jive5abv + "running on" + host)
+print("Free space: " + rtime_space + " (" + rtime_perc + ").")
 print("")
-print("Will record "+ str(recsec) + " seconds of data to file " + scan_name + "...")
+mode = fbcmd("mode?").split(":")[1].strip()
+print("Selected recording mode (set from FS?): " + mode)
+print("")
+print("Will record "+ str(recsec) + " seconds of data to file " + scan_name + " assuming data with the above mode ...")
 
 #Assume recording mode has already been sent by the FS, otherwise can send manually like this:
 #mode = "mode=VDIF_8192-8192-1-2" # 8192 byte UDP packet, 8Gbps data rate in total, 1 channel, 2 bits
