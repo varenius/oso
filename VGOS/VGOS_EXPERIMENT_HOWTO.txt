@@ -10,7 +10,7 @@ OTT2=North=ONSA13NE=OE=FS2=fulla (=quadridge feed from CALTEC)
 There is a script to do this which can be run as
 python /usr2/oper/eskil/eskil.oso.git/VGOS/VGOS_prep.py vt9248
 What it does is
-1) wget --user anonymous ftp://ivs.bkg.bund.de/pub/vlbi/ivsdata/aux/2019/vt9248/vt9248.sked
+1) wget --user anonymous ftp://ivs.bkg.bund.de/pub/vlbi/ivsdata/aux/2019/vt9248/vt9248.skd
 2) drudg .sked file for oe/ow (depending on which computer) to get .snp file in /usr2/sched
 3) copy and rename a template .prc file to /usr2/proc/
 4) modify .snp and .prc to remove disk_pos, ready_disk commands, change setupsx to setupbb
