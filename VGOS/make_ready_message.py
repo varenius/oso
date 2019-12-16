@@ -60,9 +60,9 @@ sefde = get_lines(lines, "l   6856.40",1)
 print_lines(sefde)
 sefdf = get_lines(lines, "r   6856.40",1)
 print_lines(sefdf)
-sefdg = get_lines(lines, "l   10696.40",1)
+sefdg = get_lines(lines, "l  10696.40",1)
 print_lines(sefdg)
-sefdh = get_lines(lines, "r   10696.40",1)
+sefdh = get_lines(lines, "r  10696.40",1)
 print_lines(sefdh)
 print 
 

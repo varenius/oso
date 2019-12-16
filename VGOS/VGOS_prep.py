@@ -3,13 +3,14 @@ import sys, os
 # Get path of script
 scriptpath = os.path.dirname(os.path.abspath(__file__))
 
-# take schedule name as input, e.g. vt9248
+# take schedule name and year as input, e.g. vt9248 2019
 exp = sys.argv[1]
+year = sys.argv[2]
 
-if exp[2]=="9":
-    year = "2019"
-else:
-    year = "202"+exp[2]
+#if exp[2]=="9":
+#    year = "2019"
+#else:
+#    year = "202"+exp[2]
 
 ftpaddr = "ftp://ivs.bkg.bund.de/pub/vlbi/ivsdata/aux/" + year + "/" + exp + "/" + exp + ".skd"
 
