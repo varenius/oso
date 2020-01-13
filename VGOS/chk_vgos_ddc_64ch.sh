@@ -86,8 +86,10 @@ out_m5bstate="${out_dir}/m5bstate_${data_time}.txt"
 data_m5bstate="${out_dir}/m5bstate_data.txt"
 out_m5spec="${out_dir}/m5spec_${data_time}.txt"
 out_bandpass="${out_dir}/bandpass_${data_time}.ps"
-/usr/local/difx-trunk/bin/m5bstate ${data_file} ${data_format} ${n_frame} > ${out_m5bstate} 
-/usr/local/difx-trunk/bin/m5spec -dbbc -nopol ${data_file} ${data_format} ${fft_chan} ${n_frame} ${out_m5spec} >> /dev/null  
+#/usr/local/difx-trunk/bin/m5bstate ${data_file} ${data_format} ${n_frame} > ${out_m5bstate} 
+#/usr/local/difx-trunk/bin/m5spec -dbbc -nopol ${data_file} ${data_format} ${fft_chan} ${n_frame} ${out_m5spec} >> /dev/null  
+/usr/local/difx-2.6.1/bin/m5bstate ${data_file} ${data_format} ${n_frame} > ${out_m5bstate}
+/usr/local/difx-2.6.1/bin/m5spec -dbbc -nopol ${data_file} ${data_format} ${fft_chan} ${n_frame} ${out_m5spec} >> /dev/null
 
 if ! [[ -f ${out_m5spec} ]]
 then
