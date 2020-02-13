@@ -6,6 +6,11 @@ scriptpath = os.path.dirname(os.path.abspath(__file__))
 # take schedule name and year as input, e.g. vt9248 2019
 exp = sys.argv[1]
 year = sys.argv[2]
+# Check if we should download schedule, or assume it already exists locally
+dl=False
+if (len(sys.argv)==4) and (sys.argv[3]=="dl"):
+    dl=True
+
 
 #if exp[2]=="9":
 #    year = "2019"
@@ -16,11 +21,12 @@ ftpaddr = "ftp://ivs.bkg.bund.de/pub/vlbi/ivsdata/aux/" + year + "/" + exp + "/"
 
 check = raw_input("Ready to fetch, drudg, and modify (SNP/PRC) experiment " + exp + ". NOTE: this will overwrite any existing files with this experiment name. Type go and hit enter to continue: " )
 if check.strip() == "go":
-    # Get schedule via wget, saving it in /usr2/sched/, e.g. /usr2/sched/vt9248.skd
-    print("INFO: Downloading sked file...")
-    wgetcmd = "wget --user anonymous " + ftpaddr + " -O /usr2/sched/" + exp + ".skd"
-    os.system(wgetcmd)
-    print("INFO: ...done.")
+    if dl:
+        # Get schedule via wget, saving it in /usr2/sched/, e.g. /usr2/sched/vt9248.skd
+        print("INFO: Downloading sked file...")
+        wgetcmd = "wget --user anonymous " + ftpaddr + " -O /usr2/sched/" + exp + ".skd"
+        os.system(wgetcmd)
+        print("INFO: ...done.")
     
     # get hostname of this FS machine, fulla or freja
     host = os.uname()[1]
