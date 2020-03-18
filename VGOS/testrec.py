@@ -30,7 +30,7 @@ def fbcmd(message):
     sock.close()
     return data
 # Note recording less than 20 seconds may give weird tstats
-recsec = 20 # length to record in seconds
+recsec = 30 # length to record in seconds
 scan_name = "testrec_" + me + "_"+datetime.datetime.utcnow().strftime("%y%m%d_%H%M%S")
 
 print("")
@@ -53,6 +53,7 @@ print("Will record "+ str(recsec) + " seconds of data to file " + scan_name + " 
 # See also https://www.jive.nl/~verkout/evlbi/jive5ab-documentation-1.10.pdf sect. 7.1.
 #fbcmd(mode)
 
+fbcmd("tstat?")
 fbcmd("record=on:"+scan_name)
 fbcmd("tstat?")
 print("...recording any packets arriving...")
