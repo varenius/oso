@@ -41,7 +41,7 @@ def fbcmd(message):
 
 # Run disk2file to extract some time from the current scan selected by scan_set
 fbcmd("scan_set?")
-fbcmd("scan_set=:-0.2s:+0.2s")
+fbcmd("scan_set=:+5.0s:+0.2s")
 fbcmd("disk2file=" + disk2fileout + ":::w")
 time.sleep(1) # Wait for disk2file to finish
 
