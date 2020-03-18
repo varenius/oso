@@ -5,12 +5,12 @@ define  proc_library  00000000000x
 enddef
 define  exper_initi   19217160656x
 sched_initi
-mk5=mtu?
 mk5=mtu=9000
-mk5=mode?
+mk5=mtu?
 mk5=mode=VDIF_8192-8192-64-2
-mk5=net_protocol?
+mk5=mode?
 mk5=net_protocol=udpsnor:64M:256M
+mk5=net_protocol?
 mk5=net_port=26311
 mk5=net_port?
 sy=pcal_en 1
