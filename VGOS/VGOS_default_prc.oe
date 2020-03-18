@@ -13,6 +13,8 @@ mk5=net_protocol=udpsnor:64M:256M
 mk5=net_protocol?
 mk5=net_port=26311
 mk5=net_port?
+mk5=record=nthread:4:4
+mk5=record?nthread 
 sy=pcal_en 1
 sy=atten_pcal 6
 dbbc3=time
