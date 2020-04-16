@@ -1,0 +1,116 @@
+#!/bin/csh
+###############################################################################
+#
+# FILE: cdms_delay
+#
+#    Make a CDMS cable delay measurement.
+#
+#    This command is called from the field system.
+#
+# HISTORY
+#
+# who          when           what
+# ---------    -----------    ---------------------------------------
+# lerner       20 Feb 2018    Original version
+# lerner       25 Mar 2019    Modified log message
+#
+###############################################################################
+
+#
+#   Set up some important variables
+#
+
+set telescope_file = /tmp/telescope_choice
+
+#
+#   Check that we are running on a supported operating system
+#
+
+if ( `uname` != "Linux" ) then
+   echo "Error: unsupported architecture `uname`\!"
+   exit 1
+endif
+
+#
+#   Check that we are running on a supported FS-computer
+#
+
+if ( `hostname` != "freja" && `hostname` != "fulla" ) then
+   echo "Error: non-allowed FS-computer '`hostname`'\!"
+   exit 1
+endif
+
+#
+#   Check which OTT we are running on
+#
+
+if ( ! -r $telescope_file ) then
+   echo "FAKING $*"
+   exit 0
+endif
+
+if ( `cut -c 1-5 $telescope_file` == "OTT-1" ) then
+   set cdms_ip = 192.165.6.78
+else if ( `cut -c 1-5 $telescope_file` == "OTT-2" ) then
+   set cdms_ip = 192.165.6.79
+else
+   echo "FAKING $*"
+   exit 0
+endif
+
+set cdms_port = 5000
+
+#
+#   Check that we got the right number of arguments
+#
+
+if ( $#argv != 0 ) then
+   echo "Error: bad number of arguments given to 'cdms_delay'\!"
+   echo "Usage: cdms_delay"
+   exit 1
+endif
+
+#
+#   Build the command
+#
+
+set timetag1 = `date -d "2 seconds ago" "+%Yy%jd%Hh%Mm%Ss"`
+set timetag2 = `date -d "1 second ago" "+%Yy%jd%Hh%Mm%Ss"`
+set command = "cdms_delay?${timetag1}:$timetag2;"
+
+#
+#   Send the command
+#
+
+set result = ( "`echo '$command' | nc -q 5 $cdms_ip $cdms_port`" )
+
+set code = $status
+
+#
+#   Log the command and its result
+#
+
+if ( $code == 0 ) then
+   if ( `echo "$result" | cut -d ":" -f 1` == "\!cdms_delay?0" ) then
+      set delay = `echo "$result" | cut -d ":" -f 2`
+      if ( "$delay" != "0" ) then
+         echo "CDMS cable delay measured to be $delay picoseconds"
+         inject_snap `printf '"/CDMS/%+.8f\n' $delay`
+      else
+         echo "ERROR: couldn't measure the CDMS cable delay\!\!\!"
+         echo "ERROR: reply from $cdms_ip port $cdms_port was '$result'\!"
+      endif
+   else
+      echo "ERROR: failed to measure the CDMS cable delay\!\!\!"
+      echo "ERROR: reply from $cdms_ip port $cdms_port was '$result'\!"
+   endif
+else
+   echo "ERROR: failed to set the CDMS cable delay\!\!\!"
+   echo "ERROR: communication failure with $cdms_ip port $cdms_port\!"
+endif
+
+#
+#   We are finished
+#
+
+exit $code

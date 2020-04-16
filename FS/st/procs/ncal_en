@@ -1,0 +1,110 @@
+#!/bin/csh
+###############################################################################
+#
+# FILE: ncal_en
+#
+#    Enable or disable the OTT noisediode system.
+#
+#    This command is called from the field system.
+#
+# HISTORY
+#
+# who          when           what
+# ---------    -----------    ---------------------------------------
+# lerner       18 Oct 2017    Original version
+#
+###############################################################################
+
+#
+#   Set up some important variables
+#
+
+set telescope_file = /tmp/telescope_choice
+
+#
+#   Check that we are running on a supported operating system
+#
+
+if ( `uname` != "Linux" ) then
+   echo "Error: unsupported architecture `uname`\!"
+   exit 1
+endif
+
+#
+#   Check that we are running on a supported FS-computer
+#
+
+if ( `hostname` != "freja" && `hostname` != "fulla" ) then
+   echo "Error: non-allowed FS-computer '`hostname`'\!"
+   exit 1
+endif
+
+#
+#   Check which OTT we are running on
+#
+
+if ( ! -r $telescope_file ) then
+   echo "FAKING $*"
+   exit 0
+endif
+
+if ( `cut -c 1-5 $telescope_file` == "OTT-1" ) then
+   set ncal_ip = 192.165.6.76
+else if ( `cut -c 1-5 $telescope_file` == "OTT-2" ) then
+   set ncal_ip = 192.165.6.77
+else
+   echo "FAKING $*"
+   exit 0
+endif
+
+set ncal_port = 5000
+
+#
+#   Check that we got the right number of arguments
+#
+
+if ( $#argv != 1 ) then
+   echo "Error: bad number of arguments given to 'ncal_en'\!"
+   echo "Usage: ncal_en 0|1"
+   exit 1
+endif
+
+#
+#   Check the argument and build the command
+#
+
+if ( "$1" == "0" ) then
+   set command = "ncal_en=0"
+else if ( "$1" == "1" ) then
+   set command = "ncal_en=1"
+else
+   echo "Error: bad argument given to 'ncal_en'\!"
+   echo "Usage: ncal_en 0|1"
+   exit 1
+endif
+
+#
+#   Send the command
+#
+
+nc -w 1 $ncal_ip $ncal_port << EOF
+$command
+EOF
+
+set code = $status
+
+#
+#   Log the command and its result
+#
+
+if ( $code == 0 ) then
+   echo "Set $0:t $*"
+else
+   echo "ERROR: failed to set $0:t $*\!\!\!"
+endif
+
+#
+#   We are finished
+#
+
+exit $code

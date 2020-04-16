@@ -1,0 +1,108 @@
+#!/bin/csh
+###############################################################################
+#
+# FILE: cdms_baseline
+#
+#    Make a CDMS baseline (reference) measurement to be used for
+#    the cable delay measurements.
+#
+#    This command is called from the field system.
+#
+# HISTORY
+#
+# who          when           what
+# ---------    -----------    ---------------------------------------
+# lerner       20 Feb 2018    Original version
+#
+###############################################################################
+
+#
+#   Set up some important variables
+#
+
+set telescope_file = /tmp/telescope_choice
+
+#
+#   Check that we are running on a supported operating system
+#
+
+if ( `uname` != "Linux" ) then
+   echo "Error: unsupported architecture `uname`\!"
+   exit 1
+endif
+
+#
+#   Check that we are running on a supported FS-computer
+#
+
+if ( `hostname` != "freja" && `hostname` != "fulla" ) then
+   echo "Error: non-allowed FS-computer '`hostname`'\!"
+   exit 1
+endif
+
+#
+#   Check which OTT we are running on
+#
+
+if ( ! -r $telescope_file ) then
+   echo "FAKING $*"
+   exit 0
+endif
+
+if ( `cut -c 1-5 $telescope_file` == "OTT-1" ) then
+   set cdms_ip = 192.165.6.78
+else if ( `cut -c 1-5 $telescope_file` == "OTT-2" ) then
+   set cdms_ip = 192.165.6.79
+else
+   echo "FAKING $*"
+   exit 0
+endif
+
+set cdms_port = 5000
+
+#
+#   Check that we got the right number of arguments
+#
+
+if ( $#argv != 0 ) then
+   echo "Error: bad number of arguments given to 'cdms_baseline'\!"
+   echo "Usage: cdms_baseline"
+   exit 1
+endif
+
+#
+#   Build the command
+#
+
+set timetag = `date "+%Yy%jd%Hh%Mm%Ss"`
+set command = "cdms_baseline=$timetag;"
+
+#
+#   Send the command
+#
+
+set result = ( "`echo '$command' | nc -q 5 $cdms_ip $cdms_port`" )
+
+set code = $status
+
+#
+#   Log the command and its result
+#
+
+if ( $code == 0 ) then
+   if ( "$result" == "\!cdms_baseline=0;" ) then
+      echo "CDMS baseline time set to $timetag"
+   else
+      echo "ERROR: failed to set the CDMS baseline time\!\!\!"
+      echo "ERROR: reply from $cdms_ip port $cdms_port was '$result'\!"
+   endif
+else
+   echo "ERROR: failed to set the CDMS baseline time\!\!\!"
+   echo "ERROR: communication failure with $cdms_ip port $cdms_port\!"
+endif
+
+#
+#   We are finished
+#
+
+exit $code
