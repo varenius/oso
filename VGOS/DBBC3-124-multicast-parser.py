@@ -12,10 +12,149 @@ mcast_group = "224.0.0.19" # Set in DBBC3 config file
 iface_ip    = "192.165.6.73" 
 
 # Create date-time-string without spaces or dots, do be used in log filename
-starttime = datetime.datetime.utcnow().strftime('%Y-%m-%d--%H:%M:%S.%f')
-logfile = "DBBC3_"+starttime + ".log"
+starttime = datetime.datetime.utcnow().strftime('%Y-%m-%d--%H-%M-%S')
+logfile = "MULTICAST_DBBC3_"+starttime + ".log"
 # To print on screen instead of a logfile, set logfile="".
 #logfile = ""
+
+#LOs = [0,0,7700,7700,7700,7700,11600,11600]
+#SBs = ['U', 'U', 'L', 'L', 'L', 'L', 'L', 'L',]
+
+def getTcalJy(bbc):
+    """ Return the Tcal value in Jansky for this BBC.  Note: does not read any
+        info, just assumes it is always the same!. """
+    bbcd={
+    #BBC: Tcal[Jy]
+        '001l': 55.097,
+        '001u': 58.259,
+        '002l': 59.519,
+        '002u': 63.846,
+        '003l': 68.874,
+        '003u': 69.884,
+        '004l': 74.490,
+        '004u': 77.330,
+        '005l': 73.570,
+        '005u': 71.341,
+        '006l': 93.066,
+        '006u': 102.982,
+        '007l': 107.936,
+        '007u': 123.178,
+        '008l': 128.939,
+        '008u': 129.922,
+        '009l': 90.353,
+        '009u': 89.489,
+        '010l': 91.020,
+        '010u': 92.282,
+        '011l': 102.672,
+        '011u': 115.908,
+        '012l': 147.213,
+        '012u': 161.739,
+        '013l': 165.486,
+        '013u': 167.849,
+        '014l': 141.468,
+        '014u': 120.471,
+        '015l': 122.060,
+        '015u': 129.665,
+        '016l': 137.025,
+        '016u': 182.402,
+        '017l': 90.353,
+        '017u': 88.360,
+        '018l': 87.070,
+        '018u': 90.255,
+        '019l': 79.530,
+        '019u': 83.085,
+        '020l': 73.219,
+        '020u': 75.438,
+        '021l': 63.991,
+        '021u': 66.697,
+        '022l': 59.844,
+        '022u': 60.914,
+        '023l': 61.605,
+        '023u': 60.236,
+        '024l': 64.535,
+        '024u': 62.309,
+        '025l': 68.710,
+        '025u': 66.699,
+        '026l': 69.299,
+        '026u': 70.145,
+        '027l': 63.365,
+        '027u': 60.713,
+        '028l': 64.299,
+        '028u': 57.984,
+        '029l': 69.634,
+        '029u': 74.198,
+        '030l': 66.980,
+        '030u': 68.105,
+        '031l': 66.070,
+        '031u': 67.539,
+        '032l': 62.256,
+        '032u': 66.381,
+        '033l': 37.165,
+        '033u': 39.049,
+        '034l': 43.053,
+        '034u': 37.697,
+        '035l': 48.437,
+        '035u': 45.066,
+        '036l': 44.907,
+        '036u': 46.289,
+        '037l': 50.952,
+        '037u': 51.020,
+        '038l': 54.843,
+        '038u': 50.696,
+        '039l': 56.499,
+        '039u': 55.625,
+        '040l': 55.670,
+        '040u': 56.845,
+        '041l': 53.273,
+        '041u': 53.919,
+        '042l': 56.137,
+        '042u': 53.955,
+        '043l': 55.490,
+        '043u': 58.222,
+        '044l': 48.274,
+        '044u': 51.645,
+        '045l': 59.380,
+        '045u': 56.243,
+        '046l': 60.268,
+        '046u': 56.932,
+        '047l': 62.791,
+        '047u': 60.881,
+        '048l': 60.285,
+        '048u': 63.311,
+        '049l': 52.585,
+        '049u': 47.426,
+        '050l': 54.157,
+        '050u': 53.424,
+        '051l': 43.206,
+        '051u': 48.114,
+        '052l': 37.088,
+        '052u': 38.248,
+        '053l': 32.480,
+        '053u': 32.968,
+        '054l': 35.539,
+        '054u': 36.439,
+        '055l': 34.335,
+        '055u': 35.586,
+        '056l': 32.127,
+        '056u': 34.245,
+        '057l': 59.184,
+        '057u': 57.488,
+        '058l': 63.133,
+        '058u': 67.606,
+        '059l': 48.341,
+        '059u': 52.685,
+        '060l': 53.026,
+        '060u': 41.516,
+        '061l': 64.009,
+        '061u': 64.317,
+        '062l': 68.627,
+        '062u': 70.067,
+        '063l': 57.507,
+        '063u': 67.834,
+        '064l': 101.819,
+        '064u': 46.681
+    }
+    return bbcd[bbc]
 
 def joinMcast(mcast_addr,port,if_ip):
     """
@@ -171,13 +310,16 @@ while True:
         bbcTPLOff = bbcValues[8]
         bbcInfo += [bbcTPUOn, bbcTPLOn, bbcTPUOff, bbcTPLOff]
 
-        #try:
-        #    # Calculate approximate Tsys from rxg-file Tcal-values
-        #    Tcal = getTcal() # Kelvin
-        #    bbcTsys = - Tcal * bbcTPUOff / (bbcTPUOn-bbcTPUOff)
-        #    bbcInfo += [" Approximate Tsys: " + str(round(bbcTsys)) + " K",]
-        #except ZeroDivisionError:
-        #    bbcInfo += ["Tsys: INF",]
+        try:
+            # Calculate approximate Tsys from rxg-file Tcal-values
+            bbc = str(i+1).rjust(3,"0")
+            TcalL = getTcalJy(bbc+"l") # Jansky
+            TcalU = getTcalJy(bbc+"u") # Jansky
+            bbcSEFDU = - TcalU * bbcTPUOff / (bbcTPUOn-bbcTPUOff)
+            bbcSEFDL = - TcalL * bbcTPLOff / (bbcTPLOn-bbcTPLOff)
+            bbcInfo += ["SEFDU: " + str(round(bbcSEFDU)) + " Jy","SEFDL: " + str(round(bbcSEFDL)) + " Jy"]
+        except ZeroDivisionError:
+            bbcInfo += ["Tsys: INF",]
 
         # Extract and append Bit statitics for logging. N/A in DDC F/W ver <=124
         #bbcstat0 = bbcValues[9]
@@ -195,7 +337,7 @@ while True:
 
         # Add together all extracted values into comma-separated string for logging/printing
         bbcString = ",".join([str(k) for k in bbcInfo])
-        logString("BBC["+str(i+1) + "]", bbcString)
+        logString("BBC"+str(i+1).rjust(3,"0"), bbcString)
         
         # Jump to next BBC byte offset position
         offset = offset + 40
