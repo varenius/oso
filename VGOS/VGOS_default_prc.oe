@@ -1,10 +1,11 @@
 define  proc_library  00000000000x
-" VT9248     ONSA13NE  Oe
+" VO0132     ONSA13NE  Oe
 " drudg version 2016Jul25 compiled under FS  9.12.12
 "< DBBC     rack >< Mark5B   recorder 1>
 enddef
-define  exper_initi   19217160656x
+define  exper_initi   20132122541x
 sched_initi
+" Configure jive5ab for recording
 mk5=mtu=9000
 mk5=mtu?
 mk5=mode=VDIF_8192-8192-64-2
@@ -15,23 +16,74 @@ mk5=net_port=26311
 mk5=net_port?
 mk5=record=nthread:4:4
 mk5=record?nthread 
+" Enable pcal signal
 sy=pcal_en 1
-sy=atten_pcal 6
+" set pcal attenuation
+sy=atten_pcal 5
+" check DBBC3 VDIF time
+" 1s lag for later cards is normal
 dbbc3=time
+" check maser timing
 clock
+" check DBBC3 delay
 dbbc3=pps_delay
+" Configure fivept and onoff
+" for system checks
+fivept=azel,-2,9,0.4,1,057u
+onoff=2,2,,,,,all
+" configure frequencies etc.
+setupbb
 enddef
-define  setupbb       19217160707x
-azeloff=0d,0d
-azeloff
-dbbc_bb
-ifall
-dbbc_ifall2
-"tpicd=stop
-"tpicd=no,100
-"tpicd
+define  kill          00000000000
+" Useful to stop tasks if needed
+sy=brk aquir &
+sy=brk fivpt &
+sy=brk onoff &        
 enddef
-define  dbbc_bb      19217160710
+define  ifall         20132122558x
+"configure LO and GComo settings
+lo=
+lo=loa,0,usb,lcp
+lo=lob,0,usb,rcp
+lo=loc,7700,lsb,lcp
+lo=lod,7700,lsb,rcp
+lo=loe,7700,lsb,lcp
+lo=lof,7700,lsb,rcp
+lo=log,11600,lsb,lcp
+lo=loh,11600,lsb,rcp
+ifa=1,agc
+ifb=1,agc
+ifc=2,agc
+ifd=2,agc
+ife=2,agc
+iff=2,agc
+ifg=2,agc
+ifh=2,agc
+enddef
+define  dbbc_ifall    20132122604x
+"read out IF/Gcomo settings through FS
+ifa
+ifb
+ifc
+ifd
+ife
+iff
+ifg
+ifh
+enddef
+define  dbbc_ifall2   20132122605x
+"read out IF/Gcomo settings through DBBC3
+dbbc=dbbcifa
+dbbc=dbbcifb
+dbbc=dbbcifc
+dbbc=dbbcifd
+dbbc=dbbcife
+dbbc=dbbciff
+dbbc=dbbcifg
+dbbc=dbbcifh
+enddef
+define  dbbc_bb      12013216450
+" Set all DBBC BBCs through DBBC3
 dbbc3=dbbc01=3480.4,a,32,1
 dbbc3=dbbc02=3448.4,a,32,1
 dbbc3=dbbc03=3384.4,a,32,1
@@ -96,4 +148,83 @@ dbbc3=dbbc61=1175.6,h,32,1
 dbbc3=dbbc62=1303.6,h,32,1
 dbbc3=dbbc63=1335.6,h,32,1
 dbbc3=dbbc64=1367.6,h,32,1
+enddef
+define  bbcall        20132122554x
+" Set all DBBC BBCs through FS
+" Needed so FS knows about this
+bbc001=3480.4,a,32,1
+bbc002=3448.4,a,32,1
+bbc003=3384.4,a,32,1
+bbc004=3320.4,a,32,1
+bbc005=3224.4,a,32,1
+bbc006=3096.4,a,32,1
+bbc007=3064.4,a,32,1
+bbc008=3032.4,a,32,1
+bbc009=3480.4,b,32,1
+bbc010=3448.4,b,32,1
+bbc011=3384.4,b,32,1
+bbc012=3320.4,b,32,1
+bbc013=3224.4,b,32,1
+bbc014=3096.4,b,32,1
+bbc015=3064.4,b,32,1
+bbc016=3032.4,b,32,1
+bbc017=1979.6,c,32,1
+bbc018=2011.6,c,32,1
+bbc019=2075.6,c,32,1
+bbc020=2139.6,c,32,1
+bbc021=2235.6,c,32,1
+bbc022=2363.6,c,32,1
+bbc023=2395.6,c,32,1
+bbc024=2427.6,c,32,1
+bbc025=1979.6,d,32,1
+bbc026=2011.6,d,32,1
+bbc027=2075.6,d,32,1
+bbc028=2139.6,d,32,1
+bbc029=2235.6,d,32,1
+bbc030=2363.6,d,32,1
+bbc031=2395.6,d,32,1
+bbc032=2427.6,d,32,1
+bbc033=859.6,e,32,1
+bbc034=891.6,e,32,1
+bbc035=955.6,e,32,1
+bbc036=1019.6,e,32,1
+bbc037=1115.6,e,32,1
+bbc038=1243.6,e,32,1
+bbc039=1275.6,e,32,1
+bbc040=1307.6,e,32,1
+bbc041=859.6,f,32,1
+bbc042=891.6,f,32,1
+bbc043=955.6,f,32,1
+bbc044=1019.6,f,32,1
+bbc045=1115.6,f,32,1
+bbc046=1243.6,f,32,1
+bbc047=1275.6,f,32,1
+bbc048=1307.6,f,32,1
+bbc049=919.6,g,32,1
+bbc050=951.6,g,32,1
+bbc051=1015.6,g,32,1
+bbc052=1079.6,g,32,1
+bbc053=1175.6,g,32,1
+bbc054=1303.6,g,32,1
+bbc055=1335.6,g,32,1
+bbc056=1367.6,g,32,1
+bbc057=919.6,h,32,1
+bbc058=951.6,h,32,1
+bbc059=1015.6,h,32,1
+bbc060=1079.6,h,32,1
+bbc061=1175.6,h,32,1
+bbc062=1303.6,h,32,1
+bbc063=1335.6,h,32,1
+bbc064=1367.6,h,32,1
+enddef
+define  setupbb       20132122551x
+" Configure frequencies etc.
+" First ensure no offsets left in FS
+azeloff=0d,0d
+azeloff
+dbbc_bb
+bbcall
+ifall
+dbbc_ifall
+dbbc_ifall2
 enddef

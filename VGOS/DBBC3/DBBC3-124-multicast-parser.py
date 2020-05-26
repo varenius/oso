@@ -319,7 +319,7 @@ while True:
             bbcSEFDL = - TcalL * bbcTPLOff / (bbcTPLOn-bbcTPLOff)
             bbcInfo += ["SEFDU: " + str(round(bbcSEFDU)) + " Jy","SEFDL: " + str(round(bbcSEFDL)) + " Jy"]
         except ZeroDivisionError:
-            bbcInfo += ["Tsys: INF",]
+            bbcInfo += ["SEFDU: INF Jy","SEFDL: INF Jy"]
 
         # Extract and append Bit statitics for logging. N/A in DDC F/W ver <=124
         #bbcstat0 = bbcValues[9]
