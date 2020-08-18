@@ -6,7 +6,7 @@ mk5ad = "/usr2/control/mk5ad.ctl"
 ip = ""
 port = ""
 me = socket.gethostname()
-DEBUG=False # Print jive5ab return messages, which are parsed for results
+DEBUG=True # Print jive5ab return messages, which are parsed for results
 
 for line in open(mk5ad):
     if not line.startswith("*"):
