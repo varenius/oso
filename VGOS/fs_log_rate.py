@@ -93,6 +93,8 @@ avg = np.average(vals)
 std = np.std(vals)
 diff = np.abs(vals-avg)
 cut = 3*std
+# Filtering should really be done first fitting once without filters, removing linear trend, then filter outliers. 
+# But this works well enough for Onsala big jumps as is.
 bad = np.where(diff>cut)
 vals = np.delete(vals, bad)
 times = np.delete(times,bad)

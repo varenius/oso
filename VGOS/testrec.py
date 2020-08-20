@@ -6,7 +6,7 @@ mk5ad = "/usr2/control/mk5ad.ctl"
 ip = ""
 port = ""
 me = socket.gethostname()
-DEBUG=False # Print jive5ab return messages, which are parsed for results
+DEBUG=True # Print jive5ab return messages, which are parsed for results
 
 for line in open(mk5ad):
     if not line.startswith("*"):
@@ -57,8 +57,10 @@ fbcmd("tstat?")
 fbcmd("record=on:"+scan_name)
 fbcmd("tstat?")
 print("...recording any packets arriving...")
-time.sleep(recsec)
+# Need to ensure tstat runs at least for one sec before we can query details reliably
+time.sleep(1)
 tstat = fbcmd("tstat?").split(":")
+time.sleep(recsec-1)
 fbcmd("record=off")
 evlbi = fbcmd("evlbi?").split(":")
 scraw = fbcmd("scan_check?:4000000")
