@@ -49,17 +49,18 @@ class CorrelatorReport:
         corr_nscan = float(len(corr_qcodes))
         corr_5t9 = [q for q in corr_qcodes if q in ['5','6','7','8','9']]
         corr_0 = [q for q in corr_qcodes if q in ['0']]
-        corr_4t1_AH_N = [q for q in corr_qcodes if q in ['4','3','2','1','N','A','B','C','D','E','F','G','H']]
-        tot_nscan = sum([self.nscans[i] for i in self.nscans.keys()])
+        # Add together both 1 char codes like "3" and 2 char codes like "5G"
+        corr_4t1_AH_N = [q for q in corr_qcodes if q in ['4','3','2','1','N','A','B','C','D','E','F','G','H']] + [q for q in corr_qcodes if (len(q)==2) and (q[1] in ['4','3','2','1','N','A','B','C','D','E','F','G','H'])]
         # All scans, also non-correlated
+        tot_nscan = sum([self.nscans[i] for i in self.nscans.keys()])
         # Prepare summary text
         h = "+SUMMARY\n"
         h += " Qcode  % of Total   % of Correlated\n" 
-        h += "             scans        scans\n\n" 
-        msg =" 5-9           -            {:2d}%\n".format(int(round(100.0*len(corr_5t9)/corr_nscan)))
-        msg +=" 0             -            {:2d}%\n".format(int(round(100.0*len(corr_0)/corr_nscan)))
-        msg +=" 4-1,A-H,N     -            {:2d}%\n".format(int(round(100.0*len(corr_4t1_AH_N)/corr_nscan)))
-        msg +=" REMOVED       -             -\n".format()
+        h += "             scans        scans\n" 
+        msg =" 5-9           -          {:5.2f}%\n".format(100.0*len(corr_5t9)/corr_nscan)
+        msg +=" 0             -          {:5.2f}%\n".format(100.0*len(corr_0)/corr_nscan)
+        msg +=" 4-1,A-H,N     -          {:5.2f}%\n".format(100.0*len(corr_4t1_AH_N)/corr_nscan)
+        msg +=" REMOVED       -           -\n".format()
         # Ignore "total scans" since this is not well defined. Do we mean number of scans/number of baseline products, scheduled/correlated?
         #msg =" 5-9           {:2d}%            {:2d}%\n".format(int(round(100.0*len(corr_5t9)/tot_nscan)), int(round(100.0*len(corr_5t9)/corr_nscan)))
         #msg +=" 0             {:2d}%            {:2d}%\n".format(int(round(100.0*len(corr_0)/tot_nscan)), int(round(100.0*len(corr_0)/corr_nscan)))
@@ -68,13 +69,23 @@ class CorrelatorReport:
         print(h + msg)
 
     def getQcodes(self):
-        codes = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","N","-"]
+        #codes = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","N","-"]
+        codes = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","N"]
         # Correlated scans
         corr_bs_q = self.alist[:,14:16]
         bs = np.unique(corr_bs_q[:,0])
         qtab = []
         for b in bs:
-            vals = corr_bs_q[:,1][corr_bs_q[:,0]==b]
+            # Get all Qcodes for this baseline
+            vs = corr_bs_q[:,1][corr_bs_q[:,0]==b]
+            vals = []
+            for v in vs:
+                if len(v)==1:
+                    vals.append(v)
+                elif len(v)==2:
+                # Trim 2 letter codes, e.g. 5G, to one letter, i.e. "G"
+                    vals.append(v[1])
+            vals = np.array(vals)
             qc = []
             for c in codes:
                 qc.append((len(vals[vals==c])))
@@ -93,12 +104,12 @@ class CorrelatorReport:
         qtab.append(np.sum(np.array(qtab),axis=0))
         qtab = np.array(qtab).astype(str)
         cws = [len(max(qtab[:,i], key=len)) for i in range(len(codes)+1)] # Include Total column
-        h = "+QCODES\n"
+        h = "+QCODES"
         print(h)
         h = "Qcod"
         for i,a in enumerate(codes):
             h+= a.rjust(cws[i]+1)
-        h+= "Tot".rjust(cws[-1]+1) + "\n"
+        h+= "Tot".rjust(cws[-1]+1)
         sep = "-"*len(h.strip())
         print(h)
         print(sep)
@@ -123,9 +134,10 @@ class CorrelatorReport:
         l += "   = G   Fringe amp in a channel is <.5 times mean amp (only if SNR>20).\n"
         l += "   = H   Low Phase-cal amplitude in one or more channels.\n"
         l += "   = N   No valid correlator data.\n"
-        l += "   = -   Scans in original schedule file for which correlation was not\n"
-        l += "         attempted, usually because of known station problems.\n"
-        l += "   = Tot Total number of scans in schedule.\n" 
+        #l += "   = -   Scans in original schedule file for which correlation was not\n"
+        #l += "         attempted, usually because of known station problems.\n"
+        #l += "   = Tot Total number of scans in schedule.\n" 
+        l += "   = Tot Total number of Qcodes in row/column.\n" 
         print(l)
 
     def getSNR(self):
