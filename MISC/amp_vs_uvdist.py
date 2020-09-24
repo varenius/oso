@@ -20,7 +20,7 @@ nif = d[1].header["NO_IF"]
 us = d[0].data['UU'] # in light-seconds, according to http://parac.eu/AIPSMEM117.pdf Table 4
 vs = d[0].data['VV'] # in light-seconds, according to http://parac.eu/AIPSMEM117.pdf Table 4
 lam = c/freq # Observing wavelength
-ls_to_m = 1.0*c# Convert from light-seconds to Mlambda
+ls_to_m = 1.0*c# Convert from light-seconds to meters
 m_to_mlambda = 1.0/(1e6*lam)# Convert from meters to Mlambda
 dist = np.sqrt(us**2+vs**2)*ls_to_m*m_to_mlambda # Now distances are in Mega-wavelength
 
