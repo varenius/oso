@@ -6,6 +6,8 @@ from scipy.stats import binned_statistic
 from scipy.constants import c
 from scipy.optimize import curve_fit
 
+ndist= 10 # Number of ranges for sked flux catalog line
+    
 # Open file given as first argument to script
 infile = sys.argv[1]
 d = fits.open(infile)
@@ -65,11 +67,9 @@ popt,pcov = curve_fit(gauss,dists,amps,p0=[0.5, 50], sigma=sigmas)
 if lam>0.1:
     band = "S"
     dmax = 100 # Mlambda
-    ndist= 5 # Number of ranges for sked flux catalog line
 else:
     band = "X"
     dmax = 340 # Mlambda
-    ndist= 10 # Number of ranges for sked flux catalog line
 
 # Render model at fixed UV-range
 mdists = np.linspace(0,dmax,100)
