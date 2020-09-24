@@ -80,10 +80,11 @@ mamps = gauss(mdists, *popt)
 skedl = "{0} {1} {2} {3}".format(target, band, "?", 0.0)
 # Extract model flux densities for sked catalog at specific points
 catpoints = np.linspace(0,dmax,ndist) # Ndist points from 0 to dmax in Mlambda
+catflux = gauss(catpoints, *popt)
 # Now add the flux for the distances (in km) to the string
-for p in catpoints:
-    pflux = gauss(p, *popt)
-    pdist =  p * 1e-3 / m_to_mlambda # Convert from Mlambda to kilometers
+for i in range(len(catpoints)):
+    pflux = catflux[i]
+    pdist =  catpoints[i] * 1e-3 / m_to_mlambda # Convert from Mlambda to kilometers
     skedl += " {0:.2f} {1:.1f}".format(pflux, pdist)
 print("SKEDFLUXCAT: " + skedl)
 
@@ -93,10 +94,12 @@ fig, ax = plt.subplots(1)
 ax.errorbar(avg_dist, avg_amps, fmt="o", label="binned data")
 # Plot fitted model
 ax.plot(mdists, mamps, label='Gaussian fit')
+# Plot SKED cat values
+ax.errorbar(catpoints, catflux, fmt= "*", label="For SKED")
 ax.legend()
 # Set lables and limits
-ax.set_ylabel("Correlated amplitude")
-ax.set_xlabel("Projected baseline length (Mlambda)")
+ax.set_ylabel("Correlated amplitude [Jy]")
+ax.set_xlabel("Projected baseline length [Mlambda]")
 ax.set_ylim(bottom=0.0)
 # Set title
 fig.suptitle(dateobs + "    " + target + "    " + "Freq: {0} GHz".format(freq/1.0e9))
