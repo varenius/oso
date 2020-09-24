@@ -79,7 +79,7 @@ mamps = gauss(mdists, *popt)
 # First prepare start of string
 skedl = "{0} {1} {2} {3}".format(target, band, "?", 0.0)
 # Extract model flux densities for sked catalog at specific points
-catpoints = np.linspace(0,dmax,ndist) # Ndist points from 0 to dmax in Mlambda
+catpoints = np.linspace(0,dmax,ndist)[1:] # Ndist points from 0 to dmax in Mlambda, omitting 0.0 as it's already covered
 catflux = gauss(catpoints, *popt)
 # Now add the flux for the distances (in km) to the string
 for i in range(len(catpoints)):
