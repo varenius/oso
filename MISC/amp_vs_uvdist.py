@@ -62,13 +62,30 @@ def gauss(x,a,sigma):
 # Fit model to data
 popt,pcov = curve_fit(gauss,dists,amps,p0=[0.5, 50], sigma=sigmas)
 # Determine UV-ranges for plotting
-if lam>0.1: #Sband
+if lam>0.1:
+    band = "S"
     dmax = 100 # Mlambda
-else: #Sband
-    dmax = 350 # Mlambda
+    ndist= 5 # Number of ranges for sked flux catalog line
+else:
+    band = "X"
+    dmax = 340 # Mlambda
+    ndist= 10 # Number of ranges for sked flux catalog line
+
 # Render model at fixed UV-range
 mdists = np.linspace(0,dmax,100)
 mamps = gauss(mdists, *popt)
+
+# Format string for SKED source catalog
+# First prepare start of string
+skedl = "{0} {1} {2} {3}".format(target, band, "?", 0.0)
+# Extract model flux densities for sked catalog at specific points
+catpoints = np.linspace(0,dmax,ndist) # Ndist points from 0 to dmax in Mlambda
+# Now add the flux for the distances (in km) to the string
+for p in catpoints:
+    pflux = gauss(p, *popt)
+    pdist =  p * 1e-3 / m_to_mlambda # Convert from Mlambda to kilometers
+    skedl += " {0:.2f} {1:.1f}".format(pflux, pdist)
+print("SKEDFLUXCAT: " + skedl)
 
 # Create figure and axis object for plotting
 fig, ax = plt.subplots(1)
