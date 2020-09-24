@@ -6,8 +6,6 @@ from scipy.stats import binned_statistic
 from scipy.constants import c
 from scipy.optimize import curve_fit
 
-ndist= 10 # Number of ranges for sked flux catalog line
-    
 # Open file given as first argument to script
 infile = sys.argv[1]
 d = fits.open(infile)
@@ -22,7 +20,7 @@ nif = d[1].header["NO_IF"]
 us = d[0].data['UU'] # in light-seconds, according to http://parac.eu/AIPSMEM117.pdf Table 4
 vs = d[0].data['VV'] # in light-seconds, according to http://parac.eu/AIPSMEM117.pdf Table 4
 lam = c/freq # Observing wavelength
-ls_to_m = 1.0*c# Convert from light-seconds to meters
+ls_to_m = 1.0*c# Convert from light-seconds to Mlambda
 m_to_mlambda = 1.0/(1e6*lam)# Convert from meters to Mlambda
 dist = np.sqrt(us**2+vs**2)*ls_to_m*m_to_mlambda # Now distances are in Mega-wavelength
 
@@ -67,9 +65,11 @@ popt,pcov = curve_fit(gauss,dists,amps,p0=[0.5, 50], sigma=sigmas)
 if lam>0.1:
     band = "S"
     dmax = 100 # Mlambda
+    ndist= 5 # Number of ranges for sked flux catalog line
 else:
     band = "X"
     dmax = 340 # Mlambda
+    ndist= 10 # Number of ranges for sked flux catalog line
 
 # Render model at fixed UV-range
 mdists = np.linspace(0,dmax,100)
@@ -77,7 +77,7 @@ mamps = gauss(mdists, *popt)
 
 # Format string for SKED source catalog
 # First prepare start of string
-skedl = "{0} {1} {2} {3}".format(target, band, "B", 0.0)
+skedl = "{0} {1} {2} {3}".format(target, band, "?", 0.0)
 # Extract model flux densities for sked catalog at specific points
 catpoints = np.linspace(0,dmax,ndist)[1:] # Ndist points from 0 to dmax in Mlambda, omitting 0.0 as it's already covered
 catflux = gauss(catpoints, *popt)
