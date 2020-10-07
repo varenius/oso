@@ -123,7 +123,7 @@ print("Rate: {0} s/s ({1} us/h)".format(rate, rate2))
 print("*RESULT IN VEX FORMAT:")
 print("*NOTE: Using peculiar offset {0} us from reference '{1}'. Make sure this is correct!".format(pecoff[0], pecoff[1]))
 print("*                  valid from           clock_early    clock_early_epoch        rate")
-print("def {:s};  clock_early = {:s} : {:.3f} usec : {:s} : {:.3f}e-12; enddef;").format(station,reftime,refclock*1e6,reftime,rate*1e12)
+print("def {:s};  clock_early = {:s} : {:.3f} usec : {:s} : {:.3f}e-12; enddef;".format(station,reftime,refclock*1e6,reftime,rate*1e12))
 print("*NOTE: You probably want to set the 'valid from' time to a at least a few minutes before the experiment start to make sure you cover all scans.")
 
 f, a1 = plt.subplots(1)
