@@ -6,7 +6,7 @@ mk5ad = "/usr2/control/mk5ad.ctl"
 ip = ""
 port = ""
 me = socket.gethostname()
-DEBUG=True # Print jive5ab return messages, which are parsed for results
+DEBUG=False # Print jive5ab return messages, which are parsed for results
 
 for line in open(mk5ad):
     if not line.startswith("*"):
@@ -29,8 +29,7 @@ def fbcmd(message):
         print('INFO: answer: ', data)
     sock.close()
     return data
-# Note recording less than 20 seconds may give weird tstats
-recsec = 30 # length to record in seconds
+recsec = 5 # length to record in seconds
 scan_name = "testrec_" + me + "_"+datetime.datetime.utcnow().strftime("%y%m%d_%H%M%S")
 
 print("")
@@ -53,36 +52,63 @@ print("Will record "+ str(recsec) + " seconds of data to file " + scan_name + " 
 # See also https://www.jive.nl/~verkout/evlbi/jive5ab-documentation-1.10.pdf sect. 7.1.
 #fbcmd(mode)
 
-fbcmd("tstat?")
+fbcmd("tstat=")
 fbcmd("record=on:"+scan_name)
-fbcmd("tstat?")
+fbcmd("tstat=")
 print("...recording any packets arriving...")
-# Need to ensure tstat runs at least for one sec before we can query details reliably
+# Need to ensure tstat runs after data flows have started, so sleep 1 sec
 time.sleep(1)
-tstat = fbcmd("tstat?").split(":")
-time.sleep(recsec-1)
+# Run first tstat
+tstat1 = fbcmd("tstat=").split(":")
+time.sleep(1)
+# Run second tstat, against which to calcualte the difference
+tstat2 = fbcmd("tstat=").split(":")
+# Wait for rest of time to pass
+time.sleep(recsec-2)
+# Turn off recording
 fbcmd("record=off")
+print("...done! Checking stats...")
+
+if DEBUG:
+    print(tstat1)
+    print(tstat2)
+# Calculate rate from tstat=
+tstat_bdiff = (float(tstat2[4])-float(tstat1[4]))
+tstat_tdiff = (float(tstat2[1])-float(tstat1[1]))
+tstat_rate = 8*tstat_bdiff / (tstat_tdiff * 1000**2)
+print("")
+print("Tstat rate: {:4.0f} Mbps (including overheads)".format(tstat_rate))
+
+# Get rate from evlbi? and scan_check?
 evlbi = fbcmd("evlbi?").split(":")
+if DEBUG:
+    print(evlbi)
+ev_loss = int(evlbi[4].split()[0])
+ev_loss_pct = re.match(".*?([0-9\.]*%).*", "".join(map(str, evlbi[4].split()[1:]))).group(1)
+ev_ooo = int(evlbi[6].split()[0])
+ev_ooo_pct = re.match(".*?([0-9\.]*%).*", "".join(map(str, evlbi[6].split()[1:]))).group(1)
+ev_tot = int(evlbi[2])
+# Check for packet loss
+if ev_loss > 0:
+        print "Warning: " + str(ev_loss) + " packets lost (" + ev_loss_pct + ")"
+
+if ev_ooo > 0:
+        print "Warning: " + str(ev_ooo) + " packets recevied out of order (" + ev_ooo_pct + ")"
+
 scraw = fbcmd("scan_check?:4000000")
 if " does not exist" in scraw:
     print 
-    print "ERROR: No data recorded on disk - investigate !!!" 
+    print "ERROR: scan_check did not find any data - investigate !!!" 
     print "Some (but not all) possible things to check:"
+    print "- Perhaps you are recording multifile? If so, try with 'datastream=clear'"
     print "- No mode= command sent to jive5ab since starting jive5ab?"
     print "- FiLa10G VDIF output not started? Check with fila10g=sysstat "
     print "- Bad fibre connection from FiLa to flexbuff?"
     print "...exiting test... try again after changing something!"
     print
     sys.exit(1)
+
 sc = scraw.split(":")
-print("...done! Checking stats...")
-
-if DEBUG:
-    print(tstat)
-tstat_re = re.match("([0-9\.]*)(.*)", tstat[3].split()[1])
-tstat_rate = float(tstat_re.group(1))
-tstat_unit = tstat_re.group(2)
-
 if DEBUG:
     print(sc)
 sc_pkt_size = int(sc[9].split()[0])
@@ -93,28 +119,10 @@ sc_nchan = int(sc[4].strip())
 sc_t_re = re.match("([0-9\.]*)(.*)", sc[6].strip())
 sc_t = sc_t_re.group(1)
 sc_t_unit = sc_t_re.group(2)
-
-if DEBUG:
-    print(evlbi)
-ev_loss = int(evlbi[4].split()[0])
-ev_loss_pct = re.match(".*?([0-9\.]*%).*", "".join(map(str, evlbi[4].split()[1:]))).group(1)
-ev_ooo = int(evlbi[6].split()[0])
-ev_ooo_pct = re.match(".*?([0-9\.]*%).*", "".join(map(str, evlbi[6].split()[1:]))).group(1)
-ev_tot = int(evlbi[2])
-
-if ev_loss > 0:
-        print "Warning: " + str(ev_loss) + " packets lost (" + ev_loss_pct + ")"
-
-if ev_ooo > 0:
-        print "Warning: " + str(ev_ooo) + " packets recevied out of order (" + ev_ooo_pct + ")"
-
 # Scan_check packet size * n_pkts received / scan time
-#print sc_pkt_size * 8 * ev_tot / float(sc_t)
 evlbi_rate = int((sc_pkt_size * 8 * ev_tot / float(sc_t)))/1.0e6
 
-if tstat_unit == "Gbps":
-    tstat_rate = tstat_rate * 1000
-
+# Print final rate comparison between the methods
 print ""
 if tstat_rate < sc_rate * sc_nchan * 0.9 or tstat_rate > sc_rate * sc_nchan * 1.1:
     print "Data rates returned by scan_check and tstat are not within 10% of each other! scan_check:", sc_rate * sc_nchan, "Mbps; tstat:", tstat_rate, "Mbps"
