@@ -24,7 +24,8 @@ import argparse
 peculiaroff = {"Ow": [6.28,"average from Date: 2019/01/08 00:00:00 and Date: 2019/01/23 00:00:00 Haystack"],
                "Oe": [6.32,"average from Date: 2019/01/08 00:00:00 and Date: 2019/01/23 00:00:00 Haystack"],
                "On": [1.35,"from multiple exp from Bonn"],
-               "Is": [1.246, "VO009 VgosDB from haystack"]
+               "Is": [1.246, "VO009 VgosDB from haystack"],
+               "O8": [0, "Unknown, using 0"]
                }
 
 parser = argparse.ArgumentParser()
