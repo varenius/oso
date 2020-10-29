@@ -8,10 +8,10 @@ mcast_port  = 25000 # Taken from DBBC3 firmware v124 parser.py example file
 # interfaces, set this to one which is on the same network as your DBBC3
 # Note: This is the computer IP where you run this script, NOT the DBBC3 IP
 hostname = socket.gethostname()
-if hostname == "freja"
+if hostname == "freja":
     iface_ip    = "192.165.6.72" # freja 
     mcast_group = "224.0.0.20" # Set in DBBC3 config file
-elif hostname == "fulla"
+elif hostname == "fulla":
     iface_ip    = "192.165.6.73" #fulla
     mcast_group = "224.0.0.19" # Set in DBBC3 config file
 
