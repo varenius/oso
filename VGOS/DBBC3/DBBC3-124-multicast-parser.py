@@ -9,7 +9,8 @@ mcast_group = "224.0.0.20" # Set in DBBC3 config file
 # IP of network interface to use on this computer.  If you have multiple
 # interfaces, set this to one which is on the same network as your DBBC3
 # Note: This is the computer IP where you run this script, NOT the DBBC3 IP
-iface_ip    = "192.165.6.72" 
+iface_ip    = "192.165.6.72" # freja 
+#iface_ip    = "192.165.6.73" #fulla
 
 # Create date-time-string without spaces or dots, do be used in log filename
 starttime = datetime.datetime.utcnow().strftime('%Y-%m-%d--%H-%M-%S')
