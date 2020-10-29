@@ -4,13 +4,16 @@ import datetime
 
 # Multicast configuration
 mcast_port  = 25000 # Taken from DBBC3 firmware v124 parser.py example file
-#TODO: Add mcast_port to DBBC3 config file
-mcast_group = "224.0.0.20" # Set in DBBC3 config file
 # IP of network interface to use on this computer.  If you have multiple
 # interfaces, set this to one which is on the same network as your DBBC3
 # Note: This is the computer IP where you run this script, NOT the DBBC3 IP
-iface_ip    = "192.165.6.72" # freja 
-#iface_ip    = "192.165.6.73" #fulla
+hostname = socket.gethostname()
+if hostname == "freja"
+    iface_ip    = "192.165.6.72" # freja 
+    mcast_group = "224.0.0.20" # Set in DBBC3 config file
+elif hostname == "fulla"
+    iface_ip    = "192.165.6.73" #fulla
+    mcast_group = "224.0.0.19" # Set in DBBC3 config file
 
 # Create date-time-string without spaces or dots, do be used in log filename
 starttime = datetime.datetime.utcnow().strftime('%Y-%m-%d--%H-%M-%S')
