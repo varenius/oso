@@ -40,7 +40,7 @@ print("Running with arguments: {}".format(args))
 
 fslog = args.logfile[0]
 if not os.path.exists(fslog):
-    print("Logfile {0} does not exist. Check that you gave the full path.".format(logfile))
+    print("Logfile {0} does not exist. Check that you gave the full path.".format(fslog))
     sys.exit(1)
 
 if args.stime is not None:
