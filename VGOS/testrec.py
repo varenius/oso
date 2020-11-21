@@ -77,7 +77,8 @@ tstat_bdiff = (float(tstat2[4])-float(tstat1[4]))
 tstat_tdiff = (float(tstat2[1])-float(tstat1[1]))
 tstat_rate = 8*tstat_bdiff / (tstat_tdiff * 1000**2)
 print("")
-print("Tstat rate: {:4.0f} Mbps (including overheads)".format(tstat_rate))
+#print("Tstat rate: {:4.0f} Mbps (including overheads)".format(tstat_rate)) #only python3
+print("Tstat rate: Mbps (including overheads):", tstat_rate) # python2 and python3
 
 # Get rate from evlbi? and scan_check?
 evlbi = fbcmd("evlbi?").split(":")

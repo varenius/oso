@@ -26,6 +26,7 @@ peculiaroff = {"Ow": [6.183,"from https://github.com/whi-llc/adjust/blob/files/d
                "On": [1.350,"from multiple exp from Bonn"],
                "Is": [1.268,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
                "Yj": [-0.108, "from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"]
+               "O8": [0, "Unknown, using 0"]
                }
 
 parser = argparse.ArgumentParser()
