@@ -21,10 +21,11 @@ import argparse
 #*NOTE: You probably want to set the 'valid from' time to a at least a few minutes before the experiment start to make sure you cover all scans.
 
 # List peculiar offsets in us, relative to clock_early
-peculiaroff = {"Ow": [6.28,"average from Date: 2019/01/08 00:00:00 and Date: 2019/01/23 00:00:00 Haystack"],
-               "Oe": [6.32,"average from Date: 2019/01/08 00:00:00 and Date: 2019/01/23 00:00:00 Haystack"],
-               "On": [1.35,"from multiple exp from Bonn"],
-               "Is": [1.246, "VO009 VgosDB from haystack"]
+peculiaroff = {"Ow": [6.183,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
+               "Oe": [6.211,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
+               "On": [1.350,"from multiple exp from Bonn"],
+               "Is": [1.268,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
+               "Yj": [-0.108, "from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"]
                }
 
 parser = argparse.ArgumentParser()
@@ -118,6 +119,7 @@ rate = pf[0]/(24*3600) # convert to s/s
 rate2 = 1e6*pf[0]/(24.0) # convert to us/hour for easy check
 print("Infile: "+fslog)
 print("Reftime {0}".format(reftime))
+print("Refclock: {0} us [NO PECOFF]".format(p(xx.min())*1e6))
 print("Refclock: {0} us".format(refclock*1e6))
 print("Rate: {0} s/s ({1} us/h)".format(rate, rate2))
 print("*RESULT IN VEX FORMAT:")

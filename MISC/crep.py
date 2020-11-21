@@ -143,6 +143,6 @@ class CorrelatorReport:
     def getSNR(self):
         print("")
 
-cr = CorrelatorReport(sys.argv[1], sys.argv[2], sys.argv[3]) # args= alist, vex
+cr = CorrelatorReport(sys.argv[1], sys.argv[2], sys.argv[3]) # args= alist, vex, stations
 cr.getSummary()
 cr.getQcodes()
