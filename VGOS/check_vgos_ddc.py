@@ -54,7 +54,7 @@ if disk2file=="active":
 # Kill any running vmux processes
 os.system("ssh oper@{0} pkill -x vmux".format(ip))
 # Convert from 8 threads 8 channels to 1 thread 64 channels
-os.system("ssh oper@{0} /usr/local/difx-2.6.2_ompi_4.0.3_icc/bin/vmux -q {1} 8224 15625 0,1,2,3,4,5,6,7 {2}".format(ip,disk2fileout,vmuxout))
+os.system("ssh oper@{0} vmux -q {1} 8224 15625 0,1,2,3,4,5,6,7 {2}".format(ip,disk2fileout,vmuxout))
 # Use m5 tools to create plots from the 64channel-data
 os.system("ssh oper@{0} /home/oper/bin/chk_vgos_ddc_64ch.sh VDIF_65536-8192-64-2 {1} {2}".format(ip,vmuxout,mk5_dir))
 # Copy plot to FS computer, where gv_bpass will find it and (if open) display on screen
