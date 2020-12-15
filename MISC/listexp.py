@@ -6,7 +6,7 @@ exps = []
 for line in open(infile):
     if line.startswith("d"):
         sp = line.split()[7].split("_")
-        if len(sp)==3:
+        if len(sp)>2:
             exp=sp[0] + "_" + sp[1]  # Exp and antenna
         else:
             exp=sp

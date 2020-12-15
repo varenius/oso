@@ -8,6 +8,7 @@ import os
 # So you need to edit the file to ensure the last command does not end with &&, else you will get error.
 
 vbsdir = "/mnt/vbsmnt/"
+print(sys.argv)
 if not len(sys.argv)==3:
     print("USAGE: script.py exp outfile, for example: script.py vt9259 vmux.vt9259.sh")
     print("NOTE: select antenna by e.g.: script.py vt9259_oe vmux.vt9259.oe.sh")
@@ -16,7 +17,10 @@ if not len(sys.argv)==3:
 exp = sys.argv[1]
 ofname = sys.argv[2]
 
-vdifs = glob.glob(vbsdir + exp + "*")
+if exp[0]=="/":
+    vdifs = glob.glob(exp + "*")
+else:
+    vdifs = glob.glob(vbsdir + exp + "*")
 
 of = open(ofname,"w")
 for vin in vdifs:
