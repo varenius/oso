@@ -1,0 +1,2 @@
+python batchwrapper.py
+will run nuSolve with batch.js, which will run the same Group (or Phase) delay solving for all vgosDbs.

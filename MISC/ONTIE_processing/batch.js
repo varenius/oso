@@ -4,9 +4,11 @@ function main()
         print(args);
         //handler.fileName = "/home/eskil/vgosdb/NewAnalysisOctober2020/2020/20AUG15VB/20AUG15VB_V003_iOSO_kall.wrp";
         handler.fileName = args[0];
-        //setup.path2ReportOutput ="/home/eskil/nuSolve/Reports/PH_oct20";
         var delayMode = args[2];
+	//delayMode = 'GR'
+	//delayMode = 'PH'
         setup.path2ReportOutput = args[1] + delayMode + "/";
+        //setup.path2ReportOutput ="/home/eskil/nuSolve/Reports/PH_oct20";
         var save = args[3];
     }
 
@@ -62,6 +64,9 @@ function makeSetup()
             stations[i].estimateCoords=false;
         }
     }
+    var primaryBand = session.bands[session.primaryBandIdx];
+    if (primaryBand.getInputFileVersion > 3) // clear previous editings:
+          session.resetAllEditings();
 };
 
 function processSession(delayMode)
@@ -125,7 +130,6 @@ function processSession(delayMode)
     print("have2ApplyOldOceanTideContrib"+config.have2ApplyOldOceanTideContrib)
     print("have2ApplyOldPoleTideContrib" +config.have2ApplyOldPoleTideContrib)
 
-    session.doReWeighting();
     session.setNumOfClockPolynoms4Stations(3);
     // Run initial SB delay processing steps and remove initial outliers
     session.process();
@@ -143,8 +147,7 @@ function processSession(delayMode)
     }
     // Initial processing runs
     session.process();
-    session.process();
-    session.process();
+    session.doReWeighting();
     // Resolve ambiguities. Needs to be done iteratively for phase-delays it seems
     for (var i=0; i<10; i++)
     {
@@ -152,7 +155,14 @@ function processSession(delayMode)
         session.process();
     };
     // Remove final outliers, after convergence
-    session.eliminateOutliersSimpleMode(session.primaryBandIdx, session.numOfObservations*maxNumOfPasses, 5, upperLimit);
+    config.opThreshold  = 5.0;
+    config.opMode       = CFG.OPM_BASELINE;
+    config.opAction     = CFG.OPA_RESTORE;
+    session.doReWeighting();
+    session.restoreOutliers(session.primaryBandIdx);
+    session.eliminateOutliers(session.primaryBandIdx);
+    session.process();
+    session.restoreOutliers(session.primaryBandIdx);
     // Run 7 processing runs, maximum for reweighting
     session.process();
     session.process();
