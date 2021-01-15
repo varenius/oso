@@ -1,2 +1,3 @@
-python wrapper.py
-will run nuSolve with batch.js, which will run the same Group (or Phase) delay solving for all vgosDbs.
+Script used to "pre-analyse" all ONTIE epochs with nuSolve, to create version 4 wrapper with outliers removed and ambiguities resolved.
+Run: python wrapper.py
+Which will run nuSolve script batch.js, which will run the same Group (or Phase) delay solving for each vgosdb.
