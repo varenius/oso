@@ -135,17 +135,11 @@ function processSession(delayMode)
     session.process();
     session.eliminateOutliersSimpleMode(session.primaryBandIdx, maxNumOfPasses, 7, upperLimit);
 
-    // estimate parameters:
-    parsDescript.setMode4Parameter(Parameters.Clocks,   Parameters.EstimatePwl);
-    parsDescript.setPwlStep(Parameters.Clocks, 1.0/24.0); // PWL interval in days
-    parsDescript.setMode4Parameter(Parameters.Zenith, Parameters.EstimatePwl);
-    parsDescript.setPwlStep(Parameters.Zenith, 1.0/24.0); // PWL interval in days
-    parsDescript.setMode4Parameter(Parameters.PolusUt1,Parameters.EstimateLocal);
-
     var numOfRestored = 0;
     var numOfEliminated = 0;
     var roiCounter = 0;
     var mdfData=0;
+    session.doReWeighting();
     do
     {
         if ( (numOfRestored = session.restoreOutliers(session.primaryBandIdx)) )
