@@ -26,7 +26,7 @@ function main()
     };
 
     // Setup and process session
-    makeSetup();
+    makeSetup(delayMode);
     processSession(delayMode);
     printInfo();
 
@@ -41,9 +41,11 @@ function main()
     print(' ++ done.');
 };
 
-function makeSetup()
+function makeSetup(delayMode)
 {
-    session.resetAllEditings(); // Reset any editings being present already in this wrapper
+    if (delayMode=="GR") {
+        session.resetAllEditings(); // Reset any editings being present already in this wrapper
+    }
     session.suppressNotSoGoodObs(); // turn off everything that has low QCs:
     //session.pickupReferenceClocksStation();  // set up a reference clock station:
     session.setReferenceClocksStation("ONSALA60");
@@ -67,8 +69,6 @@ function makeSetup()
         }
     }
     var primaryBand = session.bands[session.primaryBandIdx];
-    if (primaryBand.getInputFileVersion > 3) // clear previous editings:
-          session.resetAllEditings();
 
     config.isSolveCompatible = true                     // have to be true if not testing something
     config.useRateType = CFG.VR_NONE;                   // No rate fitting
@@ -128,6 +128,7 @@ function processSession(delayMode)
     // first, run a simple solution, just clock offsets and rates:
     parsDescript.unsetAllParameters();
     parsDescript.setMode4Parameter(Parameters.Clocks,   Parameters.EstimateLocal);
+    session.setNumOfClockPolynoms4Stations(2);
 
     config.useDelayType = CFG.VD_SB_DELAY;
     config.activeBandIdx = 0;
@@ -148,7 +149,8 @@ function processSession(delayMode)
     session.process();
     session.scanAmbiguityMultipliers(session.primaryBandIdx);
     session.process();
-    session.eliminateOutliersSimpleMode(session.primaryBandIdx, maxNumOfPasses, 7, upperLimit);
+    session.eliminateOutliersSimpleMode(session.primaryBandIdx, maxNumOfPasses, 5, upperLimit);
+
 
     // phase delays special treating:
     if (delayMode=="PH") {
@@ -157,7 +159,7 @@ function processSession(delayMode)
         // phase delays are counted from group delays, we need to scan for ambigs again:
         session.scanAmbiguityMultipliers(session.primaryBandIdx);
         session.process();
-        session.eliminateOutliersSimpleMode(session.primaryBandIdx, maxNumOfPasses, 7, 50.0e-12);
+        session.eliminateOutliersSimpleMode(session.primaryBandIdx, maxNumOfPasses, 5, 50.0e-12);
         session.process();
         session.scanAmbiguityMultipliers(session.primaryBandIdx);
         session.process();
@@ -173,6 +175,13 @@ function processSession(delayMode)
     //parsDescript.setMode4Parameter(Parameters.Zenith, Parameters.EstimatePwl);
     //parsDescript.setPwlStep(Parameters.Zenith, 1.0/24.0); // PWL interval in days
 
+
+    // make sure the digits are right:
+    config.opThreshold = 3.0;
+    //
+    // make initial reweighting:
+    session.doReWeighting();
+    //
     var numOfRestored = 0;
     var numOfEliminated = 0;
     var roiCounter = 0;
