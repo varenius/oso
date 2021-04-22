@@ -299,8 +299,11 @@ def write_antab(tpidata, scans, outfile, ant, exp):
             ts = d.strftime("%H:%M:%S.%f")[:-4]
             res = "{0} {1}".format(doy, ts)
             for t in tpid[1]:
-                tent = " {:.2f}".format(t*dpfu) # Convert from Jansky to Kelvin
-                res += tent
+                tent = t*dpfu # Convert from Jansky to Kelvin
+                if (tent < 20.0) or (tent > 250.0):
+                    # bad Tsys, probably RFI or other issue. Mark as -1 to avoid problems later
+                    tent = -1.0
+                res += " {:.2f}".format(tent) 
             of.write(res+"\n")
     # Write finish line
     of.write("/\n")
