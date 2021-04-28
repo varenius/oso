@@ -10,10 +10,10 @@ mcast_port  = 25000 # Taken from DBBC3 firmware v124 parser.py example file
 hostname = socket.gethostname()
 if hostname == "freja":
     iface_ip    = "192.165.6.72" # freja 
-    mcast_group = "224.0.0.20" # Set in DBBC3 config file
+    mcast_group = "224.0.0.19" # Set in DBBC3 config file
 elif hostname == "fulla":
     iface_ip    = "192.165.6.73" #fulla
-    mcast_group = "224.0.0.19" # Set in DBBC3 config file
+    mcast_group = "224.0.0.20" # Set in DBBC3 config file
 
 # Create date-time-string without spaces or dots, do be used in log filename
 starttime = datetime.datetime.utcnow().strftime('%Y-%m-%d--%H-%M-%S')
@@ -319,8 +319,8 @@ while True:
             bbc = str(i+1).rjust(3,"0")
             TcalL = getTcalJy(bbc+"l") # Jansky
             TcalU = getTcalJy(bbc+"u") # Jansky
-            bbcSEFDU = - TcalU * bbcTPUOff / (bbcTPUOn-bbcTPUOff)
-            bbcSEFDL = - TcalL * bbcTPLOff / (bbcTPLOn-bbcTPLOff)
+            bbcSEFDU = - TcalU * 0.5*(bbcTPUOff+bbcTPUOn) / (bbcTPUOn-bbcTPUOff)
+            bbcSEFDL = - TcalL * 0.5*(bbcTPLOff+bbcTPLOn) / (bbcTPLOn-bbcTPLOff)
             bbcInfo += ["SEFDU: " + str(round(bbcSEFDU)) + " Jy","SEFDL: " + str(round(bbcSEFDL)) + " Jy"]
         except ZeroDivisionError:
             bbcInfo += ["SEFDU: INF Jy","SEFDL: INF Jy"]
