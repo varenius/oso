@@ -42,13 +42,15 @@ if check.strip() == "go":
     print("INFO: ...done.")
     
     # change setupsx to setupbb in SNP file
-    print("INFO: Changing setupsx to setupbb in snp file...")
-    sedcmd = "sed -i 's/setupsx/setupbb/g' /usr2/sched/"+exp+tel+".snp"
+    print("INFO: Changing setupsx to setupbb and commenting in snp file...")
+    sedcmd = "sed -i 's/setupsx/\"setupbb/g' /usr2/sched/"+exp+tel+".snp"
     os.system(sedcmd)
-    print("INFO: ... and comment out disk_pos and ready_disk...")
+    print("INFO: ... and comment out disk_pos and ready_disk and checkmk5...")
     sedcmd = "sed -i 's/^disk_pos/\"disk_pos/g' /usr2/sched/"+exp+tel+".snp"
     os.system(sedcmd)
     sedcmd = "sed -i 's/^ready_disk/\"ready_disk/g' /usr2/sched/"+exp+tel+".snp"
+    os.system(sedcmd)
+    sedcmd = "sed -i 's/^checkmk5/\"checkmk5/g' /usr2/sched/"+exp+tel+".snp"
     os.system(sedcmd)
     print("INFO: ...done.")
     
