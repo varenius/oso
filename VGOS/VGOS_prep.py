@@ -1,4 +1,5 @@
 import sys, os
+import datetime
 
 # Get path of script
 scriptpath = os.path.dirname(os.path.abspath(__file__))
@@ -64,5 +65,27 @@ if check.strip() == "go":
     sedcmd = "sed -i 's/VT9248/" + exp.upper() + "/g' /usr2/proc/"+exp+tel+".prc"
     os.system(sedcmd)
     print("INFO: ...done.")
+
+    snpf = "/usr2/sched/"+exp+tel+".snp"
+    # Store lines in array
+    lines = []
+    for line in open(snpf):
+        lines.append(line)
+    # Find first timetag
+    for line in lines:
+        if line.startswith("!"+year+"."):
+            starttime = datetime.datetime.strptime(line.strip()[1:], "%Y.%j.%H:%M:%S")
+            break
+    preptime = (starttime+datetime.timedelta(minutes=-10)).strftime("%Y.%j.%H:%M:%S")
+    print("starttime=", starttime, "preptime=", preptime)
+    wf = open(snpf, "w")
+    for line in lines:
+        wf.write(line)
+        if "Rack=DBBC" in line:
+            wf.write("mk5=datastream=clear\n")
+            wf.write("mk5=datastream=add:{thread}:*\n")
+            wf.write("prepant\n")
+            wf.write("!"+preptime + "\n")
+    wf.close()
 else: 
     print("Did not get go as answer so not doing anything.")
