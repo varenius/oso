@@ -186,9 +186,9 @@ if whattodo['fring']:
     for band in bands:
         rmtables(frmbt+"_"+band)
         # For weak sources, combine all SPWs, assuming the frt-solution is valid to tie SPWs together.
-        ringefit(vis=split1ms+"_"+band, refant="OE", caltable=frmbt+"_"+band, solint="60s", combine='spw', gaintable=[frt+"_"+band], globalsolve=False, delaywindow = [-10,10])
+        ringefit(vis=split1ms+"_"+band, refant="OE", caltable=frmbt+"_"+band, solint="60s", combine='spw', gaintable=[frt+"_"+band], globalsolve=False, delaywindow = [-20,20])
         # For strong sources, testing, solve individually per spw
-        #fringefit(vis=split1ms+"_"+band, refant="OE", caltable=frmbt+"_"+band, solint="60s", gaintable=[frt+"_"+band], globalsolve=False, delaywindow = [-10,10])
+        #fringefit(vis=split1ms+"_"+band, refant="OE", caltable=frmbt+"_"+band, solint="60s", gaintable=[frt+"_"+band], globalsolve=False, delaywindow = [-100,100])
 
 if whattodo['bpass']:
     for band in bands:
