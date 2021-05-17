@@ -1,11 +1,12 @@
 # NOTE: This script assumes that we have a "fits" file with Tsys attached, and a ".gain" folder with the gain curve info.
 # Simple summary to do obtain this:
-# First remove any gain (or Tsys) tables present which may be wrong:
+#For some reason, DiFX attaches a nonsense gain curve to the data. 
+#First we remove this using python2 (important, since there is some issues with opening the fits tables in python3 astropy):
 #
-#python3
-#>>> import astropy.io.fits as fits
-#>>> infits = "mff01.fits"
-#>>> hdul = fits.open(infits, mode='update')
+python2
+>>> import pyfits as fits
+>>> hdul = fits.open("mff01.fits", mode='update')
+>>> hdul.info()
 #>>> hdul.info()
 #Filename: mff01.fits
 #No.    Name      Ver    Type      Cards   Dimensions   Format
