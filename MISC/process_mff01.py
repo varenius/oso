@@ -7,7 +7,6 @@
 #>>> import pyfits as fits
 #>>> hdul = fits.open("mff01.fits", mode='update')
 #>>> hdul.info()
-#>>> hdul.info()
 #Filename: mff01.fits
 #No.    Name      Ver    Type      Cards   Dimensions   Format
 #  0  PRIMARY       1 GroupsHDU       30   ()      0 Groups  0 Parameters
@@ -185,7 +184,10 @@ if whattodo['fring']:
         fringefit(vis=split1ms+"_"+band, refant="OE", caltable=frt+"_"+band, solint="3600s", globalsolve=False, scan=frscan, zerorates=True)
     for band in bands:
         rmtables(frmbt+"_"+band)
-        fringefit(vis=split1ms+"_"+band, refant="OE", caltable=frmbt+"_"+band, solint="60s", combine='spw', gaintable=[frt+"_"+band], globalsolve=False, delaywindow = [-10,10])
+        # For weak sources, combine all SPWs
+        #fringefit(vis=split1ms+"_"+band, refant="OE", caltable=frmbt+"_"+band, solint="60s", combine='spw', gaintable=[frt+"_"+band], globalsolve=False, delaywindow = [-10,10])
+        # For strong sources, testing, solve individually per spw
+        fringefit(vis=split1ms+"_"+band, refant="OE", caltable=frmbt+"_"+band, solint="60s", gaintable=[frt+"_"+band], globalsolve=False, delaywindow = [-10,10])
 
 if whattodo['bpass']:
     for band in bands:
