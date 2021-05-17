@@ -31,6 +31,7 @@
 # If the above has been done, we can run the script... 
 import numpy as np
 import sys
+import datetime
 
 # NOTE: The infits, gainfile, e and frscan needs to be defined
 infits = "mff01.fits"
@@ -242,7 +243,7 @@ if whattodo['getflux']:
             rmtables(tf)
     skeys = sorted(fluxdata.keys())
     of = open(e+".flux", "a")
-    of.write("#Flux values fitted for "+e+"\n")
+    of.write("#Flux values fitted for "+e+" at " +str(datetime.datetime.utcnow())+ "\n")
     for name in skeys:
         # Hardcoded for 4 bands A, B, C, D right now
         val = fluxdata[name]
