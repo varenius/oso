@@ -3,7 +3,7 @@ import sys, os
 import datetime
 
 # Get path of script
-scriptpath = os.path.dirname(os.path.abspath(__file__))
+scriptpath = os.path.dirname(os.path.realpath(__file__))
 
 # take schedule name and year as input, e.g. vt9248 2019
 exp = sys.argv[1]
