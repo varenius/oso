@@ -106,6 +106,7 @@ if " does not exist" in scraw:
     print "- FiLa10G VDIF output not started? Check with fila10g=sysstat "
     print "- Bad fibre connection from FiLa to flexbuff?"
     print "...exiting test... try again after changing something!"
+    print "NOTE: To run jive5ab commands from FS, use 'mk5=' syntax e.g. mk5=datastream=clear"
     print
     sys.exit(1)
 
