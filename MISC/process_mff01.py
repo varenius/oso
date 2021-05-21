@@ -3,7 +3,7 @@
 #For some reason, DiFX attaches a nonsense gain curve to the data. 
 #First we remove this using python2 (important, since there is some issues with opening the fits tables in python3 astropy):
 #
-#python2
+#python
 #>>> import pyfits as fits
 #>>> hdul = fits.open("mff01.fits", mode='update')
 #>>> hdul.info()
