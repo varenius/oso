@@ -1,8 +1,9 @@
+#!/usr/bin/env python 
 import sys, os
 import datetime
 
 # Get path of script
-scriptpath = os.path.dirname(os.path.abspath(__file__))
+scriptpath = os.path.dirname(os.path.realpath(__file__))
 
 # take schedule name and year as input, e.g. vt9248 2019
 exp = sys.argv[1]
@@ -46,6 +47,9 @@ if check.strip() == "go":
     print("INFO: Changing setupsx to setupbb and commenting in snp file...")
     sedcmd = "sed -i 's/setupsx/\"setupbb/g' /usr2/sched/"+exp+tel+".snp"
     os.system(sedcmd)
+    print("INFO: Commenting out setupxx in snp file...")
+    sedcmd = "sed -i 's/setupxx/\"setupxx/g' /usr2/sched/"+exp+tel+".snp"
+    os.system(sedcmd)
     print("INFO: ... and comment out disk_pos and ready_disk and checkmk5...")
     sedcmd = "sed -i 's/^disk_pos/\"disk_pos/g' /usr2/sched/"+exp+tel+".snp"
     os.system(sedcmd)
@@ -77,7 +81,7 @@ if check.strip() == "go":
             starttime = datetime.datetime.strptime(line.strip()[1:], "%Y.%j.%H:%M:%S")
             break
     preptime = (starttime+datetime.timedelta(minutes=-10)).strftime("%Y.%j.%H:%M:%S")
-    print("starttime=", starttime, "preptime=", preptime)
+    #print("starttime=", starttime, "preptime=", preptime)
     wf = open(snpf, "w")
     for line in lines:
         wf.write(line)

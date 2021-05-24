@@ -1,6 +1,7 @@
+#!/usr/bin/env python 
 import sys
 
-logfile = sys.argv[1]
+logfile = "/usr2/log/"+sys.argv[1]+".log"
 
 lines = []
 for line in open(logfile):
