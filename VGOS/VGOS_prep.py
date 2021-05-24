@@ -1,7 +1,9 @@
+#!/usr/bin/env python 
 import sys, os
+import datetime
 
 # Get path of script
-scriptpath = os.path.dirname(os.path.abspath(__file__))
+scriptpath = os.path.dirname(os.path.realpath(__file__))
 
 # take schedule name and year as input, e.g. vt9248 2019
 exp = sys.argv[1]
@@ -42,13 +44,18 @@ if check.strip() == "go":
     print("INFO: ...done.")
     
     # change setupsx to setupbb in SNP file
-    print("INFO: Changing setupsx to setupbb in snp file...")
-    sedcmd = "sed -i 's/setupsx/setupbb/g' /usr2/sched/"+exp+tel+".snp"
+    print("INFO: Changing setupsx to setupbb and commenting in snp file...")
+    sedcmd = "sed -i 's/setupsx/\"setupbb/g' /usr2/sched/"+exp+tel+".snp"
     os.system(sedcmd)
-    print("INFO: ... and comment out disk_pos and ready_disk...")
+    print("INFO: Commenting out setupxx in snp file...")
+    sedcmd = "sed -i 's/setupxx/\"setupxx/g' /usr2/sched/"+exp+tel+".snp"
+    os.system(sedcmd)
+    print("INFO: ... and comment out disk_pos and ready_disk and checkmk5...")
     sedcmd = "sed -i 's/^disk_pos/\"disk_pos/g' /usr2/sched/"+exp+tel+".snp"
     os.system(sedcmd)
     sedcmd = "sed -i 's/^ready_disk/\"ready_disk/g' /usr2/sched/"+exp+tel+".snp"
+    os.system(sedcmd)
+    sedcmd = "sed -i 's/^checkmk5/\"checkmk5/g' /usr2/sched/"+exp+tel+".snp"
     os.system(sedcmd)
     print("INFO: ...done.")
     
@@ -62,5 +69,27 @@ if check.strip() == "go":
     sedcmd = "sed -i 's/VT9248/" + exp.upper() + "/g' /usr2/proc/"+exp+tel+".prc"
     os.system(sedcmd)
     print("INFO: ...done.")
+
+    snpf = "/usr2/sched/"+exp+tel+".snp"
+    # Store lines in array
+    lines = []
+    for line in open(snpf):
+        lines.append(line)
+    # Find first timetag
+    for line in lines:
+        if line.startswith("!"+year+"."):
+            starttime = datetime.datetime.strptime(line.strip()[1:], "%Y.%j.%H:%M:%S")
+            break
+    preptime = (starttime+datetime.timedelta(minutes=-10)).strftime("%Y.%j.%H:%M:%S")
+    #print("starttime=", starttime, "preptime=", preptime)
+    wf = open(snpf, "w")
+    for line in lines:
+        wf.write(line)
+        if "Rack=DBBC" in line:
+            wf.write("mk5=datastream=clear\n")
+            wf.write("mk5=datastream=add:{thread}:*\n")
+            wf.write("prepant\n")
+            wf.write("!"+preptime + "\n")
+    wf.close()
 else: 
     print("Did not get go as answer so not doing anything.")

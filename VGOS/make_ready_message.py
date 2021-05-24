@@ -1,6 +1,7 @@
+#!/usr/bin/env python 
 import sys
 
-logfile = sys.argv[1]
+logfile = "/usr2/log/"+sys.argv[1]+".log"
 
 lines = []
 for line in open(logfile):
@@ -26,7 +27,7 @@ print "READY MESSAGE DATA FROM LOGFILE ", logfile
 print
 
 print "DBBC3 timing:"
-time = get_lines(lines, "#dbbcn#dbbc3/time",25)
+time = get_lines(lines, "#dbbcn#dbbc3/time/",26)
 print_lines(time)
 print 
 

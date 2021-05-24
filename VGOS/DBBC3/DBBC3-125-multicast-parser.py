@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import socket
 import struct
 import datetime
@@ -18,9 +17,9 @@ elif hostname == "fulla":
 
 # Create date-time-string without spaces or dots, do be used in log filename
 starttime = datetime.datetime.utcnow().strftime('%Y-%m-%d--%H-%M-%S')
-logfile = "MULTICAST_DBBC3_"+starttime + ".log"
+#logfile = "125_MULTICAST_DBBC3_"+starttime + ".log"
 # To print on screen instead of a logfile, set logfile="".
-#logfile = ""
+logfile = ""
 
 #LOs = [0,0,7700,7700,7700,7700,11600,11600]
 #SBs = ['U', 'U', 'L', 'L', 'L', 'L', 'L', 'L',]
@@ -192,7 +191,7 @@ def logString(desc, msg):
     ls += msg
     
     if logfile=="":
-        print(ls)
+        print(type(ls), ls)
     else:
         with open(logfile, 'a') as of:
             of.write(ls + "\n")
@@ -209,7 +208,7 @@ while True:
     valueArray = sock.recv(16384)
     offset = 0
     versionString = valueArray[offset:offset+32].decode("utf-8") 
-    logString("F/W VER", versionString.strip())
+    logString("F/W VER", versionString.strip("\x00"))
     offset = offset + 32
     
     # GCoMo values
@@ -219,60 +218,64 @@ while True:
             mode = "MAN"
         else:
             mode = "AGC"
-        logString("GCOMO ["+str(i+1) + "] " + mode, str(shortArray))
+    #    logString("GCOMO ["+str(i+1) + "] " + mode, str(shortArray))
             
     offset = offset + (8 * 8)
            
     # Downconverter Values        
     for i in range(0,8):
         shortArray = struct.unpack('HHHH', valueArray[offset+i*8:offset+i*8+8])
-        logString("DOWNCONVERTER [" + str(i+1) + "]",  str(shortArray))
+     #   logString("DOWNCONVERTER [" + str(i+1) + "]",  str(shortArray))
         
     offset = offset + (8 * 8)
         
     # ADB3L Values
     for i in range(0,8):
         powerArray = struct.unpack('IIII', valueArray[offset:offset+16])
-        logString("ADBL ["+str(i+1)+"] POWER", str(powerArray))
+        #logString("ADBL ["+str(i+1)+"] POWER", str(powerArray))
         offset = offset + 16
         
         bstatArray_0 = struct.unpack('IIII', valueArray[offset:offset+16])
-        logString("ADBL ["+str(i+1)+"] BSTAT0", str(bstatArray_0) + ", SUM:" + str(sum(bstatArray_0)))
+        #logString("ADBL ["+str(i+1)+"] BSTAT0", str(bstatArray_0) + ", SUM:" + str(sum(bstatArray_0)))
         offset = offset + 16
         
         bstatArray_1 = struct.unpack('IIII', valueArray[offset:offset+16])
-        logString("ADBL ["+str(i+1)+"] BSTAT1", str(bstatArray_1) + ", SUM:" + str(sum(bstatArray_1)))
+        #logString("ADBL ["+str(i+1)+"] BSTAT1", str(bstatArray_1) + ", SUM:" + str(sum(bstatArray_1)))
         offset = offset + 16
         
         bstatArray_2 = struct.unpack('IIII', valueArray[offset:offset+16])
-        logString("ADBL ["+str(i+1)+"] BSTAT2", str(bstatArray_2) + ", SUM:" + str(sum(bstatArray_2)))
+        #logString("ADBL ["+str(i+1)+"] BSTAT2", str(bstatArray_2) + ", SUM:" + str(sum(bstatArray_2)))
         offset = offset + 16
         
         bstatArray_3 = struct.unpack('IIII', valueArray[offset:offset+16])
-        logString("ADBL ["+str(i+1)+"] BSTAT3", str(bstatArray_3) + ", SUM:" + str(sum(bstatArray_3)))
+        #logString("ADBL ["+str(i+1)+"] BSTAT3", str(bstatArray_3) + ", SUM:" + str(sum(bstatArray_3)))
         offset = offset + 16
         
         corrArray = struct.unpack('III', valueArray[offset:offset+12])
-        logString("ADBL ["+str(i+1)+"] DCORR", str(corrArray))
+        #logString("ADBL ["+str(i+1)+"] DCORR", str(corrArray))
         offset = offset + 12
         
     # Core3H Values    
+    pps = []
+    vdiftime = []
     for i in range(0,8):
         # VDIF TIME (only included in DDC_U v125 or higher) 
         timeValue = struct.unpack('I', valueArray[offset:offset+4])
+        vdiftime.append(timeValue[0])
         #logString("CORE3H ["+str(i+1)+"] VDIF TIME", str(timeValue))
         offset = offset + 4
         
         ppsDelayValue = struct.unpack('I', valueArray[offset:offset+4])
-        logString("CORE3H ["+str(i+1)+"] PPS_DELAY", str(ppsDelayValue))
+        pps.append(ppsDelayValue[0])
+        #logString("CORE3H ["+str(i+1)+"] PPS_DELAY", str(ppsDelayValue))
         offset = offset + 4
         
         tpS0On = struct.unpack('I', valueArray[offset:offset+4])
-        logString("CORE3H ["+str(i+1)+"] TP On S0", str(tpS0On))
+        #logString("CORE3H ["+str(i+1)+"] TP On S0", str(tpS0On))
         offset = offset + 4
         
         tpS0Off = struct.unpack('I', valueArray[offset:offset+4])
-        logString("CORE3H ["+str(i+1)+"] TP Off S0", str(tpS0Off))
+        #logString("CORE3H ["+str(i+1)+"] TP Off S0", str(tpS0Off))
         offset = offset + 4
         
         # TSys for the full band for IFA (only included in DDC_U v125 or higher) 
@@ -284,6 +287,8 @@ while True:
         sefdValue = struct.unpack('I', valueArray[offset:offset+4])
         #logString("CORE3H ["+str(i+1)+"] SEFD", str(sefdValue))
         offset = offset + 4
+    logString("CORE3H 1-8 PPS", str(pps))
+    logString("CORE3H 1-8 VDIFTIME", str(vdiftime))
         
     # BBC Values
     #for i in range(0,128):
@@ -320,8 +325,8 @@ while True:
             bbc = str(i+1).rjust(3,"0")
             TcalL = getTcalJy(bbc+"l") # Jansky
             TcalU = getTcalJy(bbc+"u") # Jansky
-            bbcSEFDU = - TcalU * 0.5*(bbcTPUOff+bbcTPUOn) / (bbcTPUOn-bbcTPUOff)
-            bbcSEFDL = - TcalL * 0.5*(bbcTPLOff+bbcTPLOn) / (bbcTPLOn-bbcTPLOff)
+            bbcSEFDU = TcalU * 0.5*(bbcTPUOff+bbcTPUOn) / (bbcTPUOn-bbcTPUOff)
+            bbcSEFDL = TcalL * 0.5*(bbcTPLOff+bbcTPLOn) / (bbcTPLOn-bbcTPLOff)
             bbcInfo += ["SEFDU: " + str(round(bbcSEFDU)) + " Jy","SEFDL: " + str(round(bbcSEFDL)) + " Jy"]
         except ZeroDivisionError:
             bbcInfo += ["SEFDU: INF Jy","SEFDL: INF Jy"]
@@ -342,7 +347,7 @@ while True:
 
         # Add together all extracted values into comma-separated string for logging/printing
         bbcString = ",".join([str(k) for k in bbcInfo])
-        logString("BBC"+str(i+1).rjust(3,"0"), bbcString)
+        #logString("BBC"+str(i+1).rjust(3,"0"), bbcString)
         
         # Jump to next BBC byte offset position
         offset = offset + 40

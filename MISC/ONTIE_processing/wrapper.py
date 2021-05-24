@@ -3,8 +3,8 @@ import os
 
 indir = "/home/eskil/vgosdbs/ONTIE/"
 
-infiles = glob.glob(indir + "*/*/*004*")
-#infiles = glob.glob(indir + "*/*/20JAN11*004*")
+#infiles = glob.glob(indir + "*/*/*003*")
+infiles = glob.glob(indir + "*/*/21JAN28*003*")
 
 out = "/home/eskil/nuSolve/Reports/batch_20210225/"
 os.system("rm -rf " + out)
