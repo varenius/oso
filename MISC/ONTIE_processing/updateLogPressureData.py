@@ -32,22 +32,22 @@ if __name__ == '__main__':
     fileName=inputFile.rsplit("/",1)[1]
     fileNameNew=fileName.rsplit(".",1)[0]
     stationCode=fileNameNew[6:8]
-    print "InputFile:", inputFile
-    print "OutputFile"
-    print "StationCode:", stationCode
+    print("InputFile:", inputFile)
+    print("OutputFile")
+    print("StationCode:", stationCode)
 
     with open(inputFile, "rt") as fin:
         with open(outputFile, "wt") as fout:
             for line in fin:
                 if ("/wx/" in line) and (",") in line:
-                        print "OLDstring:", line
+                        print("OLDstring:", line)
                         pressure_old=float(line.rsplit(",")[1])
                         pressure_new=str(round(pressure_old * (1 - 0.0000226*(deltaH[stationCode]-deltaH['wx']))**5.225,1))
                         pressure_old=str(pressure_old)
                         old_str=str(line)
                         new_string=old_str.replace(pressure_old,pressure_new)
-                        print "NEWstring:",new_string
+                        print("NEWstring:",new_string)
                         fout.write(new_string)
                 else:
                     fout.write(line)
-    print "The new logfile stored as ",outputFile,"..."
+    print("The new logfile stored as ",outputFile,"...")
