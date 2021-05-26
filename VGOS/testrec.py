@@ -8,6 +8,32 @@ port = ""
 me = socket.gethostname()
 DEBUG=False # Print jive5ab return messages, which are parsed for results
 
+def check_rate(scraw, tstat_rate, ev):
+    sc = scraw.split(":")
+    if DEBUG:
+        print(sc)
+    sc_pkt_size = int(sc[9].split()[0])
+    sc_rate_re = re.match("([0-9\.]*)(.*)", sc[7].strip())
+    sc_rate = int(sc_rate_re.group(1))
+    sc_rate_unit = sc_rate_re.group(2)
+    sc_nchan = int(sc[4].strip())
+    sc_t_re = re.match("([0-9\.]*)(.*)", sc[6].strip())
+    sc_t = sc_t_re.group(1)
+    sc_t_unit = sc_t_re.group(2)
+    # Scan_check packet size * n_pkts received / scan time
+    evlbi_rate = int((sc_pkt_size * 8 * ev / float(sc_t)))/1.0e6
+    message = ""
+    
+    # Print final rate comparison between the methods
+    if tstat_rate < sc_rate * sc_nchan * 0.9 or tstat_rate > sc_rate * sc_nchan * 1.1:
+        message = "WARNING: Rates from scan_check and tstat are not within 10% of each other! scan_check:"+ sc_rate * sc_nchan+ "Mbps; tstat:"+ tstat_rate+ "Mbps."
+    elif tstat_rate < evlbi_rate * 0.9 or tstat_rate > evlbi_rate * 1.1:
+        message = "WARNING: Rates from elvbi and tstat are not within 10% of each other! evlbi:"+ evlbi_rate+ "Mbps; tstat:"+ tstat_rate+ "Mbps"
+    else:
+        message = "Rate check OK!"
+    summary = str(sc_nchan)+ " chans, totalling "+ str(sc_rate * sc_nchan) + " " + sc_rate_unit + ", " + str(sc_t) + " sec."
+    return message, summary
+
 for line in open(mk5ad):
     if not line.startswith("*"):
         ls = line.split()
@@ -32,20 +58,19 @@ def fbcmd(message):
 recsec = 5 # length to record in seconds
 scan_name = "testrec_" + me + "_"+datetime.datetime.utcnow().strftime("%y%m%d_%H%M%S")
 
-print("")
 version = fbcmd("version?").split(":")
 jive5abv = version[2]
 host = version[5]
 rtime = fbcmd("rtime?").split(":")
 rtime_space = rtime[2].strip()
 rtime_perc = rtime[3].strip()
-print("Found jive5ab version" + jive5abv + "running on" + host)
-print("Free space: " + rtime_space + " (" + rtime_perc + ").")
-print("")
+print("Found jive5ab version" + jive5abv + "running on" + host +"with free space: " + rtime_space + " (" + rtime_perc + ").")
+datastream = fbcmd("datastream?")
+if "thread" in datastream:
+    print("NOTE: jive5ab datastreams are configured, this may mean you use multi-file recording! ")
+
 mode = fbcmd("mode?").split(":")[1].strip()
-print("Selected recording mode (set from FS?): " + mode)
-print("")
-print("Will record "+ str(recsec) + " seconds of data to file " + scan_name + " assuming data with the above mode ...")
+print("Will record "+ str(recsec) + " sec to file " + scan_name + " with mode (set from FS?): " + mode + "...")
 
 #Assume recording mode has already been sent by the FS, otherwise can send manually like this:
 #mode = "mode=VDIF_8192-8192-1-2" # 8192 byte UDP packet, 8Gbps data rate in total, 1 channel, 2 bits
@@ -76,9 +101,8 @@ if DEBUG:
 tstat_bdiff = (float(tstat2[4])-float(tstat1[4]))
 tstat_tdiff = (float(tstat2[1])-float(tstat1[1]))
 tstat_rate = 8*tstat_bdiff / (tstat_tdiff * 1000**2)
-print("")
 #print("Tstat rate: {:4.0f} Mbps (including overheads)".format(tstat_rate)) #only python3
-print("Tstat rate: Mbps (including overheads):", tstat_rate) # python2 and python3
+#print("Tstat rate: Mbps (including overheads):", tstat_rate) # python2 and python3
 
 # Get rate from evlbi? and scan_check?
 evlbi = fbcmd("evlbi?").split(":")
@@ -98,40 +122,33 @@ if ev_ooo > 0:
 
 scraw = fbcmd("scan_check?:4000000")
 if " does not exist" in scraw:
-    print 
-    print "ERROR: scan_check did not find any data - investigate !!!" 
-    print "Some (but not all) possible things to check:"
-    print "- Perhaps you are recording multifile? If so, try with 'datastream=clear'"
-    print "- No mode= command sent to jive5ab since starting jive5ab?"
-    print "- FiLa10G VDIF output not started? Check with fila10g=sysstat "
-    print "- Bad fibre connection from FiLa to flexbuff?"
-    print "...exiting test... try again after changing something!"
-    print "NOTE: To run jive5ab commands from FS, use 'mk5=' syntax e.g. mk5=datastream=clear"
-    print
-    sys.exit(1)
-
-sc = scraw.split(":")
-if DEBUG:
-    print(sc)
-sc_pkt_size = int(sc[9].split()[0])
-sc_rate_re = re.match("([0-9\.]*)(.*)", sc[7].strip())
-sc_rate = int(sc_rate_re.group(1))
-sc_rate_unit = sc_rate_re.group(2)
-sc_nchan = int(sc[4].strip())
-sc_t_re = re.match("([0-9\.]*)(.*)", sc[6].strip())
-sc_t = sc_t_re.group(1)
-sc_t_unit = sc_t_re.group(2)
-# Scan_check packet size * n_pkts received / scan time
-evlbi_rate = int((sc_pkt_size * 8 * ev_tot / float(sc_t)))/1.0e6
-
-# Print final rate comparison between the methods
-print ""
-if tstat_rate < sc_rate * sc_nchan * 0.9 or tstat_rate > sc_rate * sc_nchan * 1.1:
-    print "Data rates returned by scan_check and tstat are not within 10% of each other! scan_check:", sc_rate * sc_nchan, "Mbps; tstat:", tstat_rate, "Mbps"
-elif tstat_rate < evlbi_rate * 0.9 or tstat_rate > evlbi_rate * 1.1:
-    print "Data rates returned by scan_check/elvbi and tstat are not within 10% of each other! scan_check/evlbi:", evlbi_rate, "Mbps; tstat:", tstat_rate, "Mbps"
+    print("NOTE: Did not find the scan " +scan_name+ " on disk. Will check for matching multifile suffixes...")
+    mf_found = []
+    for i in range(8):
+        mfname = scan_name+"_"+str(i)
+        set_mf = fbcmd("scan_set="+mfname) # Assume we have multi-file name instead
+        scraw_mf = fbcmd("scan_check?:4000000")
+        if not " does not exist" in scraw_mf:
+            mf_found.append(i)
+    if len(mf_found)==0:
+        print()
+        print("ERROR: scan_check did not find any data - investigate !!!" )
+        print("Some (but not all) possible things to check:")
+        print("- No mode= command sent to jive5ab since starting jive5ab?")
+        print("- FiLa10G VDIF output not started? Check with fila10g=sysstat ")
+        print("- Bad fibre connection from FiLa to flexbuff?")
+        print("...exiting test... try again after changing something!")
+        print("NOTE: To run jive5ab commands from FS, use 'mk5=' syntax e.g. mk5=datastream=clear")
+        sys.exit(1)
+    print("Found "+str(len(mf_found)) + " files on disk for this scan. Checking each:")
+    for i in mf_found:
+        mfname = scan_name+"_"+str(i)
+        # Check rates for each multifile found
+        res, fsum = check_rate(scraw_mf, tstat_rate/len(mf_found), ev_tot/len(mf_found))
+        print("FILE: " + mfname + " RESULT: " + res + " SUMMARY: " + fsum)
+       
 else:
-    print("No rate warnings, seems good!")
+    print("Found single (possibly multi-thread) VDIF on disk called " + scan_name)
+    res, fsum = check_rate(scraw, tstat_rate, ev_tot)
+    print("FILE: " + scan_name + " RESULT: " + res + " SUMMARY: " + fsum)
 
-print ""
-print "Recorded data contains ", sc_nchan, " channels, with a total data rate of", sc_rate * sc_nchan, sc_rate_unit + ", and a recorded time of " + sc_t + " seconds"
