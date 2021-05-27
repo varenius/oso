@@ -7,8 +7,8 @@ import astropy.units as u
 from scipy.signal import resample_poly
 import matplotlib.patches as patches
 
-vbsfile = "testrec_fulla_210526_162154"
-#vbsfile = "testrec_freja_210526_161523"
+#vbsfile = "testrec_fulla_210526_162154"
+vbsfile = "testrec_freja_210526_161523"
 #vbsfile = "on1086_ow_087-1159"
 #vbsfile = "fm2110_oe_147-1323"
 #vbsfile = sys.argv[1] # e.g. fm2110_oe_147-1323. If multifile, all files with suffix _0, _1... etc will be checked.
@@ -196,5 +196,5 @@ else:
         bbcdata = data[:, bbc].astype(int)  # bbc, converted to 4 integer states (2-bit): -3, -1, +1, +3
         plot_bbc(bbcdata, bbc, nif)
 
-f.suptitle(vbsfile+": " + recmode + ", "+extractiontime + ". log10 spectra: {} points per {} MHz. Color segments = sampler statistics.".format(nspec,bbcw))
-f.savefig(vbsfile+".png",dpi=300)
+f.suptitle(vbsfile+": " + recmode + ", "+extractiontime + ". log10 spectra: {} points per {} MHz. Blue/green = sampler stats.".format(nspec,bbcw))
+f.savefig(vbsfile+".pdf",dpi=300)
