@@ -67,6 +67,7 @@ whattodo = {'load_data': True,
             'fring' : True,
             'bpass' : True,
             'applycal2' :True,
+            'tfcrop' :True,
             'split2' :True,
             'listobs2': True,
             'getflux': True,
@@ -128,7 +129,7 @@ def getPCALchans(IF):
             if n+10<nchan:
                 PCALchans.append(n+10)
             if n+20<nchan:
-                PCALchans.append(n+10)
+                PCALchans.append(n+20)
     return PCALchans
 
 if whattodo['load_data']:
@@ -174,7 +175,9 @@ if whattodo['split1']:
     split(vis=ms, outputvis = split1ms+"_B", width=1, antenna="OE&OW", datacolumn="corrected",  spw="8~15")
     split(vis=ms, outputvis = split1ms+"_C", width=1, antenna="OE&OW", datacolumn="corrected",  spw="16~23")
     split(vis=ms, outputvis = split1ms+"_D", width=1, antenna="OE&OW", datacolumn="corrected",  spw="24~31")
-
+    # Remove bad SPW in Band D
+    flagdata(vis=split1ms+"_D", mode="manual", spw="5")
+    
 if whattodo['listobs1']:
     for band in bands:
         listobs(vis=split1ms+"_"+band, listfile = split1ms+"_"+band+".listobs")
@@ -199,6 +202,10 @@ if whattodo['applycal2']:
     for band in bands:
         applycal(vis = split1ms+"_"+band, gaintable=[frt+"_"+band, frmbt+"_"+band, bpt+"_"+band], spwmap=[[], 8*[0],[]])
 
+if whattodo['tfcrop']:
+    for band in bands:
+        flagdata(vis=split1ms+"_"+band, mode="tfcrop", datacolumn="corrected",timecutoff=5.0,freqcutoff=5.0,timefit="line",freqfit="line")
+        
 if whattodo['split2']:
     for band in bands:
         rmtables(split2ms+"_"+band)
