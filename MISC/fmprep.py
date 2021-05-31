@@ -401,6 +401,10 @@ def listfiles(exp):
 ## SCRIPT STARTS HERE
 
 exp = sys.argv[1]
+ans = input("Will run preparation actions for experiment " + exp + ". NOTE: This may unmount file-systems causing loss of paths and I/O limits. So, NEVER DO THIS WHEN RECORDING OR CORRELATING unless you know what you are doing! Type 'yes' to proceed:")
+if not ans.lower()=="yes":
+    print("Did not get yes, aborting")
+    sys.exit(1)
 
 getfslogs(exp)
 getskd(exp)
