@@ -7,33 +7,6 @@ import astropy.units as u
 from scipy.signal import resample_poly
 import matplotlib.patches as patches
 
-#vbsfile = "testrec_fulla_210526_162154"
-vbsfile = "testrec_freja_210526_161523"
-#vbsfile = "on1086_ow_087-1159"
-#vbsfile = "fm2110_oe_147-1323"
-#vbsfile = sys.argv[1] # e.g. fm2110_oe_147-1323. If multifile, all files with suffix _0, _1... etc will be checked.
-
-# jive5ab info
-#ip = "129.16.208.51" # kare
-ip = "localhost"
-port = "2621" # jive5ab control port
-me = socket.gethostname()
-DEBUG=False# Print jive5ab return messages, which are parsed for results
-
-ifs2plot = [0,1,2,3,4,5,6,7] # List IFs to plot, starting from 0. 
-bbcw = 32 # MHz, width of BBC
-nspec = 256 # number of points in final spectrum
-bbcsperIF = 8
-#Plot design
-nrows = 8
-ncols = bbcsperIF
-extractiontime = "0.01s" # At least 0.01s
-iflabels = ["A", "B", "C", "D", "E", "F", "G", "H"]
-
-plt.rcParams.update({'font.size': 8})
-sample_rate = 2*bbcw # MHz
-scriptdir=os.path.dirname(os.path.realpath(__file__))
-
 def fbcmd(message):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((ip, int(port)))
@@ -143,7 +116,7 @@ def plot_bbc(bbcdata, bbc, nif):
     if col==0:
         ax.set_ylabel("IF "+ str(iflabels[nif]) + "\n"+str(start_time)[:-5].replace("T","\n"), rotation=0, ha='right', va="center")
     ax.text(0.5, 0.35, "BBC{0:03d}".format(bbc+1), transform=ax.transAxes, ha="center")
-    print("BBC{0:03d} sampler stats: {1} %".format(bbc+1, np.round(100*sampler_stats,1)))
+    #print("BBC{0:03d} sampler stats: {1} %".format(bbc+1, np.round(100*sampler_stats,1)))
     start=0
     for i,stat in enumerate(sampler_stats):
         #if i%2==0:
@@ -158,6 +131,35 @@ def plot_bbc(bbcdata, bbc, nif):
         itot+=i
         ax.axvline(x=itot*bbcw)
     ax.set_xlim([0,bbcw])
+
+ip = sys.argv[1] #ip = "localhost"
+port = sys.argv[2] #port = "2621" # jive5ab control port
+bbcw = int(sys.argv[3]) #bbcw = 32 # MHz, width of BBC
+nspec = int(sys.argv[4]) #nspec = 256 # number of points in final spectrum
+bbcsperIF = int(sys.argv[5]) #bbcsperIF = 8
+
+DEBUG=False# Print jive5ab return messages, which are parsed for results
+
+ifs2plot = [0,1,2,3,4,5,6,7] # List IFs to plot, starting from 0. 
+#Plot design
+nrows = 8
+ncols = bbcsperIF
+extractiontime = "0.01s" # At least 0.01s
+iflabels = ["A", "B", "C", "D", "E", "F", "G", "H"]
+
+plt.rcParams.update({'font.size': 8})
+sample_rate = 2*bbcw # MHz
+scriptdir=os.path.dirname(os.path.realpath(__file__))
+
+scres = fbcmd("scan_check?")
+if "does not exist" in scres:
+    vbsfile = scres.split(":")[1].split("'")[1].strip()
+else:
+    vbsfile = scres.split(":")[2].strip() # ignore spaces around filename
+if vbsfile[-2]=="_":
+    # Multi-file name, ignore the suffix for the initial pattern
+    vbsfile = vbsfile[:-2]
+print("Processing VBS name " + vbsfile)
 
 #vbsname = "testrec_freja_210526_161523"
 # Prepare plot
@@ -197,4 +199,4 @@ else:
         plot_bbc(bbcdata, bbc, nif)
 
 f.suptitle(vbsfile+": " + recmode + ", "+extractiontime + ". log10 spectra: {} points per {} MHz. Blue/green = sampler stats.".format(nspec,bbcw))
-f.savefig(vbsfile+".pdf",dpi=300)
+f.savefig(scriptdir+"/bandpass.pdf",dpi=300)
