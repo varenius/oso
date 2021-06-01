@@ -68,10 +68,13 @@ if check.strip() == "go":
     # change VT9248 to actual experiment name in PRC header
     print("INFO: ... and edit the PRC header to use actual experiment namt...")
     sedcmd = "sed -i 's/VT9248/" + exp.upper() + "/g' /usr2/proc/"+exp+tel+".prc"
+    os.system(sedcmd)
     if pcal == "off":
         print("Turning PCAL off as selected by user")
+        sedcmd = "sed -i 's/Enable pcal signal/Disable pcal signal/g' /usr2/proc/"+exp+tel+".prc"
+        os.system(sedcmd)
         sedcmd = "sed -i 's/sy=pcal_en 1/sy=pcal_en 0/g' /usr2/proc/"+exp+tel+".prc"
-    os.system(sedcmd)
+        os.system(sedcmd)
     print("INFO: ...done.")
 
     snpf = "/usr2/sched/"+exp+tel+".snp"
