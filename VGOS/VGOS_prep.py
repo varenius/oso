@@ -22,6 +22,7 @@ if (len(sys.argv)==4) and (sys.argv[3]=="dl"):
 ftpaddr = "ftp://ivs.bkg.bund.de/pub/vlbi/ivsdata/aux/" + year + "/" + exp + "/" + exp + ".skd"
 
 check = raw_input("Ready to fetch, drudg, and modify (SNP/PRC) experiment " + exp + ". NOTE: this will overwrite any existing files with this experiment name. Type go and hit enter to continue: " )
+pcal = raw_input("By default, PCAL is turned on. If you want PCAL off, please type 'off' and hit enter. If you want PCAL on, leave as is and hit enter. ")
 if check.strip() == "go":
     if dl:
         # Get schedule via wget, saving it in /usr2/sched/, e.g. /usr2/sched/vt9248.skd
@@ -67,6 +68,9 @@ if check.strip() == "go":
     # change VT9248 to actual experiment name in PRC header
     print("INFO: ... and edit the PRC header to use actual experiment namt...")
     sedcmd = "sed -i 's/VT9248/" + exp.upper() + "/g' /usr2/proc/"+exp+tel+".prc"
+    if pcal == "off":
+        print("Turning PCAL off as selected by user")
+        sedcmd = "sed -i 's/sy=pcal_en 1/sy=pcal_en 0/g' /usr2/proc/"+exp+tel+".prc"
     os.system(sedcmd)
     print("INFO: ...done.")
 
