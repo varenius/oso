@@ -98,5 +98,6 @@ if check.strip() == "go":
             wf.write("prepant\n")
             wf.write("!"+preptime + "\n")
     wf.close()
+    print("All done. DON'T FORGET TO START THE AMPCAL TPI LOGGING IF YOU HAVE NOT ALREADY!")
 else: 
     print("Did not get go as answer so not doing anything.")
