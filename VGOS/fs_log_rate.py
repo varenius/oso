@@ -26,7 +26,9 @@ peculiaroff = {"Ow": [6.183,"from https://github.com/whi-llc/adjust/blob/files/d
                "On": [1.350,"from multiple exp from Bonn"],
                "Is": [1.268,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
                "Yj": [-0.108, "from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
-               "O8": [5.18, "From Bob C, EVN: O8 = +5.78,  On = +1.95 --> O8 = 5.78-(1.95-1.350)=5.18"]
+               "O8": [5.18, "From Bob C, EVN: O8 = +5.78,  On = +1.95 --> O8 = 5.78-(1.95-1.350)=5.18"],
+               "Ny": [2.308, "From https://github.com/whi-llc/adjust/blob/files/data/sx_po_v8.dat"],
+               "Ns": [1.68, "From R1994 corr report by Bonn"]
                }
 
 parser = argparse.ArgumentParser()
