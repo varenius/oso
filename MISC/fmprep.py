@@ -457,6 +457,8 @@ makev2d(exp)
 mountfiles(exp)
 listfiles(exp)
 os.system("vex2difx -v -v -v -d "+exp+".v2d")
+# Ensure that the CalcServer is running: will restart if already exists
+os.system("startCalcServer")
 os.system("calcif2 *.calc")
 makemachines()
 
