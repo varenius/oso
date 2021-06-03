@@ -32,53 +32,63 @@ print("VEX file {0} found to cover timerange {1} to {2} for experiment {3}.".for
 
 print("Checking all available TPI log files for a matching one...")
 print("Checking for OW...")
-#get list of possible logfiles
-command = ["ssh", "freja", "ls /usr2/oper/eskil/eskil.oso.git/VGOS/DBBC3/MULTICAST_DBBC3*"]
-rc = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-files = rc.stdout.split("\n")
-match = ""
-for f in files[:-1]:
-    fstart, fstop = get_timerange(f, "freja")
-    if (start > fstart) and (stop < fstop):
-        match = f
-        fn = f.split("/")[-1]
-        print("Matching TPI file found: " + f)
-        mcdata = "OW_"+fn
-        os.system("scp freja:"+f+ " "+mcdata)
-        fslog = exp+"ow.log"
-        print("Assuming we want to create antab file using FS log " + fslog)
-        if start > datetime.datetime(2021,1,19):
-            tcal = "/home/oper/eskil/eskil.oso.git/VGOS/DBBC3/OW_post_2021-01-19.tcal.jansky.txt"
-        else:
-            tcal = "/home/oper/eskil/eskil.oso.git/VGOS/DBBC3/OW_pre_2021-01-19.tcal.jansky.txt"
-        cmd = "python /home/oper/eskil/eskil.oso.git/VGOS/DBBC3/mcastlog2antab.py {0} {1} {2} {3}ow.antab".format(fslog, mcdata, tcal, exp)
-        print("Creating antab using command "+ cmd)
-        os.system(cmd)
-        break
+fslog = exp+"ow.log"
+if os.path.exists(fslog):
+    #get list of possible logfiles
+    command = ["ssh", "freja", "ls /usr2/oper/eskil/eskil.oso.git/VGOS/DBBC3/MULTICAST_DBBC3*"]
+    rc = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    files = rc.stdout.split("\n")
+    match = ""
+    for f in files[:-1]:
+        fstart, fstop = get_timerange(f, "freja")
+        if (start > fstart) and (stop < fstop):
+            match = f
+            fn = f.split("/")[-1]
+            print("Matching TPI file found: " + f)
+            mcdata = "OW_"+fn
+            os.system("scp freja:"+f+ " "+mcdata)
+            print("Assuming we want to create antab file using FS log " + fslog)
+            if start > datetime.datetime(2021,1,19):
+                tcal = "/home/oper/eskil/eskil.oso.git/VGOS/DBBC3/OW_post_2021-01-19.tcal.jansky.txt"
+            else:
+                tcal = "/home/oper/eskil/eskil.oso.git/VGOS/DBBC3/OW_pre_2021-01-19.tcal.jansky.txt"
+            cmd = "python /home/oper/eskil/eskil.oso.git/VGOS/DBBC3/mcastlog2antab.py {0} {1} {2} {3}ow.antab".format(fslog, mcdata, tcal, exp)
+            print("Creating antab using command "+ cmd)
+            os.system(cmd)
+            break
+else:
+    print("ERROR: Did not find "+ fslog + " in current directory.")
+
 print("Checking for OE...")
-#get list of possible logfiles
-command = ["ssh", "fulla", "ls /usr2/oper/eskil/eskil.oso.git/VGOS/DBBC3/MULTICAST_DBBC3*"]
-rc = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-files = rc.stdout.split("\n")
-match = ""
-for f in files[:-1]:
-    fstart, fstop = get_timerange(f, "fulla")
-    if (start > fstart) and (stop < fstop):
-        match = f
-        fn = f.split("/")[-1]
-        print("Matching TPI file found: " + f)
-        mcdata = "OE_"+fn
-        os.system("scp fulla:"+f+ " "+mcdata)
-        fslog = exp+"oe.log"
-        print("Assuming we want to create antab file using FS log " + fslog)
-        if start > datetime.datetime(2020,12,2):
-            tcal = "/home/oper/eskil/eskil.oso.git/VGOS/DBBC3/OE_post_2020-12-02.tcal.jansky.txt"
-        else:
-            tcal = "/home/oper/eskil/eskil.oso.git/VGOS/DBBC3/OE_post_2020-12-02.tcal.jansky.txt"
-        cmd = "python /home/oper/eskil/eskil.oso.git/VGOS/DBBC3/mcastlog2antab.py {0} {1} {2} {3}oe.antab".format(fslog, mcdata, tcal, exp)
-        print("Creating antab using command "+ cmd)
-        os.system(cmd)
-        break
-combantab = exp+"oe+ow.antab"
-os.system("cat *antab > "+combantab)
-print("...DONE! File " + combantab + " should now contain antab data for both OE and OW for exp " + exp+ ". Enjoy!")
+fslog = exp+"oe.log"
+if os.path.exists(fslog):
+    #get list of possible logfiles
+    command = ["ssh", "fulla", "ls /usr2/oper/eskil/eskil.oso.git/VGOS/DBBC3/MULTICAST_DBBC3*"]
+    rc = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    files = rc.stdout.split("\n")
+    match = ""
+    for f in files[:-1]:
+        fstart, fstop = get_timerange(f, "fulla")
+        if (start > fstart) and (stop < fstop):
+            match = f
+            fn = f.split("/")[-1]
+            print("Matching TPI file found: " + f)
+            mcdata = "OE_"+fn
+            os.system("scp fulla:"+f+ " "+mcdata)
+            print("Assuming we want to create antab file using FS log " + fslog)
+            if start > datetime.datetime(2020,12,2):
+                tcal = "/home/oper/eskil/eskil.oso.git/VGOS/DBBC3/OE_post_2020-12-02.tcal.jansky.txt"
+            else:
+                tcal = "/home/oper/eskil/eskil.oso.git/VGOS/DBBC3/OE_post_2020-12-02.tcal.jansky.txt"
+            cmd = "python /home/oper/eskil/eskil.oso.git/VGOS/DBBC3/mcastlog2antab.py {0} {1} {2} {3}oe.antab".format(fslog, mcdata, tcal, exp)
+            print("Creating antab using command "+ cmd)
+            os.system(cmd)
+            break
+else:
+    print("ERROR: Did not find "+ fslog + " in current directory.")
+if os.path.exists(exp+"oe.antab") and os.path.exists(exp+"ow.antab"):
+    combantab = exp+"oe+ow.antab"
+    os.system("cat *antab > "+combantab)
+    print("...DONE! File " + combantab + " should now contain antab data for both OE and OW for exp " + exp+ ". Enjoy!")
+else:
+    print("...ERROR! Something went wrong, at leas one of the oe/ow antab files not created. Are you perhaps not in the folder where the fs logfiles are?")
