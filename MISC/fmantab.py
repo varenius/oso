@@ -18,7 +18,7 @@ vex = sys.argv[1]
 start = ""
 end = ""
 for line in open(vex):
-    if not line.startswith("*"):
+    if not line.strip().startswith("*"):
         if "exper_name =" in line:
             exp = line.split("=")[1].strip()[:-1].lower()
         if "start = " in line:
