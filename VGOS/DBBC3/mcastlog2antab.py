@@ -212,36 +212,13 @@ def get_tcaldata(tcalfile):
     return tcaldata
 
 def write_antab(tpidata, scans, outfile, ant, exp):
+    # HEADER
     of = open(outfile,"w")
     of.write("!\n")
     of.write("!INFO: Amplitude calibration data for antenna {} in experiment {}.\n".format(ant, exp))
     of.write("!INFO: For use with AIPS task ANTAB. \n".format(ant, exp))
     of.write("!\n")
     of.write("!\n")
-   #HEADER
-    #  i) CONTROL group:     specifies default input format for Tsys or
-    #                        Tant entries.
-    #cstr = "CONTROL INDEX = " 
-    #cstr += "'X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'X8', "  
-    #cstr += "'Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', "
-    #cstr += "'X9', 'X10', 'X11', 'X12', 'X13', 'X14', 'X15', 'X16', "
-    #cstr += "'Y9', 'Y10', 'Y11', 'Y12', 'Y13', 'Y14', 'Y15', 'Y16', " 
-    #cstr += "'X17', 'X18', 'X19', 'X20', 'X21', 'X22', 'X23', 'X24', " 
-    #cstr += "'Y17', 'Y18', 'Y19', 'Y20', 'Y21', 'Y22', 'Y23', 'Y24', " 
-    #cstr += "'X25', 'X26', 'X27', 'X28', 'X29', 'X30', 'X31', 'X32', "
-    #cstr += "'Y25', 'Y26', 'Y27', 'Y28', 'Y29', 'Y30', 'Y31', 'Y32' "
-    #cstr += "/"
-    #cstr = "CONTROL INDEX = " 
-    #cstr += "'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', "  
-    #cstr += "'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', "
-    #cstr += "'R9', 'R10', 'R11', 'R12', 'R13', 'R14', 'R15', 'R16', "
-    #cstr += "'L9', 'L10', 'L11', 'L12', 'L13', 'L14', 'L15', 'L16', " 
-    #cstr += "'R17', 'R18', 'R19', 'R20', 'R21', 'R22', 'R23', 'R24', " 
-    #cstr += "'L17', 'L18', 'L19', 'L20', 'L21', 'L22', 'L23', 'L24', " 
-    #cstr += "'R25', 'R26', 'R27', 'R28', 'R29', 'R30', 'R31', 'R32', "
-    #cstr += "'L25', 'L26', 'L27', 'L28', 'L29', 'L30', 'L31', 'L32' "
-    #cstr += "/"
-    #of.write(cstr+"\n")
 
     # WRITE GAIN
     of.write("!\n")
