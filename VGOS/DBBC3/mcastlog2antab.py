@@ -268,14 +268,14 @@ def write_antab(tpidata, scans, outfile, ant, exp):
     of.write("!INFO: FT=Factor by which to multiply all values.\n")
     of.write("!\n")
     cstr = "TSYS {} FT = 1.0 INDEX ".format(ant)
-    cstr += "'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', "  
-    cstr += "'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', "
-    cstr += "'R9', 'R10', 'R11', 'R12', 'R13', 'R14', 'R15', 'R16', "
-    cstr += "'L9', 'L10', 'L11', 'L12', 'L13', 'L14', 'L15', 'L16', " 
-    cstr += "'R17', 'R18', 'R19', 'R20', 'R21', 'R22', 'R23', 'R24', " 
-    cstr += "'L17', 'L18', 'L19', 'L20', 'L21', 'L22', 'L23', 'L24', " 
-    cstr += "'R25', 'R26', 'R27', 'R28', 'R29', 'R30', 'R31', 'R32', "
-    cstr += "'L25', 'L26', 'L27', 'L28', 'L29', 'L30', 'L31', 'L32' "
+    cstr += "'R8', 'R7', 'R6', 'R5', 'R4', 'R3', 'R2', 'R1', "  
+    cstr += "'L8', 'L7', 'L6', 'L5', 'L4', 'L3', 'L2', 'L1', "
+    cstr += "'R16', 'R15', 'R14', 'R13', 'R12', 'R11', 'R10', 'R9', "
+    cstr += "'L16', 'L15', 'L14', 'L13', 'L12', 'L11', 'L10', 'L9', " 
+    cstr += "'R24', 'R23', 'R22', 'R21', 'R20', 'R19', 'R18', 'R17', " 
+    cstr += "'L24', 'L23', 'L22', 'L21', 'L20', 'L19', 'L18', 'L17', " 
+    cstr += "'R32', 'R31', 'R30', 'R29', 'R28', 'R27', 'R26', 'R25', "
+    cstr += "'L32', 'L31', 'L30', 'L29', 'L28', 'L27', 'L26', 'L25' "
     cstr += "/"
     of.write(cstr+"\n")
     # Loop through TSYS data
