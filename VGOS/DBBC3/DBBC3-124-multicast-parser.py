@@ -288,6 +288,7 @@ while True:
     # BBC Values
     #for i in range(0,128):
     # We only use 64 BBCs for now
+    printvals = []
     for i in range(0,64):
         # Extract all values for this BBC
         bbcValues = struct.unpack('IBBBBIIIIHHHHII', valueArray[offset:offset+40])
@@ -323,6 +324,7 @@ while True:
             bbcSEFDU = - TcalU * 0.5*(bbcTPUOff+bbcTPUOn) / (bbcTPUOn-bbcTPUOff)
             bbcSEFDL = - TcalL * 0.5*(bbcTPLOff+bbcTPLOn) / (bbcTPLOn-bbcTPLOff)
             bbcInfo += ["SEFDU: " + str(round(bbcSEFDU)) + " Jy","SEFDL: " + str(round(bbcSEFDL)) + " Jy"]
+            printvals.append(int(bbcSEFDU))
         except ZeroDivisionError:
             bbcInfo += ["SEFDU: INF Jy","SEFDL: INF Jy"]
 
@@ -346,3 +348,9 @@ while True:
         
         # Jump to next BBC byte offset position
         offset = offset + 40
+    print(datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f'))
+    print("BAND A: ", printvals[0:16])
+    print("BAND B: ", printvals[16:32])
+    print("BAND C: ", printvals[32:48])
+    print("BAND D: ", printvals[48:64])
+    print("")
