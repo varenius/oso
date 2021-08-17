@@ -26,7 +26,7 @@ def check_rate(scraw, tstat_rate, ev):
     
     # Print final rate comparison between the methods
     if tstat_rate < sc_rate * sc_nchan * 0.9 or tstat_rate > sc_rate * sc_nchan * 1.1:
-        message = "WARNING: Rates from scan_check and tstat are not within 10% of each other! scan_check:"+ sc_rate * sc_nchan+ "Mbps; tstat:"+ tstat_rate+ "Mbps."
+        message = "WARNING: Rates from scan_check and tstat are not within 10% of each other! scan_check:"+ str(sc_rate * sc_nchan)+ "Mbps; tstat:"+ str(tstat_rate)+ "Mbps."
     elif tstat_rate < evlbi_rate * 0.9 or tstat_rate > evlbi_rate * 1.1:
         message = "WARNING: Rates from elvbi and tstat are not within 10% of each other! evlbi:"+ evlbi_rate+ "Mbps; tstat:"+ tstat_rate+ "Mbps"
     else:
@@ -55,7 +55,7 @@ def fbcmd(message):
         print('INFO: answer: ', data)
     sock.close()
     return data
-recsec = 5 # length to record in seconds
+recsec = 10 # length to record in seconds
 scan_name = "testrec_" + me + "_"+datetime.datetime.utcnow().strftime("%y%m%d_%H%M%S")
 
 version = fbcmd("version?").split(":")
