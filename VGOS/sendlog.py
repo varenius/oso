@@ -2,6 +2,6 @@
 #-*- coding: utf-8 -*-
 import os
 
-cmd = "ncftpput -u ivsincoming -p vlbi2000 ivs.bkg.bund.de / /usr2/log/`lognm`.log"
+cmd = "ncftpput -u ivsincoming -p PASSWORD ivs.bkg.bund.de / /usr2/log/`lognm`.log"
 
 os.system(cmd)
