@@ -1,12 +1,12 @@
 define  proc_library  00000000000x
 "ONSA13SW default VGOS obs library
 enddef
-define  exper_initi   00000000000x
+define  exper_initi   21242142618x
 sched_initi
 " Configure jive5ab for recording
 mk5=mtu=9000
 mk5=mtu?
-mk5=mode=VDIF_8000-8192-64-2
+mk5=mode=VDIF_8192-8192-64-2
 mk5=mode?
 mk5=net_protocol=udpsnor:256M:256M
 mk5=net_protocol?
@@ -44,7 +44,7 @@ sy=brk aquir &
 sy=brk fivpt &
 sy=brk onoff &
 enddef
-define  if_vgos       00000000000x1x
+define  if_vgos       21242142630x1x
 "configure LO and GComo settings
 lo=
 lo=loa,0,usb,lcp
@@ -64,7 +64,7 @@ iff=2,agc
 ifg=2,agc
 ifh=2,agc
 enddef
-define  bbc_vgos      00000000000x9x
+define  bbc_vgos      21242142628x9x
 bbc001=3480.4,a,32,1
 bbc002=3448.4,a,32,1
 bbc003=3384.4,a,32,1
@@ -130,12 +130,12 @@ bbc062=1303.6,h,32,1
 bbc063=1335.6,h,32,1
 bbc064=1367.6,h,32,1
 enddef
-define  setupbb       00000000000x
+define  setupbb       21242142628x
 " Configure frequencies etc.
 bbc_vgos
 if_vgos
 enddef
-define  core3h_vgos   00000000000
+define  core3h_vgos   21242142638x
 core3h_mode0=begin,
 core3h_mode1=,0xcccccccc,2,,
 core3h_mode2=,0xcccccccc,2,,
