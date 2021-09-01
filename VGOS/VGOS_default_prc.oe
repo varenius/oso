@@ -34,7 +34,7 @@ setupbb
 " Set core3h bitmasks, needed for tpicd
 core3h_vgos
 " Start multicast logging once per second
-" during "data_valid=on" periods.
+" during "data_valid" periods.
 tpicd=no,100
 tpicd
 enddef
