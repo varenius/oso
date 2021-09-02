@@ -28,7 +28,7 @@ def check_rate(scraw, tstat_rate, ev):
     if tstat_rate < sc_rate * sc_nchan * 0.9 or tstat_rate > sc_rate * sc_nchan * 1.1:
         message = "WARNING: Rates from scan_check and tstat are not within 10% of each other! scan_check:"+ str(sc_rate * sc_nchan)+ "Mbps; tstat:"+ str(tstat_rate)+ "Mbps."
     elif tstat_rate < evlbi_rate * 0.9 or tstat_rate > evlbi_rate * 1.1:
-        message = "WARNING: Rates from elvbi and tstat are not within 10% of each other! evlbi:"+ evlbi_rate+ "Mbps; tstat:"+ tstat_rate+ "Mbps"
+        message = "WARNING: Rates from elvbi and tstat are not within 10% of each other! evlbi:"+ str(evlbi_rate)+ "Mbps; tstat:"+ str(tstat_rate)+ "Mbps"
     else:
         message = "Rate check OK!"
     summary = str(sc_nchan)+ " chans, totalling "+ str(sc_rate * sc_nchan) + " " + sc_rate_unit + ", " + str(sc_t) + " sec."
