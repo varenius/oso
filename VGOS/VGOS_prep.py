@@ -22,7 +22,6 @@ if (len(sys.argv)==4) and (sys.argv[3]=="dl"):
 ftpaddr = "ftp://ivs.bkg.bund.de/pub/vlbi/ivsdata/aux/" + year + "/" + exp + "/" + exp + ".skd"
 
 check = raw_input("Ready to fetch, drudg, and modify (SNP/PRC) experiment " + exp + ". NOTE: this will overwrite any existing files with this experiment name. Type go and hit enter to continue: " )
-pcal = raw_input("By default, PCAL is turned on. If you want PCAL off, please type 'off' and hit enter. If you want PCAL on, leave as is and hit enter. ")
 if check.strip() == "go":
     if dl:
         # Get schedule via wget, saving it in /usr2/sched/, e.g. /usr2/sched/vt9248.skd
@@ -51,31 +50,19 @@ if check.strip() == "go":
     print("INFO: Commenting out setupxx in snp file...")
     sedcmd = "sed -i 's/setupxx/\"setupxx/g' /usr2/sched/"+exp+tel+".snp"
     os.system(sedcmd)
-    print("INFO: ... and comment out disk_pos and ready_disk and checkmk5...")
-    sedcmd = "sed -i 's/^disk_pos/\"disk_pos/g' /usr2/sched/"+exp+tel+".snp"
-    os.system(sedcmd)
-    sedcmd = "sed -i 's/^ready_disk/\"ready_disk/g' /usr2/sched/"+exp+tel+".snp"
-    os.system(sedcmd)
-    sedcmd = "sed -i 's/^checkmk5/\"checkmk5/g' /usr2/sched/"+exp+tel+".snp"
-    os.system(sedcmd)
+    #print("INFO: ... and comment out disk_pos and ready_disk and checkmk5...")
+    #sedcmd = "sed -i 's/^disk_pos/\"disk_pos/g' /usr2/sched/"+exp+tel+".snp"
+    #os.system(sedcmd)
+    #sedcmd = "sed -i 's/^ready_disk/\"ready_disk/g' /usr2/sched/"+exp+tel+".snp"
+    #os.system(sedcmd)
+    #sedcmd = "sed -i 's/^checkmk5/\"checkmk5/g' /usr2/sched/"+exp+tel+".snp"
+    #os.system(sedcmd)
     print("INFO: ...done.")
     
     # copy template PRC file to /usr2/proc/expST.prc where ST is oe or ow
     print("INFO: Instead of drudging for PRC, copy template PRC...")
     cpcmd = "cp " + scriptpath + "/VGOS_default_prc." + tel + " /usr2/proc/" + exp + tel + ".prc"
     os.system(cpcmd)
-
-    # change VT9248 to actual experiment name in PRC header
-    print("INFO: ... and edit the PRC header to use actual experiment namt...")
-    sedcmd = "sed -i 's/VT9248/" + exp.upper() + "/g' /usr2/proc/"+exp+tel+".prc"
-    os.system(sedcmd)
-    if pcal == "off":
-        print("Turning PCAL off as selected by user")
-        sedcmd = "sed -i 's/Enable pcal signal/Disable pcal signal/g' /usr2/proc/"+exp+tel+".prc"
-        os.system(sedcmd)
-        sedcmd = "sed -i 's/sy=pcal_en 1/sy=pcal_en 0/g' /usr2/proc/"+exp+tel+".prc"
-        os.system(sedcmd)
-    print("INFO: ...done.")
 
     snpf = "/usr2/sched/"+exp+tel+".snp"
     # Store lines in array
@@ -93,11 +80,11 @@ if check.strip() == "go":
     for line in lines:
         wf.write(line)
         if "Rack=DBBC" in line:
-            wf.write("mk5=datastream=clear\n")
-            wf.write("mk5=datastream=add:{thread}:*\n")
+            #wf.write("mk5=datastream=clear\n")
+            #wf.write("mk5=datastream=add:{thread}:*\n")
             wf.write("prepant\n")
             wf.write("!"+preptime + "\n")
     wf.close()
-    print("All done. DON'T FORGET TO START THE AMPCAL TPI LOGGING IF YOU HAVE NOT ALREADY!")
+    print("All done.")
 else: 
     print("Did not get go as answer so not doing anything.")
