@@ -1,47 +1,104 @@
 define  proc_library  00000000000x
-" VO0132     ONSA13NE  Oe
-" drudg version 2016Jul25 compiled under FS  9.12.12
-"< DBBC     rack >< Mark5B   recorder 1>
+" ONSA13NE default VGOS obs library
+" Manually constructed outside DRUDG
+"< DBBC3_DDC            rack >< FlexBuff recorder 1>
 enddef
-define  exper_initi   20132122541x
+define  exper_initi   00000000000
+proc_library
 sched_initi
-" Configure jive5ab for recording
-mk5=mtu=9000
-mk5=mtu?
-mk5=mode=VDIF_8192-8192-64-2
-mk5=mode?
-mk5=net_protocol=udpsnor:256M:256M
-mk5=net_protocol?
-mk5=net_port=26311
-mk5=net_port?
-mk5=record=nthread:4:4
-mk5=record?nthread 
-" Enable pcal signal
-sy=pcal_en 1
-" set pcal attenuation
-sy=atten_pcal 5
-" check DBBC3 VDIF time
-" 1s lag for later cards is normal
-dbbc3=time
-" check maser timing
-clock
-" check DBBC3 delay
-dbbc3=pps_delay
-" Configure fivept and onoff
-" for system checks
-fivept=azel,-2,9,0.4,1,057u
-onoff=2,2,,,,,all
-" configure frequencies etc.
+mk5=dts_id?
+mk5=os_rev?
+mk5_status
 setupbb
 enddef
-define  kill          00000000000
-" Useful to stop tasks if needed
-sy=brk aquir &
-sy=brk fivpt &
-sy=brk onoff &        
+define  setupbb       21242142628x
+pcalon
+tpicd=stop
+core3hbb=$
+fb_mode=vdif,,,64
+fb_mode
+jive5ab_cnfg
+dbbcbb32
+ifdbb
+cont_cal=on,2
+tpicd=no,100
+tpicd
 enddef
-define  ifall         20132122558x
-"configure LO and GComo settings
+define  dbbcbb32      21242142628x9x
+bbc001=3480.4,a,32.0
+bbc002=3448.4,a,32.0
+bbc003=3384.4,a,32.0
+bbc004=3320.4,a,32.0
+bbc005=3224.4,a,32.0
+bbc006=3096.4,a,32.0
+bbc007=3064.4,a,32.0
+bbc008=3032.4,a,32.0
+bbc009=3480.4,b,32.0
+bbc010=3448.4,b,32.0
+bbc011=3384.4,b,32.0
+bbc012=3320.4,b,32.0
+bbc013=3224.4,b,32.0
+bbc014=3096.4,b,32.0
+bbc015=3064.4,b,32.0
+bbc016=3032.4,b,32.0
+bbc017=1979.6,c,32.0
+bbc018=2011.6,c,32.0
+bbc019=2075.6,c,32.0
+bbc020=2139.6,c,32.0
+bbc021=2235.6,c,32.0
+bbc022=2363.6,c,32.0
+bbc023=2395.6,c,32.0
+bbc024=2427.6,c,32.0
+bbc025=1979.6,d,32.0
+bbc026=2011.6,d,32.0
+bbc027=2075.6,d,32.0
+bbc028=2139.6,d,32.0
+bbc029=2235.6,d,32.0
+bbc030=2363.6,d,32.0
+bbc031=2395.6,d,32.0
+bbc032=2427.6,d,32.0
+bbc033=859.6,e,32.0
+bbc034=891.6,e,32.0
+bbc035=955.6,e,32.0
+bbc036=1019.6,e,32.0
+bbc037=1115.6,e,32.0
+bbc038=1243.6,e,32.0
+bbc039=1275.6,e,32.0
+bbc040=1307.6,e,32.0
+bbc041=859.6,f,32.0
+bbc042=891.6,f,32.0
+bbc043=955.6,f,32.0
+bbc044=1019.6,f,32.0
+bbc045=1115.6,f,32.0
+bbc046=1243.6,f,32.0
+bbc047=1275.6,f,32.0
+bbc048=1307.6,f,32.0
+bbc049=919.6,g,32.0
+bbc050=951.6,g,32.0
+bbc051=1015.6,g,32.0
+bbc052=1079.6,g,32.0
+bbc053=1175.6,g,32.0
+bbc054=1303.6,g,32.0
+bbc055=1335.6,g,32.0
+bbc056=1367.6,g,32.0
+bbc057=919.6,h,32.0
+bbc058=951.6,h,32.0
+bbc059=1015.6,h,32.0
+bbc060=1079.6,h,32.0
+bbc061=1175.6,h,32.0
+bbc062=1303.6,h,32.0
+bbc063=1335.6,h,32.0
+bbc064=1367.6,h,32.0
+enddef
+define  ifdbb       21242142630x1x
+ifa=1,agc,32000
+ifb=1,agc,32000
+ifc=2,agc,32000
+ifd=2,agc,32000
+ife=2,agc,32000
+iff=2,agc,32000
+ifg=2,agc,32000
+ifh=2,agc,32000
 lo=
 lo=loa,0,usb,lcp
 lo=lob,0,usb,rcp
@@ -51,180 +108,17 @@ lo=loe,7700,lsb,lcp
 lo=lof,7700,lsb,rcp
 lo=log,11600,lsb,lcp
 lo=loh,11600,lsb,rcp
-ifa=1,agc
-ifb=1,agc
-ifc=2,agc
-ifd=2,agc
-ife=2,agc
-iff=2,agc
-ifg=2,agc
-ifh=2,agc
 enddef
-define  dbbc_ifall    20132122604x
-"read out IF/Gcomo settings through FS
-ifa
-ifb
-ifc
-ifd
-ife
-iff
-ifg
-ifh
+define  core3hbb      00000000000
+core3h_mode0=begin,$
+core3h_mode1=,0xcccccccc,,64.0,$
+core3h_mode2=,0xcccccccc,,64.0,$
+core3h_mode3=,0x33333333,,64.0,$
+core3h_mode4=,0x33333333,,64.0,$
+core3h_mode5=,0x33333333,,64.0,$
+core3h_mode6=,0x33333333,,64.0,$
+core3h_mode7=,0x33333333,,64.0,$
+core3h_mode8=,0x33333333,,64.0,$
+core3h_mode0=end,$
 enddef
-define  dbbc_ifall2   20132122605x
-"read out IF/Gcomo settings through DBBC3
-dbbc=dbbcifa
-dbbc=dbbcifb
-dbbc=dbbcifc
-dbbc=dbbcifd
-dbbc=dbbcife
-dbbc=dbbciff
-dbbc=dbbcifg
-dbbc=dbbcifh
-enddef
-define  dbbc_bb      12013216450
-" Set all DBBC BBCs through DBBC3
-dbbc3=dbbc01=3480.4,a,32,1
-dbbc3=dbbc02=3448.4,a,32,1
-dbbc3=dbbc03=3384.4,a,32,1
-dbbc3=dbbc04=3320.4,a,32,1
-dbbc3=dbbc05=3224.4,a,32,1
-dbbc3=dbbc06=3096.4,a,32,1
-dbbc3=dbbc07=3064.4,a,32,1
-dbbc3=dbbc08=3032.4,a,32,1
-dbbc3=dbbc09=3480.4,b,32,1
-dbbc3=dbbc10=3448.4,b,32,1
-dbbc3=dbbc11=3384.4,b,32,1
-dbbc3=dbbc12=3320.4,b,32,1
-dbbc3=dbbc13=3224.4,b,32,1
-dbbc3=dbbc14=3096.4,b,32,1
-dbbc3=dbbc15=3064.4,b,32,1
-dbbc3=dbbc16=3032.4,b,32,1
-dbbc3=dbbc17=1979.6,c,32,1
-dbbc3=dbbc18=2011.6,c,32,1
-dbbc3=dbbc19=2075.6,c,32,1
-dbbc3=dbbc20=2139.6,c,32,1
-dbbc3=dbbc21=2235.6,c,32,1
-dbbc3=dbbc22=2363.6,c,32,1
-dbbc3=dbbc23=2395.6,c,32,1
-dbbc3=dbbc24=2427.6,c,32,1
-dbbc3=dbbc25=1979.6,d,32,1
-dbbc3=dbbc26=2011.6,d,32,1
-dbbc3=dbbc27=2075.6,d,32,1
-dbbc3=dbbc28=2139.6,d,32,1
-dbbc3=dbbc29=2235.6,d,32,1
-dbbc3=dbbc30=2363.6,d,32,1
-dbbc3=dbbc31=2395.6,d,32,1
-dbbc3=dbbc32=2427.6,d,32,1
-dbbc3=dbbc33=859.6,e,32,1
-dbbc3=dbbc34=891.6,e,32,1
-dbbc3=dbbc35=955.6,e,32,1
-dbbc3=dbbc36=1019.6,e,32,1
-dbbc3=dbbc37=1115.6,e,32,1
-dbbc3=dbbc38=1243.6,e,32,1
-dbbc3=dbbc39=1275.6,e,32,1
-dbbc3=dbbc40=1307.6,e,32,1
-dbbc3=dbbc41=859.6,f,32,1
-dbbc3=dbbc42=891.6,f,32,1
-dbbc3=dbbc43=955.6,f,32,1
-dbbc3=dbbc44=1019.6,f,32,1
-dbbc3=dbbc45=1115.6,f,32,1
-dbbc3=dbbc46=1243.6,f,32,1
-dbbc3=dbbc47=1275.6,f,32,1
-dbbc3=dbbc48=1307.6,f,32,1
-dbbc3=dbbc49=919.6,g,32,1
-dbbc3=dbbc50=951.6,g,32,1
-dbbc3=dbbc51=1015.6,g,32,1
-dbbc3=dbbc52=1079.6,g,32,1
-dbbc3=dbbc53=1175.6,g,32,1
-dbbc3=dbbc54=1303.6,g,32,1
-dbbc3=dbbc55=1335.6,g,32,1
-dbbc3=dbbc56=1367.6,g,32,1
-dbbc3=dbbc57=919.6,h,32,1
-dbbc3=dbbc58=951.6,h,32,1
-dbbc3=dbbc59=1015.6,h,32,1
-dbbc3=dbbc60=1079.6,h,32,1
-dbbc3=dbbc61=1175.6,h,32,1
-dbbc3=dbbc62=1303.6,h,32,1
-dbbc3=dbbc63=1335.6,h,32,1
-dbbc3=dbbc64=1367.6,h,32,1
-enddef
-define  bbcall        20132122554x
-" Set all DBBC BBCs through FS
-" Needed so FS knows about this
-bbc001=3480.4,a,32,1
-bbc002=3448.4,a,32,1
-bbc003=3384.4,a,32,1
-bbc004=3320.4,a,32,1
-bbc005=3224.4,a,32,1
-bbc006=3096.4,a,32,1
-bbc007=3064.4,a,32,1
-bbc008=3032.4,a,32,1
-bbc009=3480.4,b,32,1
-bbc010=3448.4,b,32,1
-bbc011=3384.4,b,32,1
-bbc012=3320.4,b,32,1
-bbc013=3224.4,b,32,1
-bbc014=3096.4,b,32,1
-bbc015=3064.4,b,32,1
-bbc016=3032.4,b,32,1
-bbc017=1979.6,c,32,1
-bbc018=2011.6,c,32,1
-bbc019=2075.6,c,32,1
-bbc020=2139.6,c,32,1
-bbc021=2235.6,c,32,1
-bbc022=2363.6,c,32,1
-bbc023=2395.6,c,32,1
-bbc024=2427.6,c,32,1
-bbc025=1979.6,d,32,1
-bbc026=2011.6,d,32,1
-bbc027=2075.6,d,32,1
-bbc028=2139.6,d,32,1
-bbc029=2235.6,d,32,1
-bbc030=2363.6,d,32,1
-bbc031=2395.6,d,32,1
-bbc032=2427.6,d,32,1
-bbc033=859.6,e,32,1
-bbc034=891.6,e,32,1
-bbc035=955.6,e,32,1
-bbc036=1019.6,e,32,1
-bbc037=1115.6,e,32,1
-bbc038=1243.6,e,32,1
-bbc039=1275.6,e,32,1
-bbc040=1307.6,e,32,1
-bbc041=859.6,f,32,1
-bbc042=891.6,f,32,1
-bbc043=955.6,f,32,1
-bbc044=1019.6,f,32,1
-bbc045=1115.6,f,32,1
-bbc046=1243.6,f,32,1
-bbc047=1275.6,f,32,1
-bbc048=1307.6,f,32,1
-bbc049=919.6,g,32,1
-bbc050=951.6,g,32,1
-bbc051=1015.6,g,32,1
-bbc052=1079.6,g,32,1
-bbc053=1175.6,g,32,1
-bbc054=1303.6,g,32,1
-bbc055=1335.6,g,32,1
-bbc056=1367.6,g,32,1
-bbc057=919.6,h,32,1
-bbc058=951.6,h,32,1
-bbc059=1015.6,h,32,1
-bbc060=1079.6,h,32,1
-bbc061=1175.6,h,32,1
-bbc062=1303.6,h,32,1
-bbc063=1335.6,h,32,1
-bbc064=1367.6,h,32,1
-enddef
-define  setupbb       20132122551x
-" Configure frequencies etc.
-" First ensure no offsets left in FS
-azeloff=0d,0d
-azeloff
-dbbc_bb
-bbcall
-ifall
-dbbc_ifall
-dbbc_ifall2
-enddef
+

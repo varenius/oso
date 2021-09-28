@@ -26,9 +26,9 @@ def check_rate(scraw, tstat_rate, ev):
     
     # Print final rate comparison between the methods
     if tstat_rate < sc_rate * sc_nchan * 0.9 or tstat_rate > sc_rate * sc_nchan * 1.1:
-        message = "WARNING: Rates from scan_check and tstat are not within 10% of each other! scan_check:"+ sc_rate * sc_nchan+ "Mbps; tstat:"+ tstat_rate+ "Mbps."
+        message = "WARNING: Rates from scan_check and tstat are not within 10% of each other! scan_check:"+ str(sc_rate * sc_nchan)+ "Mbps; tstat:"+ str(tstat_rate)+ "Mbps."
     elif tstat_rate < evlbi_rate * 0.9 or tstat_rate > evlbi_rate * 1.1:
-        message = "WARNING: Rates from elvbi and tstat are not within 10% of each other! evlbi:"+ evlbi_rate+ "Mbps; tstat:"+ tstat_rate+ "Mbps"
+        message = "WARNING: Rates from elvbi and tstat are not within 10% of each other! evlbi:"+ str(evlbi_rate)+ "Mbps; tstat:"+ str(tstat_rate)+ "Mbps"
     else:
         message = "Rate check OK!"
     summary = str(sc_nchan)+ " chans, totalling "+ str(sc_rate * sc_nchan) + " " + sc_rate_unit + ", " + str(sc_t) + " sec."
@@ -55,7 +55,7 @@ def fbcmd(message):
         print('INFO: answer: ', data)
     sock.close()
     return data
-recsec = 5 # length to record in seconds
+recsec = 10 # length to record in seconds
 scan_name = "testrec_" + me + "_"+datetime.datetime.utcnow().strftime("%y%m%d_%H%M%S")
 
 version = fbcmd("version?").split(":")
@@ -135,7 +135,9 @@ if " does not exist" in scraw:
         print("ERROR: scan_check did not find any data - investigate !!!" )
         print("Some (but not all) possible things to check:")
         print("- No mode= command sent to jive5ab since starting jive5ab?")
-        print("- FiLa10G VDIF output not started? Check with fila10g=sysstat ")
+        print("- FiLa10G VDIF output not started? Check with FS command fila10g=sysstat.")
+        print("  If it says 'output: stopped', and/or 'output 0 format: raw', then run the")
+        print("  command 'fila10g=start vdif' and try again with a few testrec.py calls.")
         print("- Bad fibre connection from FiLa to flexbuff?")
         print("...exiting test... try again after changing something!")
         print("NOTE: To run jive5ab commands from FS, use 'mk5=' syntax e.g. mk5=datastream=clear")
