@@ -2,6 +2,7 @@ import sys
 import os
 
 vmuxfile = sys.argv[1]
+dataport = sys.argv[2]
 
 def get_next_vmcmd(vmuxfile):
     vmcmd = ""
@@ -16,7 +17,7 @@ def vmux_and_transfer(vmcmd):
     vmfile = vmcmd.split()[6]
     exp = vmfile[0:9]
     cwd = os.getcwd()
-    m5cmd = "m5copy file://:2621"+cwd+"/"+vmfile+ " file://192.52.62.236:2650/mnt/raid4/data/"+exp+"/ -udt -p 2652 --resume"
+    m5cmd = "m5copy file://:2621"+cwd+"/"+vmfile+ " file://192.52.62.238:43992/mnt/raid4/data/"+exp+"/ -udt -p "+dataport+" --resume"
     if os.path.exists(vmfile):
         #File already on disk, transfer existing file (assuming it's complete)
         cmd = m5cmd
