@@ -26,7 +26,8 @@ if check.strip() == "go":
     if dl:
         # Get schedule via wget, saving it in /usr2/sched/, e.g. /usr2/sched/vt9248.skd
         print("INFO: Downloading sked file...")
-        wgetcmd = "wget --user anonymous " + ftpaddr + " -O /usr2/sched/" + exp + ".skd"
+        #wgetcmd = "wget --user anonymous " + ftpaddr + " -O /usr2/sched/" + exp + ".skd"
+        wgetcmd = "fesh -f " + exp + ".skd"
         os.system(wgetcmd)
         print("INFO: ...done.")
     
