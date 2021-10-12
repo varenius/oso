@@ -33,7 +33,7 @@ def fbcmd(message, mp):
     sock.connect((ip, int(mp)))
     sock.send(message)
     if DEBUG:
-        print('INFO: sent to '+ip+':'+mp + ':' + message)
+        print('INFO: sent to '+ip+':'+str(mp) + ':' + message)
     data = sock.recv(1024)
     if DEBUG:
         print('INFO: answer: ', data)
@@ -45,26 +45,27 @@ scan_name = "testrec_" + me + "_"+datetime.datetime.utcnow().strftime("%y%m%d_%H
 
 # Set runtime net_ports
 if me=="freja":
-    np="2641"
+    npd=26300
 elif me=="fulla":
-    np="2631"
+    npd=26400
 # Assuming default runtime 0 should not have netport where data is coming in
-fbcmd("runtime={0}; net_port={1}{0}; mode=VDIF_8000-4096-8-2; mtu=9000; net_protocol=udpsnor:768M:256M:4; record=nthread::4; ".format("0",np),port)
+#fbcmd("runtime=0; net_port={0}; mode=VDIF_8000-4096-8-2; mtu=9000; net_protocol=udpsnor:768M:256M:4; record=nthread::4; ".format(str(npd)),port)
 # Then set rest from 1-8
-for rt in range(1,9):
-    cp = 3620+rt
-    fbcmd("net_port={1}{0}; mode=VDIF_8000-4096-8-2; mtu=9000; net_protocol=udpsnor:768M:256M:4; record=nthread::4; ".format(str(rt),np),cp)
+for rt in range(1,17):
+    cp = 3600+rt
+    np = str(npd+rt-1)
+    fbcmd("net_port={0}; mode=VDIF_8000-4096-8-2; mtu=9000; net_protocol=udpsnor:768M:256M:4; record=nthread::4; ".format(np),cp)
 time.sleep(1)
 # Start recording
-for rt in range(1,9):
-    cp = 3620+rt
+for rt in range(1,17):
+    cp = 3600+rt
     fbcmdq("record=on:{1}_{0}".format(str(rt),scan_name),cp)
 print("sleep"+str(recsec))
 time.sleep(recsec)
 # Stop recording
-for rt in range(1,9):
-    cp = 3620+rt
+for rt in range(1,17):
+    cp = 3600+rt
     fbcmdq("record=off".format(str(rt)),cp)
-for rt in range(1,9):
-    cp = 3620+rt
+for rt in range(1,17):
+    cp = 3600+rt
     print(fbcmd("evlbi?".format(str(rt)),cp))
