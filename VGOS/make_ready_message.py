@@ -1,7 +1,9 @@
 #!/usr/bin/env python 
 import sys
 
-logfile = "/usr2/log/"+sys.argv[1]+".log"
+expant = sys.argv[1] # e.g. vo2027oe
+
+logfile = "/usr2/log/"+expant+".log"
 
 lines = []
 for line in open(logfile):
@@ -67,7 +69,14 @@ sefdh = get_lines(lines, "r  10664.40",1)
 print_lines(sefdh)
 print 
 
-print "First source:"
-wx = get_lines(lines, "/source/",1)
-print_lines(wx)
+snpfile = "/usr2/sched/"+expant+".snp"
+for line in open(snpfile):
+    if "scan_name=" in line:
+        scan_name = line.split(",")[0].split("=")[-1]
+    if "source=" in line:
+        firstsource = line.split(",")[0].split("=")[-1]
+        break
+if firstsource:
+    print "Schedule start:"
+    print "First scan is " + scan_name + " with source " + firstsource
 print 
