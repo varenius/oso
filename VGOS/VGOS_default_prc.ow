@@ -110,7 +110,7 @@ lo=log,11600,lsb,lcp
 lo=loh,11600,lsb,rcp
 enddef
 define  core3hbb      00000000000
-core3h_mode0=begin,$
+core3h_mode0=begin,force
 core3h_mode1=,0xcccccccc,,64.0,$
 core3h_mode2=,0xcccccccc,,64.0,$
 core3h_mode3=,0x33333333,,64.0,$
@@ -119,6 +119,6 @@ core3h_mode5=,0x33333333,,64.0,$
 core3h_mode6=,0x33333333,,64.0,$
 core3h_mode7=,0x33333333,,64.0,$
 core3h_mode8=,0x33333333,,64.0,$
-core3h_mode0=end,$
+core3h_mode0=end,force
 enddef
 
