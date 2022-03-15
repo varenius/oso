@@ -35,18 +35,20 @@ print("Checking for OW...")
 fslog = exp+"ow.log"
 if os.path.exists(fslog):
     #get list of possible logfiles
-    command = ["ssh", "freja", "ls /usr2/oper/eskil/eskil.oso.git/VGOS/DBBC3/MULTICAST_DBBC3*"]
+    #command = ["ssh", "freja", "ls /usr2/oper/eskil/eskil.oso.git/VGOS/DBBC3/MULTICAST_DBBC3*"]
+    command = ["ssh", "eskil@grotte", "ls /data2/eskil/TPIbkp_20210823/frejabkp/MULTICAST_DBBC3*"]
     rc = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     files = rc.stdout.split("\n")
     match = ""
     for f in files[:-1]:
-        fstart, fstop = get_timerange(f, "freja")
+        #fstart, fstop = get_timerange(f, "freja")
+        fstart, fstop = get_timerange(f, "eskil@grotte")
         if (start > fstart) and (stop < fstop):
             match = f
             fn = f.split("/")[-1]
             print("Matching TPI file found: " + f)
             mcdata = "OW_"+fn
-            os.system("scp freja:"+f+ " "+mcdata)
+            os.system("scp eskil@grotte:"+f+ " "+mcdata)
             print("Assuming we want to create antab file using FS log " + fslog)
             if start > datetime.datetime(2021,1,19):
                 tcal = "/home/oper/eskil/eskil.oso.git/VGOS/DBBC3/OW_post_2021-01-19.tcal.jansky.txt"
@@ -63,18 +65,20 @@ print("Checking for OE...")
 fslog = exp+"oe.log"
 if os.path.exists(fslog):
     #get list of possible logfiles
-    command = ["ssh", "fulla", "ls /usr2/oper/eskil/eskil.oso.git/VGOS/DBBC3/MULTICAST_DBBC3*"]
+    #command = ["ssh", "fulla", "ls /usr2/oper/eskil/eskil.oso.git/VGOS/DBBC3/MULTICAST_DBBC3*"]
+    command = ["ssh", "eskil@grotte", "ls /data2/eskil/TPIbkp_20210823/fullabkp/DBBC3/MULTICAST_DBBC3*"]
     rc = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     files = rc.stdout.split("\n")
     match = ""
     for f in files[:-1]:
-        fstart, fstop = get_timerange(f, "fulla")
+        #fstart, fstop = get_timerange(f, "fulla")
+        fstart, fstop = get_timerange(f, "eskil@grotte")
         if (start > fstart) and (stop < fstop):
             match = f
             fn = f.split("/")[-1]
             print("Matching TPI file found: " + f)
             mcdata = "OE_"+fn
-            os.system("scp fulla:"+f+ " "+mcdata)
+            os.system("scp eskil@grotte:"+f+ " "+mcdata)
             print("Assuming we want to create antab file using FS log " + fslog)
             if start > datetime.datetime(2020,12,2):
                 tcal = "/home/oper/eskil/eskil.oso.git/VGOS/DBBC3/OE_post_2020-12-02.tcal.jansky.txt"
