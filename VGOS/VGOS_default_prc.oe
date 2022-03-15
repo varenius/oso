@@ -21,6 +21,7 @@ jive5ab_cnfg
 dbbcbb32
 ifdbb
 cont_cal=on,2
+bbc_gain=all,agc
 tpicd=no,100
 tpicd
 enddef
