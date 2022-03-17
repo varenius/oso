@@ -1,6 +1,10 @@
 #!/usr/bin/python
 import sys, os
-# example usage: etransfer.py gyller gsi b22076 oe
+
+if (not len(sys.argv)==5) or (sys.argv[1]== "-h") or (sys.argv[1]=="--help"):
+    print("Example usage: etransfer.py gyller gsi b22076 oe")
+    sys.exit(1)
+
 fb = sys.argv[1].lower()
 destination = sys.argv[2].lower()
 exp = sys.argv[3].lower()
