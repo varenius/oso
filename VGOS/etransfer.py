@@ -1,41 +1,32 @@
 #!/usr/bin/python
 import sys, os
-# example usage: script.py gsi vt2049 oe
-destination = sys.argv[1]
-exp = sys.argv[2]
-ant = sys.argv[3]
+# example usage: etransfer.py gyller gsi b22076 oe
+fb = sys.argv[1].lower()
+destination = sys.argv[2].lower()
+exp = sys.argv[3].lower()
+ant = sys.argv[4].lower()
+
+screenid = "etransfer_{0}_{1}_{2}".format(destination, exp, ant)
+fbdir = "/mnt/etransfer/{0}/{1}_{2}".format(destination, exp, ant)
 
 if destination == "gsi":
-    target = "210.146.79.7#2642:/export/vlbi/data/{0}{1}/".format(exp,ant)
-    #target = "skirner_x#43992:/mnt/disk0/eskil/"
+    sendcmd = "etc '{0}/*' 210.146.79.7#2642:/export/vlbi/data/{1}{2}/ --resume".format(fbdir, exp, ant)
+elif destination == "vien":
+    sendcmd = "etc '{0}/*' 193.170.79.54#2620:/gpfs/cdata/incoming/{1}/ --resume".format(fbdir, ant) 
+elif destination == "bonn":
+    sendcmd = "# DATA MOUNTED AT {0} FOR BONN TO FETCH, LET THEM KNOW!".format(fbdir)
+elif destination == "skirner": # FOR TESTING ONLY
+    sendcmd = "etc '{0}/*' skirner_x#43992:/mnt/disk0/eskil/ --resume".format(fbdir, exp, ant) 
 else:
-    print("ERROR: Only GSI supported now. Aborting.")
+    print("ERROR: Destination {0} not supported yet. Aborting.".format(destination))
     sys.exit()
 
-# Get flexbuff info from mk5ad.ctl file
-mk5ad = "/usr2/control/mk5ad.ctl"
-ip = ""
-port = ""
-for line in open(mk5ad):
-    if not line.startswith("*"):
-        ls = line.split()
-        ip = ls[0]
-        port = ls[1]
+screen = "ssh {0} 'screen -dmS {1}'".format(fb, screenid)
+mkdir = "ssh {0} \"screen -S {1} -p 0 -X stuff 'mkdir -p {2}^M'\"".format(fb, screenid, fbdir)
+umount = "ssh {0} \"screen -S {1} -p 0 -X stuff 'fusermount -u {2}^M'\"".format(fb, screenid, fbdir)
+mount = "ssh {0} \"screen -S {1} -p 0 -X stuff 'vbs_fs {2} -I {3}_{4}*^M'\"".format(fb, screenid, fbdir, exp, ant)
+send = "ssh {0} \"screen -S {1} -p 0 -X stuff \\\"{2}^M\\\"\"".format(fb, screenid, sendcmd)
 
-if ip=="" or port=="":
-    print("Flexbuff IP or port not found in " + mk5ad + ". Please check that file")
-    sys.exit()
-
-umountc = "ssh -t {0} \"fusermount -u /mnt/etransfer/gsi\"".format(ip)
-mountc = "ssh -t {0} \"vbs_fs /mnt/etransfer/gsi -I '{1}_{2}*'\"".format(ip, exp, ant)
-sendc = "ssh -t {0} \"etc '/mnt/etransfer/gsi/{1}*' {2} --resume\"".format(ip, exp, target)
-
-#TEST COMMANDS
-#screenc = "screen -dmS etc_transfer_{1}{2} ssh -t {0} \"etc '/mnt/etransfer/gsi/{1}*' {2} --resume\"".format(ip, exp, ant)
-#screenc = "ssh -t {0} screen -dmS etc_transfer_{1}{2}".format(ip, exp, ant)
-#sendc = "ssh -t {0} screen -S etc_transfer_{1}{2} -p 0 -X stuff \"etc '/mnt/etransfer/gsi/{1}_{2}*' {3} --resume^M\"".format(ip, exp, ant, target)
-#for c in [umountc, mountc, screenc, sendc]:
-
-for c in [umountc, mountc, sendc]:
+for c in [screen, mkdir, umount, mount, send]:
     print"Running command: {}".format(c)
     os.system(c)
