@@ -5,6 +5,11 @@ if (not len(sys.argv)==5) or (sys.argv[1]== "-h") or (sys.argv[1]=="--help"):
     print("Usage: etransfer.py FLEXBUFF CORRELATOR EXPERIMENT ANTENNA")
     print("Example usage: etransfer.py gyller gsi b22076 oe")
     print("Allowed values for CORRELATOR are gsi, vien, bonn. Note that bonn will just mount the data, not transfer.")
+    print("INFO: This script will start a screen at the given flexbuff. In this screen, it will:")
+    print("      - mkdir /mnt/etransfer/CORRELATOR/EXPERIMENT_ANTENNA (in case it doesn't exist)")
+    print("      - fusermount -u /mnt/etransfer/CORRELATOR/EXPERIMENT_ANTENNA (in case it has already been used)")
+    print("      - vbs_fs /mnt/etransfer/CORRELATOR/EXPERIMENT_ANTENNA -I 'EXP_ANT*' (to mount the data before transfer)")
+    print("      - etc '/mnt/etransfer/CORRELATOR/EXPERIMENT_ANTENNA/*' TARGET' (where TARGET is the selected correlator standard data folder")
     sys.exit(1)
 
 fb = sys.argv[1].lower()
