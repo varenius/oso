@@ -75,6 +75,13 @@ if check.strip() == "go":
             #wf.write("mk5=datastream=add:{thread}:*\n")
             wf.write("prepant\n")
             wf.write("!"+preptime + "\n")
+    if exp.startswith("b2") or exp.startswith("c2"):
+        #VGOSB/C session, include auto-transfer to ishioka
+        if tel == "oe":
+            fb ="gyller"
+        elif tel == "ow":
+            fb="skirner"
+        wf.write("sy=etransfer.py {0} gsi {1} {2}".format(fb, exp, tel))
     wf.close()
     print("All done.")
 else: 
