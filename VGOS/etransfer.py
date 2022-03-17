@@ -2,7 +2,9 @@
 import sys, os
 
 if (not len(sys.argv)==5) or (sys.argv[1]== "-h") or (sys.argv[1]=="--help"):
+    print("Usage: etransfer.py FLEXBUFF CORRELATOR EXPERIMENT ANTENNA")
     print("Example usage: etransfer.py gyller gsi b22076 oe")
+    print("Allowed values for CORRELATOR are gsi, vien, bonn. Note that bonn will just mount the data, not transfer.")
     sys.exit(1)
 
 fb = sys.argv[1].lower()
