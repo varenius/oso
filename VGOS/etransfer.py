@@ -27,7 +27,7 @@ if destination == "gsi":
 elif destination == "vien":
     sendcmd = "etc '{0}/*' 193.170.79.54#2620:/gpfs/cdata/incoming/{1}/ --resume".format(fbdir, ant) 
 elif destination == "shao":
-    sendcmd = "etc '{0}/*' 202.127.3.153:/vgos/vg03/{1}/{2}/ --resume".format(fbdir, exp, ant.capitalize()) 
+    sendcmd = "etc '{0}/*' 202.127.3.153:/vgos/vg03/{1}/{2}/ --resume --udt-mss 9000".format(fbdir, exp, ant.capitalize()) 
 elif destination == "bonn":
     sendcmd = "# DATA MOUNTED AT {0} FOR BONN TO FETCH, LET THEM KNOW!".format(fbdir)
 elif destination == "skirner": # FOR TESTING ONLY
