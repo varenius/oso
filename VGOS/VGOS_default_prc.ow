@@ -6,9 +6,9 @@ enddef
 define  exper_initi   00000000000
 proc_library
 sched_initi
-mk5=dts_id?
-mk5=os_rev?
-mk5_status
+fb=dts_id?
+fb=os_rev?
+fb_status
 setupbb
 enddef
 define  setupbb       21242142628x
@@ -17,7 +17,7 @@ tpicd=stop
 core3hbb=$
 fb_mode=vdif,,,64
 fb_mode
-jive5ab_cnfg
+fb_cnfg
 dbbcbb32
 ifdbb
 cont_cal=on,2
@@ -111,15 +111,15 @@ lo=log,11600,lsb,lcp
 lo=loh,11600,lsb,rcp
 enddef
 define  core3hbb      00000000000
-core3h_mode0=begin,force
-core3h_mode1=,0xcccccccc,,64.0,$
-core3h_mode2=,0xcccccccc,,64.0,$
-core3h_mode3=,0x33333333,,64.0,$
-core3h_mode4=,0x33333333,,64.0,$
-core3h_mode5=,0x33333333,,64.0,$
-core3h_mode6=,0x33333333,,64.0,$
-core3h_mode7=,0x33333333,,64.0,$
-core3h_mode8=,0x33333333,,64.0,$
-core3h_mode0=end,force
+core3h_mode=begin,force
+core3h_mode=1,,0xcccccccc,,64.0,$
+core3h_mode=2,,0xcccccccc,,64.0,$
+core3h_mode=3,,0x33333333,,64.0,$
+core3h_mode=4,,0x33333333,,64.0,$
+core3h_mode=5,,0x33333333,,64.0,$
+core3h_mode=6,,0x33333333,,64.0,$
+core3h_mode=7,,0x33333333,,64.0,$
+core3h_mode=8,,0x33333333,,64.0,$
+core3h_mode=end,force
 enddef
 
