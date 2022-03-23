@@ -23,7 +23,7 @@ def get_singlefile_data(vbsname):
     # TODO: Thread/IF selection in vmux step
     disk2fileout = scriptdir+"/checkdata.vdif"
     vmuxedfile = disk2fileout +".vmuxed"
-    ss = fbcmd("scan_set="+vbsname+":+2.0s:+"+extractiontime)
+    ss = fbcmd("scan_set="+vbsname+":+1.0s:+"+extractiontime)
     if " does not exist" in ss:
         return [False, -1, 0, -1] # No single file data found
     sc = fbcmd("scan_check?")
@@ -149,7 +149,8 @@ iflabels = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
 plt.rcParams.update({'font.size': 8})
 sample_rate = 2*bbcw # MHz
-scriptdir=os.path.dirname(os.path.realpath(__file__))
+#scriptdir=os.path.dirname(os.path.realpath(__file__))
+scriptdir = "/data/check_data/"
 
 scres = fbcmd("scan_check?")
 if "does not exist" in scres:
