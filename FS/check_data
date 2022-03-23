@@ -1,0 +1,37 @@
+#!/bin/bash
+log_file=/usr2/log/`lognm`.log
+if ! [[ -f ${log_file} ]]
+then
+    echo "ERROR: Missing the log file of ${log_file}"
+    echo ""; exit 11
+fi
+# echo "${log_file}"
+#inject_snap "bit_streams"
+#sleep 1s
+#log_line=`grep "bit_streams/VDIF" ${log_file}  | tail -n 1 | grep -o "VDIF_.*$"`
+# -- modified 2018-10-08 for new FS-version, RHaas
+#log_line=`grep "mk5c_mode/VDIF_" ${log_file}  | tail -n 1 | grep -o "VDIF_.*$"`
+# -- modified 2022-02-23 for new FS10 version, Eskil Varenius
+log_line=`grep "fb_mode/VDIF" ${log_file}  | tail -n 1 | grep -o "VDIF_.*$"`
+# echo "${log_line}"
+temp_array=(${log_line//,/ })
+mode=${temp_array[0]}
+#mode="Mark5B-512-16-2"
+# echo "${mode}"
+mk5_ip=` grep "^[^*]" /usr2/control/mk5ad.ctl | awk '{print $1}' `
+#mk5_ip="kare.oso.chalmers.se"
+
+if [[ -z ${mode} ]]
+then
+    echo "ERROR: Failed to find the mode!"
+    echo ""; exit 12
+else
+    if [[ -z ${mk5_ip} ]]
+    then
+        echo "Did not find the recorder IP. Quit"; exit 0
+    else
+        ssh oper@${mk5_ip}  /home/oper/yang/check_dbbc ${mode}
+        sleep 3s
+        scp oper@${mk5_ip}:/data/checkmk5/bandpass.ps /usr2/oper/
+    fi
+fi
