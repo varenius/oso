@@ -329,7 +329,7 @@ define  sendlog       22082082943x
 " Upload log to IVS server using ftp
 sy=/usr2/oper/bin/sendlog.py &
 enddef
-define  init_gyller   00000000000 
+define  init_gyller   00000000000
 "send DBBC3-data to gyller
 core3h=1,destination 0 10.100.0.15:26311
 core3h=2,destination 0 10.100.0.15:26311
@@ -339,6 +339,10 @@ core3h=5,destination 0 10.100.0.15:26311
 core3h=6,destination 0 10.100.0.15:26311
 core3h=7,destination 0 10.100.0.15:26311
 core3h=8,destination 0 10.100.0.15:26311
+" Change mk5ad.ctl adress
+sy=change_mk5.py gyller
+" Reload mk5ad.ctl in FS
+fb_init
 enddef
 define  init_skirner  00000000000
 "send DBBC3-data to skirner
@@ -350,6 +354,10 @@ core3h=5,destination 0 10.100.0.11:26311
 core3h=6,destination 0 10.100.0.11:26311
 core3h=7,destination 0 10.100.0.11:26311
 core3h=8,destination 0 10.100.0.11:26311
+" Change mk5ad.ctl adress
+sy=change_mk5.py skirner
+" Reload mk5ad.ctl in FS
+fb_init
 enddef
 define  prepant       22081150109x
 " unstow antenna if stowed
@@ -396,7 +404,7 @@ cont_cal=off
 cont_cal=on
 !+1s
 enddef
-define  init_kare     00000000000
+define  init_kare     00000000000 
 "send DBBC3-data to kare
 core3h=1,destination 0 10.100.0.1:26311
 core3h=2,destination 0 10.100.0.1:26311
@@ -406,6 +414,10 @@ core3h=5,destination 0 10.100.0.1:26311
 core3h=6,destination 0 10.100.0.1:26311
 core3h=7,destination 0 10.100.0.1:26311
 core3h=8,destination 0 10.100.0.1:26311
+" Change mk5ad.ctl adress
+sy=change_mk5.py kare
+" Reload mk5ad.ctl in FS
+fb_init
 enddef
 define  check_ntp     22081150044x
 sy=popen 'uptime 2>&1' -n uptime &
