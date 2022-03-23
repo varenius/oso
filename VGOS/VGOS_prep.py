@@ -36,7 +36,8 @@ if not (ans =="yes" or ans =="y"):
     rec = input("QUESTION: Then which recorder (gyller/skirner/kare)?").strip().lower()
 print("INFO: OK, using " + rec)
 print("")
-nextexp = input("QUESTION: Do you want to automatically start another experiment after this? If so, typ experiment name (e.g. b22087), else hit [enter]: ").lower().strip()
+print("QUESTION: Do you want to automatically start another experiment after this?")
+nextexp = input("          If so, typ experiment name (e.g. b22087 without oe/ow). Else leave blank: ").lower().strip()
 print("")
 check = input("FINAL QUESTION: Ready to prepare, and possibly overwrite, experiment files for " + exp + ". Proceed (yes/no) ? " ).strip().lower()
 
@@ -98,3 +99,4 @@ if not nextexp=="":
     wf.write("schedule={0}{1},#1".format(nextexp, tel))
 wf.close()
 print("INFO: All done. You may want to check the resulting /usr2/sched/{0}{1}.snp and /usr2/proc/{0}{1}.prc files.".format(exp,tel))
+print("      This is crucial for e.g. ONTIE or non-standard VGOS frequency setups; here PRC files must be replaced.".format(exp,tel))
