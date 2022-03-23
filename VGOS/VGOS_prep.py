@@ -3,9 +3,11 @@ import sys, os
 import datetime
 
 print("Welcome to the OTT VGOS_prep script. Please answer the following questions:")
+###########################
 exp = input("QUESTION: Experiment, e.g. b22082 ? ").strip().lower()
 print("INFO: OK, try to process experiment "+exp)
 print()
+###########################
 dl = input("QUESTION: Download schedule from IVS (yes/no) ? ").strip().lower()
 if dl =="yes" or dl =="y":
     print("INFO: Will download schedule from IVS")
@@ -19,6 +21,15 @@ else:
         print("ABORTING!")
         sys.exit(1)
 print()
+###########################
+prcs = {"1":"vo-default", "2": "vt2077-alternative", "3": "on1323", "4": "on1324", "5": "on1325"}
+prcks = " ".join([i+") "+prcs[i] for i in sorted(prcs.keys())])
+print("INFO: Available frequency setup default PRC files are:\n{}\n".format(prcks))
+prc = input("QUESTION: Please select setup using digit 1, 2, ...: ").strip().lower()
+selprc = prcs[prc]
+print("INFO: OK, selected setup is "+selprc)
+print()
+###########################
 # get hostname of this FS machine, fulla or freja
 host = os.uname()[1]
 # Translate hostname to telescope 2 letter code for drudg
@@ -29,6 +40,7 @@ if not (ant =="yes" or ant =="y"):
     tel = input("QUESTION: Then which antenna (oe/ow)? ").strip().lower()
 print("INFO: OK, using " + tel)
 print("")
+###########################
 recs = {"fulla":"gyller","freja":"skirner"}
 rec = recs[host]
 ans = input("QUESTION: This is machine " + host + " so I assume you will use recorder " + rec + " (yes/no) ?")
@@ -36,15 +48,17 @@ if not (ans =="yes" or ans =="y"):
     rec = input("QUESTION: Then which recorder (gyller/skirner/kare)?").strip().lower()
 print("INFO: OK, using " + rec)
 print("")
+###########################
 print("QUESTION: Do you want to automatically start another experiment after this?")
 nextexp = input("          If so, typ experiment name (e.g. b22087 without oe/ow). Else leave blank: ").lower().strip()
 print("")
+###########################
 check = input("FINAL QUESTION: Ready to prepare, and possibly overwrite, experiment files for " + exp + ". Proceed (yes/no) ? " ).strip().lower()
-
 if not (check == "yes" or check == "y"):
     print("ABORTING!")
     sys.exit(0)
-
+###########################
+# START ACTUAL SCRIPT!
 # Get path of script
 scriptpath = os.path.dirname(os.path.realpath(__file__))
 if dl:
@@ -67,8 +81,18 @@ sedcmd = "sed -i 's/setupxx/\"setupxx/g' /usr2/sched/"+exp+tel+".snp"
 os.system(sedcmd)
 
 # copy template PRC file to /usr2/proc/expST.prc where ST is oe or ow
-print("INFO: Instead of drudging for PRC, copy template PRC...")
-cpcmd = "cp " + scriptpath + "/VGOS_default_prc." + tel + " /usr2/proc/" + exp + tel + ".prc"
+print("INFO: Instead of drudging for PRC, copy template PRC for "+ selprc)
+if selprc=="vo-default":
+    cpcmd = "cp " + scriptpath + "/PRC/VGOS_default_prc." + tel + " /usr2/proc/" + exp + tel + ".prc"
+# Templates below are for Ow, but Oe is identical since differences are absorbed in station.prc
+elif selprc=="vt2077-alternative":
+    cpcmd = "cp " + scriptpath + "/PRC/vt2077ow.prc /usr2/proc/" + exp + tel + ".prc"
+elif selprc=="on1323":
+    cpcmd = "cp " + scriptpath + "/PRC/on1323ow.prc /usr2/proc/" + exp + tel + ".prc"
+elif selprc=="on1324":
+    cpcmd = "cp " + scriptpath + "/PRC/on1324ow.prc /usr2/proc/" + exp + tel + ".prc"
+elif selprc=="on1325":
+    cpcmd = "cp " + scriptpath + "/PRC/on1325ow.prc /usr2/proc/" + exp + tel + ".prc"
 os.system(cpcmd)
 
 snpf = "/usr2/sched/"+exp+tel+".snp"
