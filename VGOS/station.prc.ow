@@ -340,7 +340,7 @@ core3h=6,destination 0 10.100.0.15:26411
 core3h=7,destination 0 10.100.0.15:26411
 core3h=8,destination 0 10.100.0.15:26411
 " Change mk5ad.ctl adress
-sy=change_mk5.py gyller
+sy=change_mk5ad.py gyller
 " Reload mk5ad.ctl in FS
 fb_init
 enddef
@@ -355,7 +355,7 @@ core3h=6,destination 0 10.100.0.11:26411
 core3h=7,destination 0 10.100.0.11:26411
 core3h=8,destination 0 10.100.0.11:26411
 " Change mk5ad.ctl adress
-sy=change_mk5.py skirner
+sy=change_mk5ad.py skirner
 " Reload mk5ad.ctl in FS
 fb_init
 enddef
@@ -416,7 +416,7 @@ core3h=6,destination 0 10.100.0.1:26411
 core3h=7,destination 0 10.100.0.1:26411
 core3h=8,destination 0 10.100.0.1:26411
 " Change mk5ad.ctl adress
-sy=change_mk5.py kare
+sy=change_mk5ad.py kare
 " Reload mk5ad.ctl in FS
 fb_init
 enddef
