@@ -215,13 +215,13 @@ enddef
 define  calon         00000000000
 sy=popen 'noise_force 1 2>&1' -n noise
 enddef
-define  cont_enable   21306130508
+define  cont_enable   22081143807
 sy=popen 'ncal_en 1 2>&1' -n noise
 sy=popen 'noise_force 0 2>&1' -n noise
 sy=popen 'noise_gate_en 1 2>&1' -n noise
 cont_cal=on,2,80,0
 enddef
-define  sched_initi   21306130547x
+define  sched_initi   00000000000x
 " Check DBBC3 timng etc
 dbbc3_check
 " check maser timing
@@ -248,7 +248,7 @@ antenna=tra azel az 0 el 0.01
 "antenna=off
 log=station
 enddef
-define  initi         21306130508x
+define  initi         22081143807x
 "welcome to the OTTS field system
 check_ntp
 "Enable continuous cal
@@ -276,17 +276,17 @@ define  preob         00000000000x
 enddef
 define  ready_disk    00000000000x
 enddef
-define  pcalon        21306130553
+define  pcalon        00000000000
 " Enable pcal signal
 sy=pcal_en 1
 " set pcal attenuation
 sy=atten_pcal 5
 enddef
-define  pcaloff       21306130801x
+define  pcaloff       00000000000x
 " Disable pcal signal
 sy=pcal_en 0
 enddef
-define  checkfb       000000000000
+define  checkfb       00000000000x
 "scan_check
 fb_status
 fb=net_protocol?
@@ -298,13 +298,13 @@ define  collect       00000000000x
 iread
 bread
 enddef
-define  clock         21306130552x
+define  clock         00000000000x
 "fmout-gps=cb
 "gps-fmout=cb
 " changed to gps-maser 2019-04-01, RHaas
 gps-maser=cb
 enddef
-define  casa          21306130538x
+define  casa          00000000000x
 source=casa,232324.8,584859,2000
 enddef
 define  cygnusa       00000000000
@@ -320,7 +320,7 @@ define  chk_vgos_ddc  00000000000x
 " This python script will run the required check commands
 sy=python /usr2/oper/bin/check_vgos_ddc.py &
 enddef
-define  park_0_0      21306132302
+define  park_0_0      00000000000
 azeloff=0d,0d
 antenna=tra azel az 0 el 0.01
 "antenna=off
@@ -534,14 +534,14 @@ dbbc3=core3h=8,start vdif
 "sync PPS of all core3
 dbbc3=pps_sync
 enddef
-define  check_ntp     21306130553x
+define  check_ntp     22081143807x
 sy=popen 'uptime 2>&1' -n uptime &
 sy=popen 'ntpq -np 2>&1|grep -v "^[- x]" 2>&1' -n ntpq &
 enddef
 define  caltsys       00000000000x
 tpicd=tsys
 enddef
-define  dbbc3_check   21306130547
+define  dbbc3_check   00000000000
 " check version
 dbbc3=version
 dbbc3=core3h=1,version
@@ -566,14 +566,14 @@ sy=brk aquir &
 sy=brk fivpt &
 sy=brk onoff &
 enddef
-define  fb_config     00000000000
+define  fb_config     00000000000 
 " Configure jive5ab for OW antenna
-jive5ab=net_port=26411
-jive5ab=net_port?
-jive5ab=record?nthread
-jive5ab=datastream=clear
-jive5ab=datastream=add:{thread}:*
-jive5ab=datastream=reset
+fb=net_port=26411
+fb=net_port?
+fb=record?nthread
+fb=datastream=clear
+fb=datastream=add:{thread}:*
+fb=datastream=reset
 enddef
 define  park_zenith   00000000000x
 antenna=tra azel az 0 el 90.029
