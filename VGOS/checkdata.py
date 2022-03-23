@@ -40,7 +40,7 @@ def get_singlefile_data(vbsname):
             sys.exit(1)
         time.sleep(1) # Wait for disk2file
         nwait+=1
-    vmuxcmd = "vmux -v {0} 8032 16000 0,1,2,3,4,5,6,7 {1}".format(disk2fileout, vmuxedfile)
+    vmuxcmd = "vmux -q {0} 8032 16000 0,1,2,3,4,5,6,7 {1}".format(disk2fileout, vmuxedfile)
     os.system(vmuxcmd)
     time.sleep(5) # Wait for vmux
     # Read file
