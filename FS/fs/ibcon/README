@@ -1,2 +1,0 @@
-These files are meant to replace files in /usr2/fs/ibcon to enable communication with Prologix boxes via network.
-They need files in the fs/ibcon folder to compile. So, backup that folder, and then move these files there before compiling.

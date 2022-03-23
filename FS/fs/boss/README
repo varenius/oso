@@ -1,3 +1,0 @@
-rdtib.f_ORG is the original file which was modified to create rdtib.f. If the
-file shipped with the FS is different from rdtib.f_ORG, any differences likely
-need to be merged into rdtib.f before use.
