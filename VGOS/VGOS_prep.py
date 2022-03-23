@@ -123,4 +123,3 @@ if not nextexp=="":
     wf.write("schedule={0}{1},#1".format(nextexp, tel))
 wf.close()
 print("INFO: All done. You may want to check the resulting /usr2/sched/{0}{1}.snp and /usr2/proc/{0}{1}.prc files.".format(exp,tel))
-print("      This is crucial for e.g. ONTIE or non-standard VGOS frequency setups; here PRC files must be replaced.".format(exp,tel))
