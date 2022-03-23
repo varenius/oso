@@ -329,7 +329,7 @@ define  sendlog       22082082943x
 " Upload log to IVS server using ftp
 sy=/usr2/oper/bin/sendlog.py &
 enddef
-define  init_gyller   00000000000
+define  init_gyller   22082120216
 "send DBBC3-data to gyller
 core3h=1,destination 0 10.100.0.15:26311
 core3h=2,destination 0 10.100.0.15:26311
