@@ -17,7 +17,7 @@ tpicd=stop
 core3hbb=$
 fb_mode=vdif,,,64
 fb_mode
-fb_cnfg
+fb_config
 dbbcbb32
 ifdbb
 cont_cal=on,2
@@ -122,4 +122,3 @@ core3h_mode=7,,0x33333333,,64.0,$
 core3h_mode=8,,0x33333333,,64.0,$
 core3h_mode=end,force
 enddef
-
