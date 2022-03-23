@@ -329,111 +329,27 @@ define  sendlog       00000000000x
 " Upload log to IVS server using ftp
 sy=/usr2/oper/bin/sendlog.py &
 enddef
-define  init_gyller   00000000000x
+define  init_gyller   00000000000
 "send DBBC3-data to gyller
-"core3h,1
-dbbc3=core3h=1,reset
-dbbc3=core3h=1,destination 0 10.100.0.15:26311
-dbbc3=core3h=1,timesync
-dbbc3=core3h=1,start vdif
-!+1s
-"core3h,2
-dbbc3=core3h=2,reset
-dbbc3=core3h=2,destination 0 10.100.0.15:26311
-dbbc3=core3h=2,timesync
-dbbc3=core3h=2,start vdif
-!+1s
-"core3h,3
-dbbc3=core3h=3,reset
-dbbc3=core3h=3,destination 0 10.100.0.15:26311
-dbbc3=core3h=3,timesync
-dbbc3=core3h=3,start vdif
-!+1s
-"core3h,4
-dbbc3=core3h=4,reset
-dbbc3=core3h=4,destination 0 10.100.0.15:26311
-dbbc3=core3h=4,timesync
-dbbc3=core3h=4,start vdif
-!+1s
-"core3h,5
-dbbc3=core3h=5,reset
-dbbc3=core3h=5,destination 0 10.100.0.15:26311
-dbbc3=core3h=5,timesync
-dbbc3=core3h=5,start vdif
-!+1s
-"core3h,6
-dbbc3=core3h=6,reset
-dbbc3=core3h=6,destination 0 10.100.0.15:26311
-dbbc3=core3h=6,timesync
-dbbc3=core3h=6,start vdif
-!+1s
-"core3h,7
-dbbc3=core3h=7,reset
-dbbc3=core3h=7,destination 0 10.100.0.15:26311
-dbbc3=core3h=7,timesync
-dbbc3=core3h=7,start vdif
-!+1s
-"core3h,8
-dbbc3=core3h=8,reset
-dbbc3=core3h=8,destination 0 10.100.0.15:26311
-dbbc3=core3h=8,timesync
-dbbc3=core3h=8,start vdif
-!+1s
-"sync PPS of all core3
-dbbc3=pps_sync
+core3h=1,destination 0 10.100.0.15:26411
+core3h=2,destination 0 10.100.0.15:26411
+core3h=3,destination 0 10.100.0.15:26411
+core3h=4,destination 0 10.100.0.15:26411
+core3h=5,destination 0 10.100.0.15:26411
+core3h=6,destination 0 10.100.0.15:26411
+core3h=7,destination 0 10.100.0.15:26411
+core3h=8,destination 0 10.100.0.15:26411
 enddef
 define  init_skirner  00000000000
 "send DBBC3-data to skirner
-"core3h,1
-dbbc3=core3h=1,reset
-dbbc3=core3h=1,destination 0 10.100.0.11:26311
-dbbc3=core3h=1,timesync
-dbbc3=core3h=1,start vdif
-!+1s
-"core3h,2
-dbbc3=core3h=2,reset
-dbbc3=core3h=2,destination 0 10.100.0.11:26311
-dbbc3=core3h=2,timesync
-dbbc3=core3h=2,start vdif
-!+1s
-"core3h,3
-dbbc3=core3h=3,reset
-dbbc3=core3h=3,destination 0 10.100.0.11:26311
-dbbc3=core3h=3,timesync
-dbbc3=core3h=3,start vdif
-!+1s
-"core3h,4
-dbbc3=core3h=4,reset
-dbbc3=core3h=4,destination 0 10.100.0.11:26311
-dbbc3=core3h=4,timesync
-dbbc3=core3h=4,start vdif
-!+1s
-"core3h,5
-dbbc3=core3h=5,reset
-dbbc3=core3h=5,destination 0 10.100.0.11:26311
-dbbc3=core3h=5,timesync
-dbbc3=core3h=5,start vdif
-!+1s
-"core3h,6
-dbbc3=core3h=6,reset
-dbbc3=core3h=6,destination 0 10.100.0.11:26311
-dbbc3=core3h=6,timesync
-dbbc3=core3h=6,start vdif
-!+1s
-"core3h,7
-dbbc3=core3h=7,reset
-dbbc3=core3h=7,destination 0 10.100.0.11:26311
-dbbc3=core3h=7,timesync
-dbbc3=core3h=7,start vdif
-!+1s
-"core3h,8
-dbbc3=core3h=8,reset
-dbbc3=core3h=8,destination 0 10.100.0.11:26311
-dbbc3=core3h=8,timesync
-dbbc3=core3h=8,start vdif
-!+1s
-"sync to PPS for all core3h
-dbbc3=pps_sync
+core3h=1,destination 0 10.100.0.11:26411
+core3h=2,destination 0 10.100.0.11:26411
+core3h=3,destination 0 10.100.0.11:26411
+core3h=4,destination 0 10.100.0.11:26411
+core3h=5,destination 0 10.100.0.11:26411
+core3h=6,destination 0 10.100.0.11:26411
+core3h=7,destination 0 10.100.0.11:26411
+core3h=8,destination 0 10.100.0.11:26411
 enddef
 define  prepant       00000000000x
 " unstow antenna if stowed
@@ -481,58 +397,16 @@ cont_cal=off
 cont_cal=on
 !+1s
 enddef
-define  init_kare     00000000000x
+define  init_kare     00000000000 
 "send DBBC3-data to kare
-"core3h,1
-dbbc3=core3h=1,reset
-dbbc3=core3h=1,destination 0 10.100.0.1:26311
-dbbc3=core3h=1,timesync
-dbbc3=core3h=1,start vdif
-!+1s
-"core3h,2
-dbbc3=core3h=2,reset
-dbbc3=core3h=2,destination 0 10.100.0.1:26311
-dbbc3=core3h=2,timesync
-dbbc3=core3h=2,start vdif
-!+1s
-"core3h,3
-dbbc3=core3h=3,reset
-dbbc3=core3h=3,destination 0 10.100.0.1:26311
-dbbc3=core3h=3,timesync
-dbbc3=core3h=3,start vdif
-!+1s
-"core3h,4
-dbbc3=core3h=4,reset
-dbbc3=core3h=4,destination 0 10.100.0.1:26311
-dbbc3=core3h=4,timesync
-dbbc3=core3h=4,start vdif
-!+1s
-"core3h,5
-dbbc3=core3h=5,reset
-dbbc3=core3h=5,destination 0 10.100.0.1:26311
-dbbc3=core3h=5,timesync
-dbbc3=core3h=5,start vdif
-!+1s
-"core3h,6
-dbbc3=core3h=6,reset
-dbbc3=core3h=6,destination 0 10.100.0.1:26311
-dbbc3=core3h=6,timesync
-dbbc3=core3h=6,start vdif
-!+1s
-"core3h,7
-dbbc3=core3h=7,reset
-dbbc3=core3h=7,destination 0 10.100.0.1:26311
-dbbc3=core3h=7,timesync
-dbbc3=core3h=7,start vdif
-!+1s
-"core3h,8
-dbbc3=core3h=8,reset
-dbbc3=core3h=8,destination 0 10.100.0.1:26311
-dbbc3=core3h=8,timesync
-dbbc3=core3h=8,start vdif
-!+1s
-"sync PPS of all core3
-dbbc3=pps_sync
+core3h=1,destination 0 10.100.0.1:26411
+core3h=2,destination 0 10.100.0.1:26411
+core3h=3,destination 0 10.100.0.1:26411
+core3h=4,destination 0 10.100.0.1:26411
+core3h=5,destination 0 10.100.0.1:26411
+core3h=6,destination 0 10.100.0.1:26411
+core3h=7,destination 0 10.100.0.1:26411
+core3h=8,destination 0 10.100.0.1:26411
 enddef
 define  check_ntp     22081143807x
 sy=popen 'uptime 2>&1' -n uptime &
@@ -566,7 +440,7 @@ sy=brk aquir &
 sy=brk fivpt &
 sy=brk onoff &
 enddef
-define  fb_config     00000000000 
+define  fb_config     00000000000
 " Configure jive5ab for OW antenna
 fb=net_port=26411
 fb=net_port?
