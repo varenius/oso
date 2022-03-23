@@ -66,28 +66,32 @@ else:
 
 vals = []
 times = []
+expstart = False
 for l in open(fslog):
-    if ("/gps-fmout/" in l ) or ("/gps-maser/" in l) or ("/gps-dbbcout2/" in l):
-        ls = l.split("/")
-        time = datetime.datetime.strptime(ls[0], "%Y.%j.%H:%M:%S.%f")
-        val = -float(ls[2]) # negative, as fmout-gps is the "clock early" convention
-        if (time > st) and (time < et):
-            vals.append(val) # Seconds
-            times.append(time)
-    elif ("/fmout-gps/" in l ):
-        ls = l.split("/")
-        time = datetime.datetime.strptime(ls[0], "%Y.%j.%H:%M:%S.%f")
-        val = float(ls[2]) # pos, as fmout-gps is the "clock early" convention
-        if (time > st) and (time < et):
-            vals.append(val) # Seconds
-            times.append(time)
-    elif ("!dbe_gps_offset?" in l ):
-        ls = re.split(r"/|[?]0:|;",l.strip())
-        time = datetime.datetime.strptime(ls[0], "%Y.%j.%H:%M:%S.%f")
-        val = float(ls[3])
-        if (time > st) and (time < et):
-            vals.append(val) # Seconds
-            times.append(time)
+    if ("scan_name=" in l) and (not expstart):
+        expstart=True
+    if expstart:
+        if ("/gps-fmout/" in l ) or ("/gps-maser/" in l) or ("/gps-dbbcout2/" in l):
+            ls = l.split("/")
+            time = datetime.datetime.strptime(ls[0], "%Y.%j.%H:%M:%S.%f")
+            val = -float(ls[2]) # negative, as fmout-gps is the "clock early" convention
+            if (time > st) and (time < et):
+                vals.append(val) # Seconds
+                times.append(time)
+        elif ("/fmout-gps/" in l ):
+            ls = l.split("/")
+            time = datetime.datetime.strptime(ls[0], "%Y.%j.%H:%M:%S.%f")
+            val = float(ls[2]) # pos, as fmout-gps is the "clock early" convention
+            if (time > st) and (time < et):
+                vals.append(val) # Seconds
+                times.append(time)
+        elif ("!dbe_gps_offset?" in l ):
+            ls = re.split(r"/|[?]0:|;",l.strip())
+            time = datetime.datetime.strptime(ls[0], "%Y.%j.%H:%M:%S.%f")
+            val = float(ls[3])
+            if (time > st) and (time < et):
+                vals.append(val) # Seconds
+                times.append(time)
 
 vals = np.array(vals)
 times = np.array(times)
@@ -113,18 +117,17 @@ dd = mdates.num2date(xx)
 fn = os.path.basename(fslog)
 station = fn[-6:-5].upper()+fn[-5:-4].lower()
 
-reftime = dd[0].strftime("%Yy%jd%Hh%Mm%Ss") # Integer seconds; we don't need more precision
+#reftime = dd[0].strftime("%Yy%jd%Hh%Mm%Ss") # Integer seconds; we don't need more precision
+refdate = datetime.datetime(dd[0].year, dd[0].month, dd[0].day) # Floor to midnight
+reftime = refdate.strftime("%Yy%jd%Hh%Mm%Ss") # Integer seconds; we don't need more precision
 
 # Get fitted clock, add peculiar offset
 pecoff = peculiaroff[station]
-refclock = p(xx.min()) + pecoff[0]*1e-6
+#refclock = p(xx.min()) + pecoff[0]*1e-6
+refclock_nopecoff = p(mdates.date2num(refdate))
+refclock = refclock_nopecoff + pecoff[0]*1e-6
 rate = pf[0]/(24*3600) # convert to s/s
 rate2 = 1e6*pf[0]/(24.0) # convert to us/hour for easy check
-#print("Infile: "+fslog)
-#print("Reftime {0}".format(reftime))
-#print("Refclock: {0} us [NO PECOFF]".format(p(xx.min())*1e6))
-#print("Refclock: {0} us".format(refclock*1e6))
-#print("Rate: {0} s/s ({1} us/h)".format(rate, rate2))
 print("----------------------")
 print("*RESULT IN VEX FORMAT:")
 print("*NOTE: Using peculiar offset {0} us from reference. Make sure this is correct!".format(pecoff[0]))
@@ -134,8 +137,8 @@ print("*NOTE: You may want to adjust 'valid from' to before the exp start to cov
 print("----------------------")
 print("*RESULT IN CORRELATOR REPORT FORMAT:")
 print("Station     fmout-gps      Used      rate     Comments")
-print("[usec]       [usec]   [sec/sec]")
-print("{:<10s}  {:>6.2f} {:>12.2f} {:>9.3f}e-12 Reftime {:s}".format(station,p(xx.min())*1e6, refclock*1e6,rate*1e12, reftime))
+print("             [usec]       [usec]   [sec/sec]")
+print("{:<10s}  {:>6.2f} {:>12.2f} {:>9.3f}e-12 Reftime {:s}".format(station,refclock_nopecoff*1e6, refclock*1e6,rate*1e12, reftime))
 
 f, a1 = plt.subplots(1)
 a1.set_title(fn + ", Reftime: {:s},\n Clock: {:.3f} us, Rate: {:.3f} ps/s".format(reftime,refclock*1e6, rate*1e12))
