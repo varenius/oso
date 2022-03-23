@@ -267,13 +267,12 @@ onsource
 wx
 sy=cdms_delay
 clock
-mk5=record?
-mk5=evlbi?
+fb=record?
+fb=evlbi?
 enddef
 define  postob        00000000000x
 enddef
 define  preob         00000000000x
-onsource
 enddef
 define  ready_disk    00000000000x
 enddef
@@ -287,12 +286,12 @@ define  pcaloff       21306130801x
 " Disable pcal signal
 sy=pcal_en 0
 enddef
-define  checkmk5      00000000000x
+define  checkfb       000000000000
 "scan_check
-mk5_status
-mk5=net_protocol?
-mk5=mtu?
-mk5=rtime?
+fb_status
+fb=net_protocol?
+fb=mtu?
+fb=rtime?
 chk_vgos_ddc
 enddef
 define  collect       00000000000x
@@ -318,7 +317,7 @@ define  oriona        00000000000
 source=oriona,053516.,-052322,2000
 enddef
 define  chk_vgos_ddc  00000000000x
-" This python script will run the required mk5 commands
+" This python script will run the required check commands
 sy=python /usr2/oper/bin/check_vgos_ddc.py &
 enddef
 define  park_0_0      21306132302
@@ -567,7 +566,7 @@ sy=brk aquir &
 sy=brk fivpt &
 sy=brk onoff &
 enddef
-define  jive5ab_cnfg  21306130646x
+define  fb_config     00000000000
 " Configure jive5ab for OW antenna
 jive5ab=net_port=26411
 jive5ab=net_port?
@@ -575,4 +574,7 @@ jive5ab=record?nthread
 jive5ab=datastream=clear
 jive5ab=datastream=add:{thread}:*
 jive5ab=datastream=reset
+enddef
+define  park_zenith   00000000000x
+antenna=tra azel az 0 el 90.029
 enddef
