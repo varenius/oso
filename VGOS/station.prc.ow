@@ -339,6 +339,10 @@ core3h=5,destination 0 10.100.0.15:26411
 core3h=6,destination 0 10.100.0.15:26411
 core3h=7,destination 0 10.100.0.15:26411
 core3h=8,destination 0 10.100.0.15:26411
+" Change mk5ad.ctl adress
+sy=change_mk5.py gyller
+" Reload mk5ad.ctl in FS
+fb_init
 enddef
 define  init_skirner  00000000000
 "send DBBC3-data to skirner
@@ -350,6 +354,10 @@ core3h=5,destination 0 10.100.0.11:26411
 core3h=6,destination 0 10.100.0.11:26411
 core3h=7,destination 0 10.100.0.11:26411
 core3h=8,destination 0 10.100.0.11:26411
+" Change mk5ad.ctl adress
+sy=change_mk5.py skirner
+" Reload mk5ad.ctl in FS
+fb_init
 enddef
 define  prepant       00000000000x
 " unstow antenna if stowed
@@ -407,6 +415,10 @@ core3h=5,destination 0 10.100.0.1:26411
 core3h=6,destination 0 10.100.0.1:26411
 core3h=7,destination 0 10.100.0.1:26411
 core3h=8,destination 0 10.100.0.1:26411
+" Change mk5ad.ctl adress
+sy=change_mk5.py kare
+" Reload mk5ad.ctl in FS
+fb_init
 enddef
 define  check_ntp     22081143807x
 sy=popen 'uptime 2>&1' -n uptime &
