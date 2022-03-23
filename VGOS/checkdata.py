@@ -40,7 +40,7 @@ def get_singlefile_data(vbsname):
             sys.exit(1)
         time.sleep(1) # Wait for disk2file
         nwait+=1
-    vmuxcmd = "vmux -v {0} 8224 15625 0,1,2,3,4,5,6,7 {1}".format(disk2fileout, vmuxedfile)
+    vmuxcmd = "vmux -v {0} 8032 16000 0,1,2,3,4,5,6,7 {1}".format(disk2fileout, vmuxedfile)
     os.system(vmuxcmd)
     time.sleep(5) # Wait for vmux
     # Read file
@@ -102,7 +102,7 @@ def plot_bbc(bbcdata, bbc, nif):
     ps2plot = ps[idx][nplot:]
     
     # Decimate signal to 128 points
-    down = int(nplot/nspec)
+    down = int(np.ceil(nplot/nspec))
     ps2plot_dec = resample_poly(ps2plot, 1, down)
     fr2plot = np.linspace(0,bbcw, nspec)
     
