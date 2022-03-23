@@ -1,3 +1,4 @@
+#!/usr/bin/env python 
 import sys
 
 inf = "/usr2/control/mk5ad.ctl"
