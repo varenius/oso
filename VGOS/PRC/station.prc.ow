@@ -359,10 +359,10 @@ sy=change_mk5ad.py skirner
 " Reload mk5ad.ctl in FS
 fb_init
 enddef
-define  prepant       00000000000x
+define  prepant       00000000000 
 " unstow antenna if stowed
 antenna=unstow
-!+3m
+!+1m
 " start antenna motors
 antenna=run
 !+1m
@@ -405,7 +405,7 @@ cont_cal=off
 cont_cal=on
 !+1s
 enddef
-define  init_kare     00000000000 
+define  init_kare     00000000000
 "send DBBC3-data to kare
 core3h=1,destination 0 10.100.0.1:26411
 core3h=2,destination 0 10.100.0.1:26411
