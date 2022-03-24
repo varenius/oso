@@ -31,7 +31,7 @@ def check_rate(scraw, tstat_rate, ev):
         message = "WARNING: Rates from elvbi and tstat are not within 10% of each other! evlbi:"+ str(evlbi_rate)+ "Mbps; tstat:"+ str(tstat_rate)+ "Mbps"
     else:
         message = "Rate check OK!"
-    summary = str(sc_nchan)+ " chans, totalling "+ str(sc_rate * sc_nchan) + " " + sc_rate_unit + ", " + str(sc_t) + " sec."
+    summary = str(sc_nchan)+ " chans, "+ str(sc_rate * sc_nchan) + " " + sc_rate_unit + ", " + str(sc_t) + " s."
     return message, summary
 
 for line in open(mk5ad):
@@ -67,7 +67,7 @@ rtime_perc = rtime[3].strip()
 print("Found jive5ab version" + jive5abv + "running on" + host +"with free space: " + rtime_space + " (" + rtime_perc + ").")
 datastream = fbcmd("datastream?")
 if "thread" in datastream:
-    print("NOTE: jive5ab datastreams are configured, this may mean you use multi-file recording! ")
+    print("NOTE: jive5ab datastreams are configured, this probably means multi-file recording. ")
 
 mode = fbcmd("mode?").split(":")[1].strip()
 print("Will record "+ str(recsec) + " sec to file " + scan_name + " with mode (set from FS?): " + mode + "...")
@@ -122,7 +122,7 @@ if ev_ooo > 0:
 
 scraw = fbcmd("scan_check?:4000000")
 if " does not exist" in scraw:
-    print("NOTE: Did not find the scan " +scan_name+ " on disk. Will check for matching multifile suffixes...")
+    print("NOTE: Did not find " +scan_name+ " on disk. Checking for matching multifile suffixes...")
     mf_found = []
     for i in range(8):
         mfname = scan_name+"_"+str(i)
