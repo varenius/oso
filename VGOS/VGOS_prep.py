@@ -43,7 +43,7 @@ print("")
 ###########################
 recs = {"fulla":"gyller","freja":"skirner"}
 rec = recs[host]
-ans = input("QUESTION: This is machine " + host + " so I assume you will use recorder " + rec + " (yes/no) ?")
+ans = input("QUESTION: This is machine " + host + " so I assume you will use recorder " + rec + " (yes/no) ? ")
 if not (ans =="yes" or ans =="y"):
     rec = input("QUESTION: Then which recorder (gyller/skirner/kare)?").strip().lower()
 print("INFO: OK, using " + rec)
@@ -73,10 +73,10 @@ drudgcmd = "drudg /usr2/sched/" + exp + ".skd " + tel + " 3 0"
 os.system(drudgcmd)
 
 # change setupsx to setupbb in SNP file
-print("INFO: Changing setupsx to setupbb and commenting out in snp file...")
+#print("INFO: Changing setupsx to setupbb and commenting out in snp file...")
 sedcmd = "sed -i 's/setupsx/\"setupbb/g' /usr2/sched/"+exp+tel+".snp"
 os.system(sedcmd)
-print("INFO: Commenting out any setupxx-calls in snp file...")
+#print("INFO: Commenting out any setupxx-calls in snp file...")
 sedcmd = "sed -i 's/setupxx/\"setupxx/g' /usr2/sched/"+exp+tel+".snp"
 os.system(sedcmd)
 
@@ -120,6 +120,6 @@ if exp.startswith("b2") or exp.startswith("c2"):
     wf.write("sy=etransfer.py {0} gsi {1} {2}\n".format(rec, exp, tel))
 if not nextexp=="":
     print("INFO: Adding schedule={0}{1},#1 as last line of SNP file.".format(nextexp, tel))
-    wf.write("schedule={0}{1},#1".format(nextexp, tel))
+    wf.write("schedule={0}{1},#1\n".format(nextexp, tel))
 wf.close()
 print("INFO: All done. You may want to check the resulting /usr2/sched/{0}{1}.snp and /usr2/proc/{0}{1}.prc files.".format(exp,tel))
