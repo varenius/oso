@@ -54,5 +54,5 @@ scriptdir = os.path.dirname(os.path.realpath(__file__))
 
 for i in ins:
     b = i.split(".")[0]
-    os.system("cp {}/ex.machines " + b + ".machines".format(scriptdir))
-    os.system("cp {}/ex.threads " + b + ".threads".format(scriptdir))
+    os.system("cp {0}/ex.machines " + b + ".machines".format(scriptdir))
+    os.system("cp {0}/ex.threads " + b + ".threads".format(scriptdir))
