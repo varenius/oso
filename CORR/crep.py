@@ -131,7 +131,7 @@ class CorrelatorReport:
         l += "   = D   No data in one or more frequency channels.\n"
         l += "   = E   Maximum fringe amplitude at edge of SBD, MBD, or rate window.\n"
         l += "   = F   Fork problem in processing.\n"
-        l += "   = G   Fringe amp in a channel is <.5 times mean amp (only if SNR>20).\n"
+        l += "   = G   Fringe amp in a channel is significantly lower than mean amp.\n"
         l += "   = H   Low Phase-cal amplitude in one or more channels.\n"
         l += "   = N   No valid correlator data.\n"
         #l += "   = -   Scans in original schedule file for which correlation was not\n"
