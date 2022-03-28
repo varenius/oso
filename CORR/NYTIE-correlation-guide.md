@@ -1,11 +1,11 @@
 # Guide to correlate and fringe-fit NY2080
 Eskil Varenius, Onsala Space Observatory, 2022-03-28
 
-# Table of contents
-1. [Required software](#software)
-2. [Mounting and indexing the data ](#mount)
-    1. [Sub paragraph](#subparagraph1)
-3. [Another paragraph](#paragraph2)
+## Table of contents
+
+
+# Introduction<a name="introduction"></a>
+This is a guide to correlate and post-process data from experiment ny2080. The output will be a vgosDb database which can be analysed by your favourite VLBI analysis software package. I assume you have the recorded VDIF/MARK5B data and the VLBI Field-System (FS) log files. In addition, you need the following:
 
 ## Required software <a name="software"></a>
 This guide assumes you have the following software installed, preferably the same or higher version numbers:
@@ -51,18 +51,16 @@ ANTENNA NY
 ```
 Here we made sure to change the `vex=` line to the current experiment vex file (see below), adjust any date fields (here used to skip first part which did not have good data), and possibly tInt and/or nChan for time and frequency resolution respectively of the output visibilities. Note that we are using the "ns.files" "ny.files" that we prepared above.
 
-### Preparing the vex file  <a name="vex"></a>
+### Preparing the vex file <a name="vex"></a>
 The vex file will contain information about scan times, sources, clock corrections and Earth Orientation Parameters (EOPs). If you schedule with VieSched++ software, you may have a VEX file already. Here we assume you have skeduled with the sked software, which by default writes .skd files. However, sked can also output vex files. To convert an existing skd file to vex, we
 1. Open the file in sked with `sked ../SKD_new/ny2080.skd`
 2. At the prompt we use the command `VEC ny2080.vex` to save it to a vex file
 3. quit the sked software
 
-### Manually modify vex equipment setup
+### Manually modify vex equipment setup <a name="modifyvex"></a>
 In theory, the vex file should be correct with all equipment and antenna settings. However, because of errors in the station catalogs, and in some cases limitations in the catalog and .skd formats, we need to manually edit the vex file. For S/X NYTIE observations, there is only one required change and this is to comment one line of code: `*    ref $TRACKS = Mk341_1f_2b-SX02:Ns;` where the `*` character indicates a commented line. If you want, you can optionally also change the correlator name to something sensible; in this case I set `target_correlator = OSO;`.
 
-
-### Add clock information
-
+### Add clock information <a name="clock"></a>
 For correlation we need information about the respective clocks for all stations involved. The "proper" way to do this is to use the tool "fmout.py" which can be found in https://github.com/whi-llc/fmout. However, long before I was aware of this tool, I wrote my own (less fancy) version at https://github.com/varenius/oso/blob/master/CORR/fs_log_rate.py. This second script has the minor advantage of writing not only a clock value (offset and rate) fitted from the Field-System log file, but it also adds the so called "peculiar offset" values for a few stations, and writes the results as a line which can be directly copied and pasted in the vex file. (The most recent peculiar offset values can be obtained from adjust.py from https://github.com/whi-llc/adjust and would have to be added manually to the fs_log_rate.py code. However, if nothing major happens to the RF setup, the offsets should be constant.)
 
 To generate the desired clock information, we run the script once for each station; first for Ns:
@@ -109,28 +107,49 @@ def Ns;  clock_early = 2022y080d00h00m00s : 25.493 usec : 2022y080d00h00m00s : 0
 def Ny;  clock_early = 2022y080d00h00m00s : -86.804 usec : 2022y080d00h00m00s : -0.184e-12; enddef;
 ```
 
-### Add Earth Orientation Parameters (EOPs)
+### Add Earth Orientation Parameters (EOPs) <a name="eop"></a>
 By default, IVS experiments are 24 hours. Difx wants 2 days before and 2 days after i.e. 5 days in total of EOP values in the correct format. This can be obtained by running the tool "geteop.pl" which comes with difx. Because of recent security restrictions for anonymous downloads, we need to give an email address as an environment variable when running the script. To do so and download 5 days of data starting 2 days before: `EMAIL_ADDR=your.email@example.com geteop.pl 2022-078 5` where "your.email..." should be your valid email. This will produce a file called EOP.txt which can be copied verbatim and appended as a section to the VEX file.
 
+## Prepare the input files needed for difx <a name="vex2difx"></a>
+When you have the v2d and vex files, and the ny/ns.files which the v2d points to, you can translate these to the actual input files used by difx. This is done by running the command `vex2difx -v -v -v -d *.v2d`. This will, using the example v2d file above, generate one set of input file for every scan. In this case we have 800 scans, so we generate a large number of files. 
 
-vex2difx -v -v -v -d *.v2d
-calcif2 -f *.calc (if failure, run startCalcServer)
+Assuming this works without errors (otherwise try to figure out why, perhaps some stray character in the v2d or vex files when you did the modifications above) the next step is to generate the delay model files. If this is the first time you do this operation since booting the machine, you likely first have to run `startCalcServer`. The command to generate the model files is `calcif2 -f *.calc`.
 
-python3 /home/oper/eskil/eskil.oso.git/CORR/makemachines.py 
+To start difx you also need to specify the computing setup used, i.e. number of machines, their names/IPs, and the processes to run on each machine. There are multiple ways to do this, but I have settled on my own little convenience script at https://github.com/varenius/oso/blob/master/CORR/makemachines.py. I run this in the directory with all the .input files as `python3 makemachines.py` and it will generate .machines and .threads files for all of the input files. Please see the comments inside the makemachines.py script for details on how to adapt the setup for your needs. The minimum setup for running this job (with 2 antennas, with one filelist-file per antenna) on a single machine with 4 CPU cores would be:
+```
+ex.threads:
+NUMBER OF CORES:    1
+4
+ex.machines:
+localhost
+localhost
+localhost
+localhost
+```
 
-startdifx -n -f -v *.input
+# Running DiFX
+To run DiFX, and not overwrite any threads or machines files based on erroneous assumptions, we use the command `startdifx -n -f -v *.input`. Note: This may take many hours if you have only a few CPU cores (and possibly I/O limitations) so it is good practice to 
+* first try to correlate only a few scans, perhaps on known bright sources, to see that everything works as expected, and
+* run this job in a "screen" or similar so that you can go and do other stuff while it runs
+Please note that, as DiFX output will tell you, you can use e.g. the tool "errormon2" to check the progress while it's running. (This will create a log-file also in the directory where you are, which is redundant since there will be a .difxlog file for each job as well.)
+The output from the correlation job will be one ".difx" folder per scan, if using the above v2d setup.
 
-Complains about
-"[ -1] WARNING Baseline 0 frequency 0 points at two different frequencies that are apparently identical - this is not wrong, but very strange.  Check the input file
-"
-But no problem.
-Check that you get progress, e.g. by running "errormon2"
+## Notes:
+When you run difx with the above setup, you will probably see warnings like
+```
+[ -1] WARNING Baseline 0 frequency 0 points at two different frequencies that are apparently identical - this is not wrong, but very strange.  Check the input file
+```
+This is not a problem, it will run fine anyway.
 
+## Convert the difx output to MK4-format
+For fringe-fitting we use the HOPS fourfit software. This cannot read the .difx files, but wants the old "mark4"-format. To convert, we run the tool "difx2mark4" which comes with difx. To convert all .difx folders at once we run `difx2mark4 -v  -s station_code_file.txt  *.difx`. The "-s" argument is optional but good practice, since this will force the Mark4 station labels (one single letter) to use the data in the given txt file. It is nice to use the same letters as other correlators, if possible, to simplify comparisons and questions later on. For Ny/Ns data I use a file "station_code_file.txt" with these contents:
+```
+w Ns
+N Ny
+```
 
-
-difx2mark4 -v  -s ../station_code_file.txt  *.difx
-
-cp cf_ny2075 cf_ny2080
+# Fringe-fitting
+Fringe-fitting using fourfit is the most common way to process geodetic VLBI-data (PIMA and possibly CASA are other options). Fourfit needs a "control file" to set various parameters. Usually, we start from a previously existing control file and modify as needed. 
 
 Remove "pc_phases" line
 
