@@ -17,8 +17,11 @@ Eskil Varenius, Onsala Space Observatory
 - [Fringe-fitting](#fringe-fitting)
   * [Determine pc-phases using a bright scan](#determine-pc-phases-using-a-bright-scan)
   * [Running the actual fringe-fitting](#running-the-actual-fringe-fitting)
-
-
+  * [Creating a correlator report](#creating-a-correlator-report)
+- [Creating a vgosDb](#creating-a-vgosdb)
+  * [Appending Calc information](#appending-calc-information)
+  * [Appending FS-log information](#appending-fs-log-information)
+- [Creating a version 4 wrapper with editing and ambiguity resolution using nuSolve](#creating-a-version-4--wrapper-with-editing-and-ambiguity-resolution-using-nusolve)
 # Introduction
 This is a guide to correlate and post-process data from experiment ny2080. The output will be a vgosDb database which can be analysed by your favourite VLBI analysis software package. I assume you have the recorded VDIF/MARK5B data and the VLBI Field-System (FS) log files. In addition, you need the following:
 
@@ -231,6 +234,8 @@ vgosDbProcLogs -k log /path/to/database/22MAR16VB_V002_iOSO_kall.wrp
 ```
 This will create a "version 3" wrapper.
 
-# Creating a version 4 (and 5) wrapper with editing and ambiguity resolution using nuSolve 
+# Creating a version 4 wrapper with editing and ambiguity resolution using nuSolve 
 
-We now open the V003-wrapper with nuSolve. After opening the wrapper and checking that the loading log output looks sensible (no big errors or important warnings), I usually click "Options--> Clocks: PWL, Baseline vector: LCL, Outliers Action: Elimination, Reweighting Action: Evaluate weight correction". then I switch to "Bands" and select "Y: Res GR delay, ns". Then I press "Process" 5 times or so to converge, then remove outliers either automatically with "Outlr" button or manually by selecting the points in the display using the mouse and then pressing "CTRL-X" on the keyboard. Then press "process" some more times until converge. You may have to hit the "Ambig" button to resolve ambiguities. Once you have converted and the residuals look reasonable Gaussian, and you may be done. In this case, press "Save" to save the results to a new (automatically the highest + 1) wrapper version. If you also want to process phase-delays, you can select "Y: Res PH delay, ns" and repeat the outlier-removal and ambiguity resolution procedure. You may have to do this interatively a few times, including dosens of "Process" clicks before you converge. Then, if you save again, you will get the phase delay editing and amibguity multipliers stored in another (by defauly now version 5) database wrapper.  
+We now open the V003-wrapper with nuSolve. After opening the wrapper and checking that the loading log output looks sensible (no big errors or important warnings), I usually click "Options--> Clocks: PWL, Baseline vector: LCL, Outliers Action: Elimination, Reweighting Action: Evaluate weight correction". then I switch to "Bands" and select "Y: Res GR delay, ns". Then I press "Process" 5 times or so to converge, then remove outliers either automatically with "Outlr" button or manually by selecting the points in the display using the mouse and then pressing "CTRL-X" on the keyboard. Then press "process" some more times until converge. You may have to hit the "Ambig" button to resolve ambiguities. Once you have converted and the residuals look reasonable Gaussian, and you may be done. In this case, press "Save" to save the results to a new (automatically the highest + 1) wrapper version. 
+
+If you also want to process phase-delays, you can select "Y: Res PH delay, ns" and repeat the outlier-removal and ambiguity resolution procedure. You may have to do this interatively a few times, including dosens of "Process" clicks before you converge. Then, if you save again, you will get the phase delay editing and amibguity multipliers stored in another (by defauly now version 5) database wrapper.  
