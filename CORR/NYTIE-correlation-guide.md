@@ -199,4 +199,36 @@ Notes:
 ## Running the actual fringe-fitting
 The fourfit command above with the "-pt" option will actually not write any results to disk, just show you the figure and print values in terminal. To actually fringe-fit and save the results, we run `fourfit -c cf_ny2080 -b wN 1234/*"` to fringe-fitt this baseline using our control file for all scans. this may take a while, so again it may be a good idea to run this in a screen. 
 
+## Creating a correlator report
+Technically this is an optional step, i.e. not required for analysis, but it is very good practice to do this as properly as you can. Most correlators process many data sets and soon get tired of doing this by hand. Therefore, they have various scripts to generate the correlator reports more or less automatically. So far I have not spent enough time to warrant a fully automatic tool, but I have made a short script to summarise the basic baseline statistics from fourfit which is needed for the correlator report. Note: The current correlator report format (may change soon) is described in the IVS memo https://ivscc.gsfc.nasa.gov/publications/memos/ivs-2017-001v02.pdf (which unfortunately is somewhat inconsistent, but generally a good explanation of the content). In my case, I start from an existing correlator report and manually edit the required sections. An example of a correlator report for NY2080 can be found at XXX. To genrate the text in the "SUMMARY" and "CODES" sections, one can use the script at https://github.com/varenius/oso/blob/master/CORR/crep.py. This first need you to produce an "alist" summary file from the fringe-fitted data, which can be done as 
+```
+alist 1234/
+```
+which will create the file alist.out. Then, we create the summary by running
+```
+python crep.py alist.out ny2080.vex station_code_file.txt 
+```
+For the "CLOCKS" section in the correlator report, please note that the "fs_log_rate.py" script example above also generates lines which are suitable to paste into the correlator report clocks table.
+
 # Creating a vgosDb
+To create a vgosDb and fill it with the usual (calc, logs) content, we use the tools vgosDbMake, vgosDbCalc and vgosDbProcLogs which are bundled with the nuSolve software. Before you can process data you first need to run each tool with the "-w" option to set up paths etc. Here it is important to have current a priori files (for Calc) and a well defined directory for fs log fiels (for ProcLogs). Assuming this is all set up, we firs create the database (version 1 wrapper) by
+```
+LC_ALL=C vgosDbMake -d DBCODE -r OSO  -o /output_vgosDb_folder/ -t ny2080.corr /1234/
+```
+where `DBCODE` is constructed from the session start date and code as specified in https://cddis.nasa.gov/archive/vlbi/ivsformats/master-format.txt. In this case, it would be XXXXX. For the other options, see "vgosDbMake --help". 
+Notes:
+* I usually add the `LC_ALL=C` before the command to avoid some weird issues I had a couple of years ago. Not sure this is needed anymore, but I still include it.
+
+## Appending Calc information
+We now have a wrapper version 1, and we can use it to construct a version 2 which contains Calc information
+```
+vgosDbCalc /path/to/database/22MAR16VB_V001_iOSO_kall.wrp 
+```
+## Appending FS-log information
+Similarly to append FS-log info (weather, cable-cal etc.)
+```
+vgosDbProcLogs -k log /path/to/database/22MAR16VB_V002_iOSO_kall.wrp
+```
+This will create a "version 3" wrapper.
+
+# Creating a version 4 (and 5) wrapper with nuSolve editing and ambiguity resolution
