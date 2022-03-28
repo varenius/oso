@@ -21,7 +21,7 @@ Eskil Varenius, Onsala Space Observatory
 - [Creating a vgosDb](#creating-a-vgosdb)
   * [Appending Calc information](#appending-calc-information)
   * [Appending FS-log information](#appending-fs-log-information)
-- [Creating a version 4 wrapper with editing and ambiguity resolution using nuSolve](#creating-a-version-4--wrapper-with-editing-and-ambiguity-resolution-using-nusolve)
+- [Creating a version 4 wrapper with editing and ambiguity resolution using nuSolve](#creating-a-version-4-wrapper-with-editing-and-ambiguity-resolution-using-nusolve)
 # Introduction
 This is a guide to correlate and post-process data from experiment ny2080. The output will be a vgosDb database which can be analysed by your favourite VLBI analysis software package. I assume you have the recorded VDIF/MARK5B data and the VLBI Field-System (FS) log files. In addition, you need the following:
 
