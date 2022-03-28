@@ -147,12 +147,33 @@ For fringe-fitting we use the HOPS fourfit software. This cannot read the .difx 
 w Ns
 N Ny
 ```
+By default, this creates a folder called "1234" which contains one folder per scan.
 
 # Fringe-fitting
-Fringe-fitting using fourfit is the most common way to process geodetic VLBI-data (PIMA and possibly CASA are other options). Fourfit needs a "control file" to set various parameters. Usually, we start from a previously existing control file and modify as needed. 
+Fringe-fitting using fourfit is the most common way to process geodetic VLBI-data (PIMA and possibly CASA are other options). Fourfit needs a "control file" to set various parameters. Usually, we start from a previously existing control file and modify as needed. Such a control file can usually be found in the "correlator report" (see below), often included in the mk4-history in the vgosDb. For convenience, I have included the final cf_2080 control file at https://github.com/varenius/oso/blob/master/CORR/cf_ny2080. 
 
-Remove "pc_phases" line
+## Determine pc_phases using a bright scan
+Assuming you have a previous control file for Ny-Ns baseline, we:
+1. Make a copy that we can edit for this experiment
+2. Remove any "pc_phases" lines in this file
+3. Find, e.g. from vex file, one or more scan names for bright sources (good signal-to-noise). Here I picked scan "080-1307" which is bright source OJ287.
 
-FIND PC_PHASES using " fourfit -pt -c cf_ny2080 -b wN -m 1 1234/BRIGHT_SCAN"
-Select "080-1307" which is OJ287
-Then "fourfit -c cf_ny2080 -b wN 1234/*"
+Now we want to find the instrumental "pc_phases" for the antennas. We pick one antenna as reference, which can in principle be at random. In this case, we pick station N as reference, because it's convenient (see below). We now find the pc_phases of antenna "w" by running the command `fourfit -pt -c cf_ny2080 -b wN -m 1 1234/080-1307`. This will produce a plot on screen, and output in the terminal. We note this important line:
+```
+pc_phases ghijklmn   32.3 -292.6  -83.6  -59.3 -234.1 -209.3 -214.6 -176.5 
+```
+This line contains the phase values needed to align all BBCs for a common group-delay fitting. To use these static offsets (assuming the instruments are stable) during the complete experiment, we put this line in the control file. Note: Strictly speaking these values are the "baseline difference" and not "station difference", which means we could put them either on antenna w or antenna N. However, since the baseline is given in the mark4 format as "wN" it is simplest to given them for the first antenna "w" by adding, in the control file, the lines
+```
+if station w
+ * Determined by first commenting out, then using "-m 1" flag on bright scan
+ * in this case OJ287 in scan 080-1307
+ pc_phases ghijklmn   32.3 -292.6  -83.6  -59.3 -234.1 -209.3 -214.6 -176.5 
+```
+where any line starting with `*` is a comment. If we instead want to use these offsets for station "N", we would have to change the sign for all of the values since the baseline would be the other way around. 
+
+Notes:
+* It is now good practice to check the values by running the same command as before, but on a few different scans - ideally spread in time over the experiment. In general, you should see a well aligned phase vs time for all BBCs during the experiment. 
+* If you for some reason need to use "Manual phase-cal", you modify the cf_file to say "pc_mode manual" for the antenna where this is needed, and then you do the procedure above as usual.
+
+## Running the actual fringe-fitting
+The fourfit command above with the "-pt" option will actually not write any results to disk, just show you the figure and print values in terminal. To actually fringe-fit and save the results, we run `fourfit -c cf_ny2080 -b wN 1234/*"` to fringe-fitt this baseline using our control file for all scans. this may take a while, so again it may be a good idea to run this in a screen. 
