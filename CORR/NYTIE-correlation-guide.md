@@ -75,6 +75,12 @@ The vex file will contain information about scan times, sources, clock correctio
 ### Manually modify vex equipment setup
 In theory, the vex file should be correct with all equipment and antenna settings. However, because of errors in the station catalogs, and in some cases limitations in the catalog and .skd formats, we need to manually edit the vex file. For S/X NYTIE observations, there is only one required change and this is to comment one line of code: `*    ref $TRACKS = Mk341_1f_2b-SX02:Ns;` where the `*` character indicates a commented line. If you want, you can optionally also change the correlator name to something sensible; in this case I set `target_correlator = OSO;`.
 
+Notes if including a VGOS antenna with linear broad-band DBBC3 setup:
+* This relatively limited need for modifications only applies for S/X observing. If you want to include a VGOS antenna, for example Nn, the story is a bit more complicated. Then you need to add the VGOS frequencies to the vex file. An example vex file for correlation can be seen at e.g. https://ivscc.gsfc.nasa.gov/sessions/2020/on0223/. 
+* You also probably need to use "zoom windows" to override the frequency selection in difx (not only because you likely observe with different bandwidths, but also to avoid a "feature" with mixed USB/LSB correlation where some baselines are omitted.
+* Finally If including a VGOS antenna, you also need to force "override" for "vex2difx" further down, since circular-linear mixed basis is not officially supported (but worked for ONTIE so far). 
+* More details may be needed. The ONTIE sessions are all uploaded to IVS, also the correlator input and output (SWIN) files, so you can inspect the details if you are curious. 
+
 ### Add clock information
 For correlation we need information about the respective clocks for all stations involved. The "proper" way to do this is to use the tool "fmout.py" which can be found in https://github.com/whi-llc/fmout. However, long before I was aware of this tool, I wrote my own (less fancy) version at https://github.com/varenius/oso/blob/master/CORR/fs_log_rate.py. This second script has the minor advantage of writing not only a clock value (offset and rate) fitted from the Field-System log file, but it also adds the so called "peculiar offset" values for a few stations, and writes the results as a line which can be directly copied and pasted in the vex file. (The most recent peculiar offset values can be obtained from adjust.py from https://github.com/whi-llc/adjust and would have to be added manually to the fs_log_rate.py code. However, if nothing major happens to the RF setup, the offsets should be constant.)
 
@@ -192,3 +198,5 @@ Notes:
 
 ## Running the actual fringe-fitting
 The fourfit command above with the "-pt" option will actually not write any results to disk, just show you the figure and print values in terminal. To actually fringe-fit and save the results, we run `fourfit -c cf_ny2080 -b wN 1234/*"` to fringe-fitt this baseline using our control file for all scans. this may take a while, so again it may be a good idea to run this in a screen. 
+
+# Creating a vgosDb
