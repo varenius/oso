@@ -216,21 +216,21 @@ For the "CLOCKS" section in the correlator report, please note that the "fs_log_
 # Creating a vgosDb
 To create a vgosDb and fill it with the usual (calc, logs) content, we use the tools vgosDbMake, vgosDbCalc and vgosDbProcLogs which are bundled with the nuSolve software. Before you can process data you first need to run each tool with the "-w" option to set up paths etc. Here it is important to have current a priori files (for Calc) and a well defined directory for fs log fiels (for ProcLogs). Assuming this is all set up, we firs create the database (version 1 wrapper) by
 ```
-LC_ALL=C vgosDbMake -d DBCODE -r OSO  -o /output_vgosDb_folder/ -t ny2075.corr /1234/
+LC_ALL=C vgosDbMake -d DBCODE -r OSO  -o /output_vgosDb_folder/ -t ny2080.corr /1234/
 ```
-where `DBCODE` is constructed from the session start date and code as specified in https://cddis.nasa.gov/archive/vlbi/ivsformats/master-format.txt. In this case, it would be 22MAR16VN (agreed with IVS 2022-03-30 per email). For the other options, see "vgosDbMake --help". 
+where `DBCODE` is constructed from the session start date and code as specified in https://cddis.nasa.gov/archive/vlbi/ivsformats/master-format.txt. In this case, it would be 22MAR21VN (agreed with IVS 2022-03-30 per email). For the other options, see "vgosDbMake --help". 
 Notes:
 * I usually add the `LC_ALL=C` before the command to avoid some weird issues I had a couple of years ago. Not sure this is needed anymore, but I still include it.
 
 ## Appending Calc information
 We now have a wrapper version 1, and we can use it to construct a version 2 which contains Calc information
 ```
-vgosDbCalc /path/to/database/22MAR16VN_V001_iOSO_kall.wrp 
+vgosDbCalc /path/to/database/22MAR21VN_V001_iOSO_kall.wrp 
 ```
 ## Appending FS-log information
 Similarly to append FS-log info (weather, cable-cal etc.)
 ```
-vgosDbProcLogs -k log /path/to/database/22MAR16VN_V002_iOSO_kall.wrp
+vgosDbProcLogs -k log /path/to/database/22MAR21VN_V002_iOSO_kall.wrp
 ```
 This will create a "version 3" wrapper.
 
