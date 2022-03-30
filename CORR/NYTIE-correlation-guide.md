@@ -211,7 +211,7 @@ which will create the file alist.out. Then, we create the summary by running
 ```
 python crep.py alist.out ny2080.vex station_code_file.txt 
 ```
-For the "CLOCKS" section in the correlator report, please note that the "fs_log_rate.py" script example above also generates lines which are suitable to paste into the correlator report clocks table. For an example correlator report file, called ny2080.corr, see XXX.
+For the "CLOCKS" section in the correlator report, please note that the "fs_log_rate.py" script example above also generates lines which are suitable to paste into the correlator report clocks table. For an example correlator report file, called ny2080.corr, see https://github.com/varenius/oso/blob/master/CORR/ny2080.corr.
 
 # Creating a vgosDb
 To create a vgosDb and fill it with the usual (calc, logs) content, we use the tools vgosDbMake, vgosDbCalc and vgosDbProcLogs which are bundled with the nuSolve software. Before you can process data you first need to run each tool with the "-w" option to set up paths etc. Here it is important to have current a priori files (for Calc) and a well defined directory for fs log fiels (for ProcLogs). Assuming this is all set up, we firs create the database (version 1 wrapper) by
