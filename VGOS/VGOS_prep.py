@@ -67,9 +67,9 @@ if dl:
     wgetcmd = "fesh -f " + exp
     os.system(wgetcmd)
 
-# drudg sked file for SNP. 
+# drudg skd/vex file for SNP. 
 print("INFO: Running DRUDG for telescope " + tel + " ...")
-drudgcmd = "drudg /usr2/sched/" + exp + ".skd " + tel + " 3 0" 
+drudgcmd = "drudg /usr2/sched/" + exp  + " " + tel + " 3 0" 
 os.system(drudgcmd)
 
 # change setupsx to setupbb in SNP file
