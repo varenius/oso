@@ -1,5 +1,6 @@
 #!/usr/local/bin/python3.9
 import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
 import sys
 import time
@@ -89,6 +90,7 @@ class SatLive:
             self.findSat(caz, calt)
         else:
             print("Nothing shown... returning to plot.")
+            plt.close("all")
             self.plot()
 
     def findSat(self,caz,calt):
@@ -152,10 +154,23 @@ class SatLive:
             if alt.degrees> minalt:
                 ax.scatter(az.radians, alt.degrees) # Azimuth in radians!!!
                 ax.annotate(sat.name, (az.radians, alt.degrees))
-        ax.set_title("Az/el plot OSO 25m made " + t.utc_strftime() + "\n Press r to replot, click close to satellite to track it. \n Toggle constallations with a=GPS, b=BEIDOU, c=GALILEO, d=GLONASS. Press q to quit.")
+        ax.set_title("Az/el plot OSO 25m made " + t.utc_strftime() + "\n Press r to replot, click close to satellite to track it. \n Toggle constallations with a=GPS, b=BEIDOU, c=GALILEO, d=GLONASS.\nPress q to quit.")
         plt.draw()
         plt.pause(0.001)
+        move_figure(fig, 200, 200)
         plt.show()
+
+def move_figure(f, x, y):
+    """Move figure's upper left corner to pixel (x, y)"""
+    backend = matplotlib.get_backend()
+    if backend == 'TkAgg':
+        f.canvas.manager.window.wm_geometry("+%d+%d" % (x, y))
+    elif backend == 'WXAgg':
+        f.canvas.manager.window.SetPosition((x, y))
+    else:
+        # This works for QT and GTK
+        # You can also use window.setGeometry
+        f.canvas.manager.window.move(x, y)
 
 if __name__ == '__main__':
     satlive = SatLive()    
