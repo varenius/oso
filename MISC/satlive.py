@@ -152,7 +152,7 @@ class SatLive:
             if alt.degrees> minalt:
                 ax.scatter(az.radians, alt.degrees) # Azimuth in radians!!!
                 ax.annotate(sat.name, (az.radians, alt.degrees))
-        ax.set_title("Az/el plot OSO 25m made " + t.utc_strftime() + "\n Press r to replot, click close to satellite to track it. \n Toggle constallations with a=GPS, b=BEIDOU, c=GALILEO, d=GLONASS")
+        ax.set_title("Az/el plot OSO 25m made " + t.utc_strftime() + "\n Press r to replot, click close to satellite to track it. \n Toggle constallations with a=GPS, b=BEIDOU, c=GALILEO, d=GLONASS. Press q to quit.")
         plt.draw()
         plt.pause(0.001)
         plt.show()
