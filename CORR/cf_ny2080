@@ -1,0 +1,57 @@
+* fourfit control file
+
+pc_mode multitone * use multitone mode
+pc_period 5 * use 5 aps to remove slopes or other drifts in pcal
+weak_channel 0.1 * Allow bigger amp offsets between channels without causing G-codes
+dr_win -0.005e-3 0.005e-3 * Restrict search window for delay rate
+
+if baseline wN
+ freqs g h i j k l m n * use only X-band BBCs
+
+if station w
+ * Determined by first commenting out, then using "-m 1" flag on bright scan
+ * in this case OJ287 in scan 080-1307
+ pc_phases ghijklmn   32.3 -292.6  -83.6  -59.3 -234.1 -209.3 -214.6 -176.5 
+
+if baseline wN and f_group X
+notches
+*g+ f=8212.99
+8214.74 8215.24
+8219.74 8220.24
+8224.74 8225.24
+*g- f=8212.99
+8209.74 8210.24
+8204.74 8205.24
+8199.74 8200.24
+*h f=8252.99
+8254.74 8255.24
+8259.74 8260.24
+8264.74 8265.24
+*i f=8352.99
+8354.74 8355.24
+8359.74 8360.24
+8364.74 8365.24
+*j f=8512.99
+8514.74 8515.24
+8519.74 8520.24
+8524.74 8525.24
+*k f=8732.99
+8734.74 8735.24
+8739.74 8740.24
+8744.74 8745.24
+*l f=8852.99
+8854.74 8855.24
+8859.74 8860.24
+8864.74 8865.24
+*m f=8892.99
+8894.74 8895.24
+8899.74 8900.24
+8904.74 8905.24
+*n+ f=8932.99
+8934.74 8935.24
+8939.74 8940.24
+8944.74 8945.24
+*n- f=8932.99
+8929.74 8930.24
+8924.74 8925.24
+8919.74 8920.24

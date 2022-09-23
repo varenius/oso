@@ -13,7 +13,7 @@ fb=os_rev?
 fb_status
 setupxx
 enddef
-define  setupxx       21324072907
+define  setup01       21324072907
 pcalon
 tpicd=stop
 core3hbb=$
