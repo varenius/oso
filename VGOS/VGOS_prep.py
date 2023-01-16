@@ -53,6 +53,12 @@ print("QUESTION: Do you want to automatically start another experiment after thi
 nextexp = input("          If so, typ experiment name (e.g. b22087 without oe/ow). Else leave blank: ").lower().strip()
 print("")
 ###########################
+ans = input("QUESTION: Do you want to add a antenna=off after prepant (yes/no) ? ").lower().strip()
+a_off = 0
+if (ans =="yes" or ans =="y"):
+    a_off = 1
+print("")
+###########################
 check = input("FINAL QUESTION: Ready to prepare, and possibly overwrite, experiment files for " + exp + ". Proceed (yes/no) ? " ).strip().lower()
 if not (check == "yes" or check == "y"):
     print("ABORTING!")
@@ -113,7 +119,10 @@ for line in lines:
     if "Rack=DBBC" in line:
         wf.write("init_{0}\n".format(rec))
         wf.write("prepant\n")
+        if a_off==1:
+            wf.write("antenna=off\n")
         wf.write("!"+preptime + "\n")
+        wf.write("antenna=run\n")
 if exp.startswith("b2") or exp.startswith("c2"):
     #VGOSB/C session, include auto-transfer to ishioka
     print("INFO: This is a VGOSB or VGOSC experiment, so adding automatic data transfer to GSI after exp finish.")
@@ -121,5 +130,7 @@ if exp.startswith("b2") or exp.startswith("c2"):
 if not nextexp=="":
     print("INFO: Adding schedule={0}{1},#1 as last line of SNP file.".format(nextexp, tel))
     wf.write("schedule={0}{1},#1\n".format(nextexp, tel))
+else:
+    wf.write("antenna=off\n")
 wf.close()
 print("INFO: All done. You may want to check the resulting /usr2/sched/{0}{1}.snp and /usr2/proc/{0}{1}.prc files.".format(exp,tel))
