@@ -10,9 +10,9 @@ onoff=2,2,,,,,049u,050u,051u,052u,053u,054u,055u,056u,057u,058u,059u,060u,061u,0
 fb=dts_id?
 fb=os_rev?
 fb_status
-setupxx
+setup01
 enddef
-define  setupxx       21323073856
+define  setup01       21323073856
 pcalon
 tpicd=stop
 core3hbb=$
