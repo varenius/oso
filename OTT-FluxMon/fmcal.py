@@ -17,20 +17,20 @@ plotdir = "frscan_plots"
 if not os.path.exists(plotdir):
     os.makedirs(plotdir)
             
-whattodo = {'load_data': False,
-            'listobs1': False,
-            'pcflag': False,
-            'edgeflag': False,
-            'rflag1': False,
-            'extraflag': False,
-            'plotms1': False,
-            'fring1' : False,
-            'bandpass' : False,
-            'applycal1' :False,
+whattodo = {'load_data': True,
+            'listobs1': True,
+            'pcflag': True,
+            'edgeflag': True,
+            'rflag1': True,
+            'extraflag': True,
+            'plotms1': True,
+            'fring1' : True,
+            'bandpass' : True,
+            'applycal1' :True,
             'rflag2': True,
             'split1' :True,
             'listobs2': True,
-            'plotms2': False,
+            'plotms2': True,
             'getflux': True,
             }
         
