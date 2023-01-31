@@ -146,11 +146,12 @@ ex.threads:
 NUMBER OF CORES:    1
 4
 ex.machines:
-localhost
-localhost
-localhost
-localhost
+gyller
+gyller
+gyller
+gyller
 ```
+Note that in this case, "gyller" is the hostname of the machine we use. (I tried "localhost" in a previous example, and that did not work.)
 
 # Running DiFX
 To run DiFX, and not overwrite any threads or machines files based on erroneous assumptions, we use the command `startdifx -n -f -v *.input`. Note: This may take many hours if you have only a few CPU cores (and possibly I/O limitations) so it is good practice to 
