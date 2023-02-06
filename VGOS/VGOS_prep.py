@@ -22,8 +22,15 @@ else:
         sys.exit(1)
 print()
 ###########################
-prcs = {"1":"vo-default", "2": "vt2077-alternative", "3": "on1323", "4": "on1324", "5": "on1325", "6": "X-band of S/X R1"}
-prcks = " ".join([i+") "+prcs[i] for i in sorted(prcs.keys())])
+prcs = {"1":"vo-default", 
+        "2": "vt2077-alternative", 
+        "3": "on1323", 
+        "4": "on1324", 
+        "5": "on1325", 
+        "6": "X-band from S/X R1 (8 MHz overlap)",
+        "7": "X-band from S/X T2 (4 MHz overlap)"
+}
+prcks = " ".join(["\n" + i+")"+prcs[i] for i in sorted(prcs.keys())])
 print("INFO: Available frequency setup default PRC files are:\n{}\n".format(prcks))
 prc = input("QUESTION: Please select setup using digit 1, 2, ...: ").strip().lower()
 selprc = prcs[prc]
@@ -117,8 +124,10 @@ elif selprc=="on1324":
     cpcmd = "cp " + scriptpath + "/PRC/on1324ow.prc /usr2/proc/" + exp + tel + ".prc"
 elif selprc=="on1325":
     cpcmd = "cp " + scriptpath + "/PRC/on1325ow.prc /usr2/proc/" + exp + tel + ".prc"
-elif selprc=="X-band of S/X R1":
+elif selprc=="X-band from S/X R1 (8 MHz overlap)":
     cpcmd = "cp " + scriptpath + "/PRC/r1_8MHz_xband_centered_32MHz_ow.prc /usr2/proc/" + exp + tel + ".prc"
+elif selprc=="X-band from S/X T2 (4 MHz overlap)":
+    cpcmd = "cp " + scriptpath + "/PRC/t2_4MHz_xband_centered_32MHz_ow.prc /usr2/proc/" + exp + tel + ".prc"
 os.system(cpcmd)
 
 snpf = "/usr2/sched/"+exp+tel+".snp"
