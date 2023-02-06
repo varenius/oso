@@ -40,6 +40,11 @@ if not (ant =="yes" or ant =="y"):
     tel = input("QUESTION: Then which antenna (oe/ow)? ").strip().lower()
 print("INFO: OK, using " + tel)
 print("")
+mirror = input("QUESTION: Mirror other station snap file - useful to tag-along Oe/Ow with a On S/X experiment - (yes/no) ? ")
+if not (mirror =="yes" or mirror =="y"):
+    tagtel = input("QUESTION: Then which antenna to mirrow (normally on, i.e. 20m)? ").strip().lower()
+print("INFO: OK, will mirror SNP file for " + tagtel)
+print("")
 ###########################
 recs = {"fulla":"gyller","freja":"skirner"}
 rec = recs[host]
@@ -74,9 +79,19 @@ if dl:
     os.system(wgetcmd)
 
 # drudg skd/vex file for SNP. 
-print("INFO: Running DRUDG for telescope " + tel + " ...")
-drudgcmd = "drudg /usr2/sched/" + exp  + " " + tel + " 3 0" 
+if mirror:
+    print("Mirroring, so will run DRUGG for antenna " + tagtel + " and then replace with actual antenna " + tel + " ...")
+    drudgtel = tagtel
+else:
+    drudgtel = tel
+print("INFO: Running DRUDG for telescope " + drudgtel + " ...")
+drudgcmd = "drudg /usr2/sched/" + exp  + " " + drudgtel + " 3 0" 
 os.system(drudgcmd)
+if mirror:
+    movecmd = "mv /usr2/sched/" + exp + drudgtel + ".snp /usr2/sched/" + exp + tel + ".snp"  
+    os.system(movecmd)
+    replacecmd = "sed -i 's/"+exp+","+tagtel+",/"+exp+","+tel+",/g' /usr2/sched/" + exp + tel + ".snp"  
+    os.system(replacecmd)
 
 # change setupsx to setupbb in SNP file
 #print("INFO: Changing setupsx to setupbb and commenting out in snp file...")
