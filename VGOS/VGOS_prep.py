@@ -102,6 +102,8 @@ elif selprc=="on1324":
     cpcmd = "cp " + scriptpath + "/PRC/on1324ow.prc /usr2/proc/" + exp + tel + ".prc"
 elif selprc=="on1325":
     cpcmd = "cp " + scriptpath + "/PRC/on1325ow.prc /usr2/proc/" + exp + tel + ".prc"
+elif selprc=="X-band of S/X R1":
+    cpcmd = "cp " + scriptpath + "/PRC/r1_8MHz_xband_centered_32MHz_ow.prc /usr2/proc/" + exp + tel + ".prc"
 os.system(cpcmd)
 
 snpf = "/usr2/sched/"+exp+tel+".snp"
