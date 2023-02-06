@@ -41,8 +41,8 @@ if not (ant =="yes" or ant =="y"):
 print("INFO: OK, using " + tel)
 print("")
 mirror = input("QUESTION: Mirror other station snap file - useful to tag-along Oe/Ow with a On S/X experiment - (yes/no) ? ")
-if not (mirror =="yes" or mirror =="y"):
-    tagtel = input("QUESTION: Then which antenna to mirrow (normally on, i.e. 20m)? ").strip().lower()
+if (mirror =="yes" or mirror =="y"):
+    tagtel = input("QUESTION: Then which antenna to mirror (normally on, i.e. 20m)? ").strip().lower()
 print("INFO: OK, will mirror SNP file for " + tagtel)
 print("")
 ###########################
