@@ -22,7 +22,7 @@ else:
         sys.exit(1)
 print()
 ###########################
-prcs = {"1":"vo-default", "2": "vt2077-alternative", "3": "on1323", "4": "on1324", "5": "on1325"}
+prcs = {"1":"vo-default", "2": "vt2077-alternative", "3": "on1323", "4": "on1324", "5": "on1325", "6": "X-band of S/X R1"}
 prcks = " ".join([i+") "+prcs[i] for i in sorted(prcs.keys())])
 print("INFO: Available frequency setup default PRC files are:\n{}\n".format(prcks))
 prc = input("QUESTION: Please select setup using digit 1, 2, ...: ").strip().lower()
@@ -84,6 +84,9 @@ sedcmd = "sed -i 's/setupsx/\"setupbb/g' /usr2/sched/"+exp+tel+".snp"
 os.system(sedcmd)
 #print("INFO: Commenting out any setupxx-calls in snp file...")
 sedcmd = "sed -i 's/setupxx/\"setupxx/g' /usr2/sched/"+exp+tel+".snp"
+os.system(sedcmd)
+#print("INFO: Commenting out any setup01-calls in snp file...")
+sedcmd = "sed -i 's/setup01/\"setup01/g' /usr2/sched/"+exp+tel+".snp"
 os.system(sedcmd)
 
 # copy template PRC file to /usr2/proc/expST.prc where ST is oe or ow
