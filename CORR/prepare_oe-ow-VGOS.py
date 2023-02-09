@@ -168,9 +168,6 @@ def fillif(of):
     of.write("    if_def = &IF_3N : 3N : Y :  8080.0 MHz : U : 5 MHz : 0 Hz;\n")
     of.write("  enddef;\n")
 
-def getskd(exp):
-    run(['scp','fulla:/usr2/sched/'+exp+'.skd', '.'])
-
 def getfslogs(exp):
     run(['scp','fulla:/usr2/log/'+exp+'oe.log', '.'])
     run(['scp','freja:/usr2/log/'+exp+'ow.log', '.'])
@@ -178,10 +175,6 @@ def getfslogs(exp):
 def fillclock(of, fslog):
     peculiaroff = {"Ow": [6.183,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
                    "Oe": [6.211,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
-                   "On": [1.350,"from multiple exp from Bonn"],
-                   "Is": [1.268,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
-                   "Yj": [-0.108, "from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
-                   "O8": [5.18, "From Bob C, EVN: O8 = +5.78,  On = +1.95 --> O8 = 5.78-(1.95-1.350)=5.18"]
                    }
     vals = []
     times = []
@@ -244,19 +237,23 @@ def fillEOP(of, start):
     for el in open("EOP.txt"):
         of.write(el)
 
-def skd2vex(exp):
-    outvex = exp+".vex"
-    if os.path.exists(outvex):
-        os.remove(outvex)
-    # Convert SKD to VEX
-    p = run(['/opt/sked/sked', exp+".skd"], stdout=PIPE, input='VEC '+outvex+'\rq\r', encoding='ascii')
+def getvex(exp):
+    vex = exp+".vex"
+    # Clear any existing vexfile
+    if os.path.exists(vex):
+        os.remove(vex)
+    # Look for vex file on FS computer
+    run(['scp','fulla:/usr2/sched/'+vex, '.'])
+    # If not vexfile exists, look for skd instead
+    if not os.path.exists(vex):
+        run(['scp','fulla:/usr2/sched/'+exp+'.skd', '.'])
+        # Convert SKD to VEX
+        p = run(['/opt/sked/bin/sked', exp+".skd"], stdout=PIPE, input='VEC '+outvex+'\rq\r', encoding='ascii')
 
 def makev2d(exp):
     vf = open(exp+".v2d",'w')
     vf.write("vex = {0}.vex\n".format(exp))
     vf.write("antennas = Oe, Ow\n")
-    vf.write("nCore=12\n")
-    vf.write("nThread=1\n")
     vf.write("# Ensure we get cross-auto corrs, just in case (i.e. Oe X-pol correlated with Oe Y-pol)\n")
     vf.write("exhaustiveAutocorrs = true\n")
     vf.write("SETUP default\n")
@@ -364,102 +361,96 @@ def makev2d(exp):
     vf.write(" phaseCalInt = 5\n")
     vf.write(" }\n")
 
-def makemachines():
-    ins = glob.glob("*.input")
-    for i in ins:
-        b = i.split(".")[0]
-        mf = open(b + ".machines","w")
-        for k in range(24):
-            mf.write(socket.gethostname()+"\n")
-        mf.close()
+def makedatascripts(exp):
+    # First skirner
+    of = open("mountandlist.skirner.sh", "w")
+    of.write("# RUN THIS FILE ON SKIRNER, in e.g. /mnt/raidz/expfolder\n")
+    of.write("# to get access to gyller raidz0 on skirner, run:\n")
+    of.write("sshfs oper@gyller:/mnt/raidz0 /mnt/raidz0\n")
+    of.write("fusermount -u /mnt/corrdata/skirner\n")
+    of.write("vbs_fs /mnt/corrdata/skirner -I '{0}*'\n".format(exp))
+    of.write("#NOTE: Will index all data with vsum. May take 10 minutes or so...\n")
+    for datastream in range(8):
+        of.write("vsum -s /mnt/corrdata/skirner/{0}_ow*_{1} > ow{1}.files \n".format(exp, datastream))
+    of.close()
+    
+    # Then gyller
+    of = open("mountandlist.gyller.sh", "w")
+    of.write("# RUN THIS FILE ON GYLLER, in e.g. /mnt/raidz/expfolder\n")
+    of.write("fusermount -u /mnt/corrdata/gyller\n")
+    of.write("vbs_fs /mnt/corrdata/gyller -I '{0}*'\n".format(exp))
+    of.write("#NOTE: Will index all data with vsum. May take 10 minutes or so...\n")
+    for datastream in range(8):
+        of.write("vsum -s /mnt/corrdata/gyller/{0}_oe*_{1} > oe{1}.files \n".format(exp, datastream))
+    
+def fixvex(exp):
+    # Read all lines of VEX file
+    invex = exp+".vex"
+    vex = [l for l in open(invex)]
+    keep = True
+    of = open(exp+".vex","w")
+    start = ""
+    for line in vex:
+        if "begin $MODE" in line:
+            keep=False
+            fillmode(of)
+        if "end $MODE" in line:
+            keep=True
+        if "begin $BBC" in line:
+            keep=False
+            fillbbc(of)
+        if "end $BBC" in line:
+            keep=True
+        if "begin $FREQ" in line:
+            keep=False
+            fillfreq(of)
+        if "end $FREQ" in line:
+            keep=True
+        if "begin $IF" in line:
+            keep=False
+            fillif(of)
+        if "end $IF" in line:
+            keep=True
+        if "begin $TRACKS" in line:
+            keep=False
+            filltracks(of)
+        if "end $TRACKS" in line:
+            of.write(line)
+            of.write("$CLOCK;\n")
+            fillclock(of, exp+"oe.log")
+            fillclock(of, exp+"ow.log")
+            fillEOP(of, start)
+        if keep:
+            of.write(line)
+        if "start = " in line and start=="":
+            year = line.split()[2][0:4]
+            doy = str(int(line.split()[2][5:8])-2)
+            start = year+"-"+doy
+    of.close()
 
-def mountfiles(exp):
-    umount = "fusermount -u /mnt/fmdata"
-    mount = "vbs_fs /mnt/fmdata -I '{0}*'".format(exp)
-    gumount = "ssh oper@gyller " + umount
-    gmount = "ssh oper@gyller " + mount
-    usshfs = "fusermount -u /mnt/gyller-fmdata"
-    sshfs = "sshfs oper@10.100.0.15:/mnt/fmdata /mnt/gyller-fmdata"
-    for c in [umount, mount, gumount, gmount, usshfs, sshfs]:
-        print("Running command " + c)
-        os.system(c)
-        time.sleep(1)
-
-def listfiles(exp):
-    print("NOTE: Will index all data with vsum. May take 10 minutes or so...")
-    for mf in range(8):
-        cmd = "vsum -s /mnt/fmdata/{0}_ow*_{1} > ow{1}.files".format(exp, mf)
-        print("Running command "+cmd)
-        os.system(cmd)
-    for mf in range(8):
-        cmd = "vsum -s /mnt/gyller-fmdata/{0}_oe*_{1} > oe{1}.files".format(exp, mf)
-        print("Running command "+cmd)
-        os.system(cmd)
-    print("...done indexing data!")
-
+def makecorrscript(exp):
+    of = open(exp+".correlate.sh", "w")
+    of.write("# Prepare correlation files\n")
+    of.write("vex2difx -v -v -v -d "+exp+".v2d\n")
+    of.write("# Modify ex.machines and ex.threads before running makemachines.py\n")
+    of.write("python3 makemachines.py\n")
+    of.write("# Ensure that the CalcServer is running: will restart if already exists\n")
+    of.write("startCalcServer\n")
+    of.write("# Run calcif2 for farfield delays\n")
+    of.write("calcif2 *.calc\n")
+    of.write("# SCRIPT FINISHED. Check the output. If all seems OK, start correlation (in a screen!) by running 'startdifx -n -f *.input -v'")
+    of.close()
 
 ## SCRIPT STARTS HERE
-
 exp = sys.argv[1]
-ans = input("Will run preparation actions for experiment " + exp + ". NOTE: This may unmount file-systems causing loss of paths and I/O limits. So, NEVER DO THIS WHEN RECORDING OR CORRELATING unless you know what you are doing! Type 'yes' to proceed:")
+ans = input("Will run preparation actions for experiment " + exp + ". NOTE: This may overwrite files in this directory - type 'yes' to proceed:")
 if not ans.lower()=="yes":
     print("Did not get yes, aborting")
     sys.exit(1)
 
 getfslogs(exp)
-getskd(exp)
-skd2vex(exp)
-
-# Read all lines of VEX file
-vex = [l for l in open(exp+".vex")]
-keep = True
-of = open(exp+".vex","w")
-start = ""
-for line in vex:
-    if "begin $MODE" in line:
-        keep=False
-        fillmode(of)
-    if "end $MODE" in line:
-        keep=True
-    if "begin $BBC" in line:
-        keep=False
-        fillbbc(of)
-    if "end $BBC" in line:
-        keep=True
-    if "begin $FREQ" in line:
-        keep=False
-        fillfreq(of)
-    if "end $FREQ" in line:
-        keep=True
-    if "begin $IF" in line:
-        keep=False
-        fillif(of)
-    if "end $IF" in line:
-        keep=True
-    if "begin $TRACKS" in line:
-        keep=False
-        filltracks(of)
-    if "end $TRACKS" in line:
-        of.write(line)
-        of.write("$CLOCK;\n")
-        fillclock(of, exp+"oe.log")
-        fillclock(of, exp+"ow.log")
-        fillEOP(of, start)
-    if keep:
-        of.write(line)
-    if "start = " in line and start=="":
-        year = line.split()[2][0:4]
-        doy = str(int(line.split()[2][5:8])-2)
-        start = year+"-"+doy
-of.close()
-
+getvex(exp)
+fixvex(exp)
 makev2d(exp)
-mountfiles(exp)
-listfiles(exp)
-os.system("vex2difx -v -v -v -d "+exp+".v2d")
-# Ensure that the CalcServer is running: will restart if already exists
-os.system("startCalcServer")
-os.system("calcif2 *.calc")
-makemachines()
-
-print("SCRIPT FINISHED. Check the output. If all seems OK, start correlation (in a screen!) by running 'startdifx -n -f *.input -v'")
+makedatascripts(exp)
+makecorrscript(exp)
