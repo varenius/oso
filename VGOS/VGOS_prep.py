@@ -8,8 +8,8 @@ exp = input("QUESTION: Experiment, e.g. b22082 ? ").strip().lower()
 print("INFO: OK, try to process experiment "+exp)
 print()
 ###########################
-dl = input("QUESTION: Download schedule from IVS (yes/no) ? ").strip().lower()
-if dl =="yes" or dl =="y":
+dlans = input("QUESTION: Download schedule from IVS (yes/no) ? ").strip().lower()
+if dlans =="yes" or dlans =="y":
     print("INFO: Will download schedule from IVS")
     dl = True
 else:
@@ -50,7 +50,7 @@ print("")
 mirror = input("QUESTION: Mirror other station snap file - useful to tag-along Oe/Ow with a On S/X experiment - (yes/no) ? ")
 if (mirror =="yes" or mirror =="y"):
     tagtel = input("QUESTION: Then which antenna to mirror (normally on, i.e. 20m)? ").strip().lower()
-print("INFO: OK, will mirror SNP file for " + tagtel)
+    print("INFO: OK, will mirror SNP file for " + tagtel)
 print("")
 ###########################
 recs = {"fulla":"gyller","freja":"skirner"}
@@ -65,13 +65,31 @@ print("QUESTION: Do you want to automatically start another experiment after thi
 nextexp = input("          If so, typ experiment name (e.g. b22087 without oe/ow). Else leave blank: ").lower().strip()
 print("")
 ###########################
-ans = input("QUESTION: Do you want to add a antenna=off after prepant (yes/no) ? ").lower().strip()
-a_off = 0
-if (ans =="yes" or ans =="y"):
-    a_off = 1
+a_offans = input("QUESTION: Do you want to add a antenna=off after prepant (yes/no) ? ").lower().strip()
+a_off = False
+if (a_offans =="yes" or ans =="y"):
+    a_off = True
 print("")
 ###########################
-check = input("FINAL QUESTION: Ready to prepare, and possibly overwrite, experiment files for " + exp + ". Proceed (yes/no) ? " ).strip().lower()
+# PRINT SUMMARY
+print("")
+print("###########################")
+print("")
+print("YOU HAVE MADE THE FOLLOWING CHOICES:")
+print("Experiment: "+exp)
+print("Download from IVS: "+dlans)
+print("Frequency setup: "+selprc)
+print("Telescope: " + tel)
+print("Mirror other station snap file: " + mirror)
+if (mirror =="yes" or mirror =="y"):
+    print("     ... will mirror SNP file for " + tagtel)
+print("Recorder: " + rec)
+print("Next exp after sched_end:" + nextexp)
+print("Put 'antenna=off' after prepant: " + a_offans)
+print("")
+print("###########################")
+print("")
+check = input("FINAL QUESTION: Ready to prepare, and possibly overwrite, experiment files for exp " + exp + ". Proceed (yes/no) ? " ).strip().lower()
 if not (check == "yes" or check == "y"):
     print("ABORTING!")
     sys.exit(0)
@@ -148,7 +166,7 @@ for line in lines:
     if "Rack=DBBC" in line:
         wf.write("init_{0}\n".format(rec))
         wf.write("prepant\n")
-        if a_off==1:
+        if a_off:
             wf.write("antenna=off\n")
         wf.write("!"+preptime + "\n")
         wf.write("antenna=run\n")
