@@ -221,16 +221,17 @@ def fillclock(of, fslog):
     fn = os.path.basename(fslog)
     station = fn[-6:-5].upper()+fn[-5:-4].lower()
     
-    valtime = (dd[0]+datetime.timedelta(minutes=-30)).strftime("%Yy%jd%Hh%Mm%Ss") # Make valid range 30 min before first ref point, just in case first point is after first scan
-    reftime = (dd[0]).strftime("%Yy%jd%Hh%Mm%Ss") # Integer seconds; we don't need more precision
+    refdate = datetime.datetime(dd[0].year, dd[0].month, dd[0].day) # Floor to midnight
+    reftime = refdate.strftime("%Yy%jd%Hh%Mm%Ss") # Integer seconds; we don't need more precision
     
     # Get fitted clock, add peculiar offset
     pecoff = peculiaroff[station]
-    refclock = p(xx.min()) + pecoff[0]*1e-6
+    refclock_nopecoff = p(mdates.date2num(refdate))
+    refclock = refclock_nopecoff + pecoff[0]*1e-6
     rate = pf[0]/(24*3600) # convert to s/s
-    of.write("*"+station+": Clock without peculiar offset: {0} us\n".format(p(xx.min())*1e6))
+    of.write("*NOTE: Using peculiar offset {0} us for {1}. Make sure this is correct!\n".format(pecoff[0], station))
     of.write("*                  valid from           clock_early    clock_early_epoch        rate\n")
-    of.write("def {:s};  clock_early = {:s} : {:.3f} usec : {:s} : {:.3f}e-12; enddef;\n".format(station,valtime,refclock*1e6,reftime,rate*1e12))
+    of.write("def {:s};  clock_early = {:s} : {:.3f} usec : {:s} : {:.3f}e-12; enddef;\n".format(station,reftime,refclock*1e6,reftime,rate*1e12))
     
 def fillEOP(of, start):
     os.system('EMAIL_ADDR=eskil.varenius@chalmers.se geteop.pl ' + start + ' 5')
@@ -248,7 +249,7 @@ def getvex(exp):
     if not os.path.exists(vex):
         run(['scp','fulla:/usr2/sched/'+exp+'.skd', '.'])
         # Convert SKD to VEX
-        p = run(['/opt/sked/bin/sked', exp+".skd"], stdout=PIPE, input='VEC '+outvex+'\rq\r', encoding='ascii')
+        p = run(['/opt/sked/bin/sked', exp+".skd"], stdout=PIPE, input='VEC '+vex+'\rq\r', encoding='ascii')
 
 def makev2d(exp):
     vf = open(exp+".v2d",'w')
@@ -364,7 +365,7 @@ def makev2d(exp):
 def makedatascripts(exp):
     # First skirner
     of = open("mountandlist.skirner.sh", "w")
-    of.write("# RUN THIS FILE ON SKIRNER, in e.g. /mnt/raidz/expfolder\n")
+    of.write("# RUN THIS FILE ON SKIRNER, in e.g. /mnt/raidz/{0}\n".format(exp))
     of.write("# to get access to gyller raidz0 on skirner, run:\n")
     of.write("sshfs oper@gyller:/mnt/raidz0 /mnt/raidz0\n")
     of.write("fusermount -u /mnt/corrdata/skirner\n")
@@ -376,7 +377,7 @@ def makedatascripts(exp):
     
     # Then gyller
     of = open("mountandlist.gyller.sh", "w")
-    of.write("# RUN THIS FILE ON GYLLER, in e.g. /mnt/raidz/expfolder\n")
+    of.write("# RUN THIS FILE ON GYLLER, in e.g. /mnt/raidz/{0}\n".format(exp))
     of.write("fusermount -u /mnt/corrdata/gyller\n")
     of.write("vbs_fs /mnt/corrdata/gyller -I '{0}*'\n".format(exp))
     of.write("#NOTE: Will index all data with vsum. May take 10 minutes or so...\n")
@@ -391,37 +392,33 @@ def fixvex(exp):
     of = open(exp+".vex","w")
     start = ""
     for line in vex:
-        if "begin $MODE" in line:
+        if "$MODE;" in line:
             keep=False
             fillmode(of)
-        if "end $MODE" in line:
-            keep=True
-        if "begin $BBC" in line:
+        if "$BBC;" in line:
             keep=False
             fillbbc(of)
-        if "end $BBC" in line:
-            keep=True
-        if "begin $FREQ" in line:
+        if "$FREQ;" in line:
             keep=False
             fillfreq(of)
-        if "end $FREQ" in line:
-            keep=True
-        if "begin $IF" in line:
+        if "$IF;" in line:
             keep=False
             fillif(of)
-        if "end $IF" in line:
-            keep=True
-        if "begin $TRACKS" in line:
+        if "$TRACKS;" in line:
             keep=False
             filltracks(of)
-        if "end $TRACKS" in line:
-            of.write(line)
             of.write("$CLOCK;\n")
             fillclock(of, exp+"oe.log")
             fillclock(of, exp+"ow.log")
             fillEOP(of, start)
         if keep:
-            of.write(line)
+            if "mode = " in line:
+                of.write("*" + line)
+                of.write("        mode = VGEO-X8.XX;\n")
+            else:
+                of.write(line)
+        if "enddef" in line:
+            keep = True
         if "start = " in line and start=="":
             year = line.split()[2][0:4]
             doy = str(int(line.split()[2][5:8])-2)
@@ -438,12 +435,12 @@ def makecorrscript(exp):
     of.write("startCalcServer\n")
     of.write("# Run calcif2 for farfield delays\n")
     of.write("calcif2 *.calc\n")
-    of.write("# SCRIPT FINISHED. Check the output. If all seems OK, start correlation (in a screen!) by running 'startdifx -n -f *.input -v'")
+    of.write("# SCRIPT FINISHED. Check the output. If all seems OK, start correlation (in a screen!) by running 'startdifx -n -f *.input -v'\n")
     of.close()
 
 ## SCRIPT STARTS HERE
 exp = sys.argv[1]
-ans = input("Will run preparation actions for experiment " + exp + ". NOTE: This may overwrite files in this directory - type 'yes' to proceed:")
+ans = input("Will run preparation actions for experiment " + exp + ".\nNOTE: This may overwrite files in this directory - type 'yes' to proceed:")
 if not ans.lower()=="yes":
     print("Did not get yes, aborting")
     sys.exit(1)
