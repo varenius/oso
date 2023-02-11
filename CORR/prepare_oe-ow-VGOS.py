@@ -7,14 +7,14 @@ from subprocess import run, PIPE
 import socket
 
 def filltracks(of):
-    of.write("$TRACKS;\n")
+    #of.write("$TRACKS;\n")
     of.write("  def OTT;\n")
     of.write("    track_frame_format = VDIF;\n")
     of.write("  enddef;\n")
 
 def fillmode(of):
-    of.write("$MODE;\n")
-    of.write("  def VGEO-X8.XX;\n")
+    #of.write("$MODE;\n")
+    of.write("  def VGOS;\n")
     of.write("    ref $FREQ = OTT:Oe:Ow;\n")
     of.write("    ref $BBC = OTT:Oe:Ow;\n")
     of.write("    ref $IF = OTT:Oe:Ow;\n")
@@ -23,7 +23,7 @@ def fillmode(of):
     of.write("  enddef;\n")
 
 def fillbbc(of):
-    of.write("$BBC;\n")
+    #of.write("$BBC;\n")
     of.write("  def OTT;\n")
     of.write("    BBC_assign = &BBC01 : 01 : &IF_1N;\n")
     of.write("    BBC_assign = &BBC02 : 02 : &IF_1N;\n")
@@ -92,7 +92,7 @@ def fillbbc(of):
     of.write("  enddef;\n")
 
 def fillfreq(of):
-    of.write("$FREQ;\n")
+    #of.write("$FREQ;\n")
     of.write("  def OTT;\n")
     of.write("    chan_def = &X : 3480.40 MHz : L : 32.000 MHz : &Ch01 : &BBC01 : &L_cal;\n")
     of.write("    chan_def = &X : 3448.40 MHz : L : 32.000 MHz : &Ch02 : &BBC02 : &L_cal;\n")
@@ -162,17 +162,19 @@ def fillfreq(of):
     of.write("  enddef;\n")
 
 def fillif(of):
-    of.write("$IF;\n")
+    #of.write("$IF;\n")
     of.write("  def OTT;\n")
     of.write("    if_def = &IF_1N : 1N : X :  8080.0 MHz : U : 5 MHz : 0 Hz;\n")
     of.write("    if_def = &IF_3N : 3N : Y :  8080.0 MHz : U : 5 MHz : 0 Hz;\n")
     of.write("  enddef;\n")
 
 def getfslogs(exp):
+    print("Getting FS logs from FS machines...")
     run(['scp','fulla:/usr2/log/'+exp+'oe.log', '.'])
     run(['scp','freja:/usr2/log/'+exp+'ow.log', '.'])
 
 def fillclock(of, fslog):
+    print("Finding CLOCK values from " + fslog)
     peculiaroff = {"Ow": [6.183,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
                    "Oe": [6.211,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
                    }
@@ -234,11 +236,14 @@ def fillclock(of, fslog):
     of.write("def {:s};  clock_early = {:s} : {:.3f} usec : {:s} : {:.3f}e-12; enddef;\n".format(station,reftime,refclock*1e6,reftime,rate*1e12))
     
 def fillEOP(of, start):
+    print("Downloading EOPs...")
     os.system('EMAIL_ADDR=eskil.varenius@chalmers.se geteop.pl ' + start + ' 5')
+    print("Writing EOP section...")
     for el in open("EOP.txt"):
         of.write(el)
 
 def getvex(exp):
+    print("Getting VEX files from FS, or SKD from FS and converting SKD to VEX...")
     vex = exp+".vex"
     # Clear any existing vexfile
     if os.path.exists(vex):
@@ -252,12 +257,15 @@ def getvex(exp):
         p = run(['/opt/sked/bin/sked', exp+".skd"], stdout=PIPE, input='VEC '+vex+'\rq\r', encoding='ascii')
 
 def makev2d(exp):
+    print("Making .v2d file for DiFX...")
     vf = open(exp+".v2d",'w')
     vf.write("vex = {0}.vex\n".format(exp))
     vf.write("antennas = Oe, Ow\n")
     vf.write("# Ensure we get cross-auto corrs, just in case (i.e. Oe X-pol correlated with Oe Y-pol)\n")
     vf.write("exhaustiveAutocorrs = true\n")
     vf.write("SETUP default\n")
+    vf.write("#select single scan for fringefinding/test\n")
+    vf.write("#scan=032-1946\n")
     vf.write("{\n")
     vf.write(" tInt=1\n")
     vf.write(" # High res to be able to notch-filter RFI on Oe-Ow baseline\n")
@@ -362,29 +370,40 @@ def makev2d(exp):
     vf.write(" phaseCalInt = 5\n")
     vf.write(" }\n")
 
-def makedatascripts(exp):
-    # First skirner
-    of = open("mountandlist.skirner.sh", "w")
-    of.write("# RUN THIS FILE ON SKIRNER, in e.g. /mnt/raidz/{0}\n".format(exp))
-    of.write("# to get access to gyller raidz0 on skirner, run:\n")
-    of.write("sshfs oper@gyller:/mnt/raidz0 /mnt/raidz0\n")
-    of.write("fusermount -u /mnt/corrdata/skirner\n")
-    of.write("vbs_fs /mnt/corrdata/skirner -I '{0}*'\n".format(exp))
-    of.write("#NOTE: Will index all data with vsum. May take 10 minutes or so...\n")
-    for datastream in range(8):
-        of.write("vsum -s /mnt/corrdata/skirner/{0}_ow*_{1} > ow{1}.files \n".format(exp, datastream))
+def makedatascripts(exp, ants, dnodes):
+    print("Making data scripts to mount and index voltage data...")
+    for i, a in enumerate(ants):
+        ant = a.lower()
+        dn = dnodes[i].lower()
+        print("Antenna " + ant + " will get data from " + dn)
+        of = open("mountandlist.{0}.{1}.sh".format(ant, dn), "w")
+        of.write("# RUN THIS FILE ON {0}\n".format(dn.upper()))
+        of.write("fusermount -u /mnt/corrdata/{}\n".format(dn))
+        of.write("vbs_fs /mnt/corrdata/{0} -I '{1}*'\n".format(dn, exp))
+        of.write("#NOTE: Will index all data with vsum. May take a few hours...\n")
+        for datastream in range(8):
+            of.write("vsum -s /mnt/corrdata/{0}/{1}_oe*_{2} > {3}{2}.files \n".format(dn, exp, datastream, ant))
+        of.close()
+
+def makeexfiles(hnode, dnodes, cnodes, cpuspern):
+    print("Writing ex.machines...")
+    of = open("ex.machines", "w")
+    of.write(hnode + "\n")
+    for dn in dnodes:
+        for i in range(8):
+            of.write(dn+"\n")
+    for cn in cnodes:
+        of.write(cn+"\n")
+    of.close()
+    print("Writing ex.threads")
+    of = open("ex.threads", "w")
+    of.write("NUMBER OF CORES:    {}\n".format(len(cnodes)))
+    for cpus in cpuspern:
+        of.write(cpus+"\n")
     of.close()
     
-    # Then gyller
-    of = open("mountandlist.gyller.sh", "w")
-    of.write("# RUN THIS FILE ON GYLLER, in e.g. /mnt/raidz/{0}\n".format(exp))
-    of.write("fusermount -u /mnt/corrdata/gyller\n")
-    of.write("vbs_fs /mnt/corrdata/gyller -I '{0}*'\n".format(exp))
-    of.write("#NOTE: Will index all data with vsum. May take 10 minutes or so...\n")
-    for datastream in range(8):
-        of.write("vsum -s /mnt/corrdata/gyller/{0}_oe*_{1} > oe{1}.files \n".format(exp, datastream))
-    
 def fixvex(exp):
+    print("Modifying VEX file with setups, tracks etc.")
     # Read all lines of VEX file
     invex = exp+".vex"
     vex = [l for l in open(invex)]
@@ -392,6 +411,14 @@ def fixvex(exp):
     of = open(exp+".vex","w")
     start = ""
     for line in vex:
+        if line.startswith("$"):
+            keep = True
+        if keep:
+            if "mode = " in line:
+                of.write("*" + line)
+                of.write("        mode = VGOS;\n")
+            else:
+                of.write(line)
         if "$MODE;" in line:
             keep=False
             fillmode(of)
@@ -407,29 +434,23 @@ def fixvex(exp):
         if "$TRACKS;" in line:
             keep=False
             filltracks(of)
-            of.write("$CLOCK;\n")
-            fillclock(of, exp+"oe.log")
-            fillclock(of, exp+"ow.log")
-            fillEOP(of, start)
-        if keep:
-            if "mode = " in line:
-                of.write("*" + line)
-                of.write("        mode = VGEO-X8.XX;\n")
-            else:
-                of.write(line)
-        if "enddef" in line:
-            keep = True
         if "start = " in line and start=="":
             year = line.split()[2][0:4]
             doy = str(int(line.split()[2][5:8])-2)
             start = year+"-"+doy
+    print("Writing CLOCK section...")
+    of.write("$CLOCK;\n")
+    fillclock(of, exp+"oe.log")
+    fillclock(of, exp+"ow.log")
+    fillEOP(of, start)
     of.close()
 
 def makecorrscript(exp):
-    of = open(exp+".correlate.sh", "w")
+    print("Making correlation script to be run to correlate the data...")
+    of = open("prep03_"+exp+".correlate.sh", "w")
     of.write("# Prepare correlation files\n")
     of.write("vex2difx -v -v -v -d "+exp+".v2d\n")
-    of.write("# Modify ex.machines and ex.threads before running makemachines.py\n")
+    of.write("# Check ex.machines and ex.threads before running makemachines.py\n")
     of.write("python3 makemachines.py\n")
     of.write("# Ensure that the CalcServer is running: will restart if already exists\n")
     of.write("startCalcServer\n")
@@ -439,7 +460,26 @@ def makecorrscript(exp):
     of.close()
 
 ## SCRIPT STARTS HERE
-exp = sys.argv[1]
+exp = input("Please type experiment to prepare e.g. fm3031: ")
+antennas_raw = input("Please type antennas to include separated by space e.g. Oe Ow : ")
+antennas = antennas_raw.strip().split()
+#setup = input("Please type frequency setup, either VGOS or on3027 : ")
+datanodes_raw = input("Please type the respective machines where the data is located e.g. gyller skirner : ")
+datanodes = datanodes_raw.strip().split()
+headnode = input("Please type head node for correlation job e.g. gyller : ").strip().lower()
+computingnodes_raw = input("Please type machines to use for actual correlation computation e.g. gyller skirner kare hjuke oldbogar : ")
+computingnodes = computingnodes_raw.strip().split()
+cpuspernode_raw = input("Please type number of CPUs to use per node e.g. 10 8 4 20 16 : ")
+cpuspernode = cpuspernode_raw.strip().split()
+
+print("You have selected: ")
+print("Experiment: " + exp)
+print("Antennas: " + " ".join(antennas))
+print("Datanodes: " + " ".join(datanodes))
+print("Computingnodes: " + " ".join(computingnodes))
+print("CPUS per node: " + " ".join(cpuspernode))
+print("Head node: " + headnode)
+
 ans = input("Will run preparation actions for experiment " + exp + ".\nNOTE: This may overwrite files in this directory - type 'yes' to proceed:")
 if not ans.lower()=="yes":
     print("Did not get yes, aborting")
@@ -449,5 +489,6 @@ getfslogs(exp)
 getvex(exp)
 fixvex(exp)
 makev2d(exp)
-makedatascripts(exp)
+makedatascripts(exp, antennas, datanodes)
+makeexfiles(headnode, datanodes, computingnodes, cpuspernode)
 makecorrscript(exp)
