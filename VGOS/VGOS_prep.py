@@ -47,8 +47,10 @@ if not (ant =="yes" or ant =="y"):
     tel = input("QUESTION: Then which antenna (oe/ow)? ").strip().lower()
 print("INFO: OK, using " + tel)
 print("")
-mirror = input("QUESTION: Mirror other station snap file - useful to tag-along Oe/Ow with a On S/X experiment - (yes/no) ? ")
-if (mirror =="yes" or mirror =="y"):
+mirrorans = input("QUESTION: Mirror other station snap file - useful to tag-along Oe/Ow with a On S/X experiment - (yes/no) ? ")
+mirror = False
+if (mirrorans =="yes" or mirrorans =="y"):
+    mirror = True
     tagtel = input("QUESTION: Then which antenna to mirror (normally on, i.e. 20m)? ").strip().lower()
     print("INFO: OK, will mirror SNP file for " + tagtel)
 print("")
@@ -80,8 +82,8 @@ print("Experiment: "+exp)
 print("Download from IVS: "+dlans)
 print("Frequency setup: "+selprc)
 print("Telescope: " + tel)
-print("Mirror other station snap file: " + mirror)
-if (mirror =="yes" or mirror =="y"):
+print("Mirror other station snap file: " + mirrorans)
+if mirror:
     print("     ... will mirror SNP file for " + tagtel)
 print("Recorder: " + rec)
 print("Next exp after sched_end:" + nextexp)
