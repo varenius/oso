@@ -735,7 +735,7 @@ def makecorrscript(exp):
     of.write("# Run calcif2 for farfield delays\n")
     of.write("calcif2 *.calc\n")
     of.write("# SCRIPT FINISHED. Check the output. If all seems OK, start correlation (in a screen!) by running\n")
-    of.write("startdifx -n -f *.input -v'\n")
+    of.write("startdifx -n -f *.input -v\n")
     of.close()
 
 ## SCRIPT STARTS HERE
