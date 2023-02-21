@@ -52,7 +52,7 @@ mirrorans = input("QUESTION: Mirror other station snap file - useful to tag-alon
 mirror = False
 if (mirrorans =="yes" or mirrorans =="y"):
     mirror = True
-    tagtel = input("QUESTION: Then which antenna to mirror (normally on, i.e. 20m)? ").strip().lower()
+    tagtel = input("QUESTION: Then which antenna to mirror (normally On)? ").strip().lower()
     print("INFO: OK, will mirror SNP file for " + tagtel)
 print("")
 ###########################
