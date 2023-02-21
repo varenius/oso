@@ -28,7 +28,7 @@ prcs = {"1":"vo-default",
         "4": "on1324", 
         "5": "on1325", 
         "6": "X-band from S/X R11091 (8x8 MHz overlap)",
-        "7": "X-band from S/X RV157 (4x16 MHz overlap)"
+        "7": "X-band from S/X RV157 (4x16 MHz overlap)",
         "8": "X-band from S/X T2 (8x4 MHz overlap)"
 }
 prcks = " ".join(["\n" + i+")"+prcs[i] for i in sorted(prcs.keys())])
