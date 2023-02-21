@@ -27,8 +27,9 @@ prcs = {"1":"vo-default",
         "3": "on1323", 
         "4": "on1324", 
         "5": "on1325", 
-        "6": "X-band from S/X R1 (8 MHz overlap)",
-        "7": "X-band from S/X T2 (4 MHz overlap)"
+        "6": "X-band from S/X R11091 (8x8 MHz overlap)",
+        "7": "X-band from S/X RV157 (4x16 MHz overlap)"
+        "8": "X-band from S/X T2 (8x4 MHz overlap)"
 }
 prcks = " ".join(["\n" + i+")"+prcs[i] for i in sorted(prcs.keys())])
 print("INFO: Available frequency setup default PRC files are:\n{}\n".format(prcks))
@@ -63,8 +64,8 @@ if not (ans =="yes" or ans =="y"):
 print("INFO: OK, using " + rec)
 print("")
 ###########################
-print("QUESTION: Do you want to automatically start another experiment after this?")
-nextexp = input("          If so, typ experiment name (e.g. b22087 without oe/ow). Else leave blank: ").lower().strip()
+print("QUESTION: Which experiment to start after this one?")
+nextexp = input("          Type experiment name (e.g. b22087 without oe/ow), else leave blank: ").lower().strip()
 print("")
 ###########################
 a_offans = input("QUESTION: Do you want to add a antenna=off after prepant (yes/no) ? ").lower().strip()
@@ -144,10 +145,12 @@ elif selprc=="on1324":
     cpcmd = "cp " + scriptpath + "/PRC/on1324ow.prc /usr2/proc/" + exp + tel + ".prc"
 elif selprc=="on1325":
     cpcmd = "cp " + scriptpath + "/PRC/on1325ow.prc /usr2/proc/" + exp + tel + ".prc"
-elif selprc=="X-band from S/X R1 (8 MHz overlap)":
-    cpcmd = "cp " + scriptpath + "/PRC/r1_8MHz_xband_centered_32MHz_ow.prc /usr2/proc/" + exp + tel + ".prc"
-elif selprc=="X-band from S/X T2 (4 MHz overlap)":
-    cpcmd = "cp " + scriptpath + "/PRC/t2_4MHz_xband_centered_32MHz_ow.prc /usr2/proc/" + exp + tel + ".prc"
+elif selprc=="X-band from S/X R11091 (8x8 MHz overlap)":
+    cpcmd = "cp " + scriptpath + "/PRC/r11091_8x8MHz_xband_centered_32MHz_ow.prc_ow.prc /usr2/proc/" + exp + tel + ".prc"
+elif selprc=="X-band from S/X RV157 (4x16 MHz overlap)":
+    cpcmd = "cp " + scriptpath + "/PRC/rv157_4x16MHz_xband_centered_32MHz_ow.prc /usr2/proc/" + exp + tel + ".prc"
+elif selprc=="X-band from S/X T2 (8x4 MHz overlap)":
+    cpcmd = "cp " + scriptpath + "/PRC/t2_8x4MHz_xband_centered_32MHz_ow.prc /usr2/proc/" + exp + tel + ".prc"
 os.system(cpcmd)
 
 snpf = "/usr2/sched/"+exp+tel+".snp"
