@@ -23,12 +23,13 @@ import argparse
 # List peculiar offsets in us, relative to clock_early
 peculiaroff = {"Ow": [6.183,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
                "Oe": [6.211,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
-               "On": [1.350,"from multiple exp from Bonn"],
+               "On": [1.72,"to zero VGOS delay"],
                "Is": [1.268,"from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
                "Yj": [-0.108, "from https://github.com/whi-llc/adjust/blob/files/data/bb_po_v1.1.dat"],
                "O8": [5.18, "From Bob C, EVN: O8 = +5.78,  On = +1.95 --> O8 = 5.78-(1.95-1.350)=5.18"],
                "Ny": [2.308, "From https://github.com/whi-llc/adjust/blob/files/data/sx_po_v8.dat"],
-               "Ns": [1.68, "From R1994 corr report by Bonn"]
+               #"Ns": [1.68, "From R1994 corr report by Bonn"]
+               "Ns": [1.24, "From later NYTIE"]
                }
 
 parser = argparse.ArgumentParser()
