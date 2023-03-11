@@ -123,8 +123,8 @@ def fillmode(of, setup):
         of.write("    ref $TRACKS = vdif       : Oe : Ow : On ;\n")
         of.write("    ref $PHASE_CAL_DETECT = Standard  : Oe : Ow : On ;\n")
         of.write("enddef;\n")
-    elif setup=="r11089":
-        of.write("def r11089;\n")
+    elif setup=="rv157":
+        of.write("def rv157;\n")
         of.write("    ref $FREQ = FREQ_20m     : On ;\n")
         of.write("    ref $FREQ = FREQ_OTT     : Oe : Ow ;\n")
         of.write("    ref $BBC = BBC_20m       : On ;\n")
