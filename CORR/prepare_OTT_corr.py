@@ -101,8 +101,8 @@ def fillmode(of, setup):
         of.write("    ref $TRACKS = vdif:Oe:Ow;\n")
         of.write("    ref $PHASE_CAL_DETECT = OTT:Oe:Ow;\n")
         of.write("  enddef;\n")
-    elif setup=="on3027":
-        of.write("def on3027;\n")
+    elif setup=="on1323":
+        of.write("def on1323;\n")
         of.write("    ref $FREQ = FREQ_20m     : On ;\n")
         of.write("    ref $FREQ = FREQ_OTT     : Oe : Ow ;\n")
         of.write("    ref $BBC = BBC_20m       : On ;\n")
@@ -192,7 +192,7 @@ def fillbbc(of, setup):
         of.write("    BBC_assign = &BBC63 : 63 : &IF_3N;\n")
         of.write("    BBC_assign = &BBC64 : 64 : &IF_3N;\n")
         of.write("  enddef;\n")
-    elif setup=="on3027":
+    elif setup=="on1323":
         of.write("def BBC_20m;\n")
         of.write("    BBC_assign = &BBC01 :    01 : &IF_A1;\n")
         of.write("    BBC_assign = &BBC02 :    02 : &IF_A1;\n")
@@ -326,7 +326,7 @@ def fillfreq(of, setup):
         of.write("    chan_def = &X : 10232.40 MHz : L : 32.000 MHz : &Ch64 : &BBC64 : &L_cal;\n")
         of.write("    sample_rate = 64.0 Ms/sec;\n")
         of.write("  enddef;\n")
-    elif setup == "on3027":
+    elif setup == "on1323":
         of.write("def FREQ_20m;\n")
         of.write("    chan_def = &X :  8099.99 MHz : U : 32.000 MHz : &CH01 : &BBC01 : &U_cal;\n")
         of.write("    chan_def = &X :  8139.99 MHz : U : 32.000 MHz : &CH02 : &BBC02 : &U_cal;\n")
@@ -403,7 +403,7 @@ def fillif(of, setup):
         of.write("    if_def = &IF_1N : 1N : X :  8080.0 MHz : U : 5 MHz : 0 Hz;\n")
         of.write("    if_def = &IF_3N : 3N : Y :  8080.0 MHz : U : 5 MHz : 0 Hz;\n")
         of.write("  enddef;\n")
-    elif setup=="on3027":
+    elif setup=="on1323":
         of.write("  def OTT;\n")
         of.write("    if_def = &IF_1N : 1N : X :  8080.0 MHz : U : 5 MHz : 0 Hz;\n")
         of.write("    if_def = &IF_3N : 3N : Y :  8080.0 MHz : U : 5 MHz : 0 Hz;\n")
@@ -518,7 +518,7 @@ def getvex(exp):
             p = run(['/opt/sked/bin/sked', exp+".skd"], stdout=PIPE, input='VEC '+vex+'\rq\r', encoding='ascii')
 
 def writezoomsection(vf,setup):
-    if setup == "on3027":
+    if setup == "on1323":
         vf.write("ZOOM zoom\n")
         vf.write("{\n")
         vf.write("addZoomFreq = freq@8099.99/bw@32.0/noparent@true\n")
@@ -673,8 +673,8 @@ def fixvex(exp, antennas, setup):
             if "mode = " in line:
                 if setup == "VGOS":
                     of.write("        mode = VGOS;\n")
-                elif setup=="on3027":
-                    of.write("        mode = on3027;\n")
+                elif setup=="on1323":
+                    of.write("        mode = on1323;\n")
                 elif setup=="r11089":
                     of.write("        mode = r11089;\n")
             elif "station =" in line:
@@ -740,7 +740,7 @@ def makecorrscript(exp):
 
 ## SCRIPT STARTS HERE
 exp = input("Please type experiment to prepare e.g. fm3031: ")
-setups = ['VGOS', 'on3027', 'r11089']
+setups = ['VGOS', 'on1323', 'r11089']
 print("Available frequency setups:")
 for i, s in enumerate(setups):
     print(str(i) + ": "+s)
