@@ -768,6 +768,8 @@ def fixvex(exp, antennas, setup):
                     of.write("        mode = on1323;\n")
                 elif setup=="r11089":
                     of.write("        mode = r11089;\n")
+                elif setup=="rv157":
+                    of.write("        mode = rv157;\n")
             elif "station =" in line:
                 if setup=="r11089" or setup=="rv157":
                     if "station = On" in line:
