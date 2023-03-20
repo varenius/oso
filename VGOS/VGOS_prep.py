@@ -48,13 +48,6 @@ if not (ant =="yes" or ant =="y"):
     tel = input("QUESTION: Then which antenna (oe/ow)? ").strip().lower()
 print("INFO: OK, using " + tel)
 print("")
-mirrorans = input("QUESTION: Mirror other station snap file - useful to tag-along Oe/Ow with a On S/X experiment - (yes/no) ? ")
-mirror = False
-if (mirrorans =="yes" or mirrorans =="y"):
-    mirror = True
-    tagtel = input("QUESTION: Then which antenna to mirror (normally On)? ").strip().lower()
-    print("INFO: OK, will mirror SNP file for " + tagtel)
-print("")
 ###########################
 recs = {"fulla":"gyller","freja":"skirner"}
 rec = recs[host]
@@ -62,6 +55,14 @@ ans = input("QUESTION: This is machine " + host + " so I assume you will use rec
 if not (ans =="yes" or ans =="y"):
     rec = input("QUESTION: Then which recorder (gyller/skirner/kare)?").strip().lower()
 print("INFO: OK, using " + rec)
+print("")
+###########################
+mirrorans = input("QUESTION: Mirror other station snap file - useful to tag-along Oe/Ow with a On S/X experiment - (yes/no) ? ")
+mirror = False
+if (mirrorans =="yes" or mirrorans =="y"):
+    mirror = True
+    tagtel = input("QUESTION: Then which antenna to mirror (normally On)? ").strip().lower()
+    print("INFO: OK, will mirror SNP file for " + tagtel)
 print("")
 ###########################
 print("QUESTION: Which experiment to start after this one?")
