@@ -71,7 +71,7 @@ print("")
 ###########################
 a_offans = input("QUESTION: Do you want to add a antenna=off after prepant (yes/no) ? ").lower().strip()
 a_off = False
-if (a_offans =="yes" or ans =="y"):
+if (a_offans =="yes" or a_offans =="y"):
     a_off = True
 print("")
 ###########################
