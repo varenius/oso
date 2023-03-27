@@ -10,5 +10,4 @@ bkgpassword = "ENTERPASS"
 print("Sending logfile {}...".format(fslog))
 cmd = "lftp -c 'debug -t 9; set ftp:ssl-force true; open -u {} ivs.bkg.bund.de; put -a {}; close; bye;' >> /usr2/log/lftp_BKG.log 2>&1".format(bkgpassword, fslog)
 os.system(cmd)
-print(cmd)
 print("...done!")
