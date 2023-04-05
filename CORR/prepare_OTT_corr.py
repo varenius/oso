@@ -840,19 +840,22 @@ def makev2d(exp, ants, setup):
 
 def makedatascripts(exp, ants, dnodes, setup):
     print("Making data scripts to mount and index voltage data...")
+    cwd = os.getcwd()
     for i, a in enumerate(ants):
         ant = a.lower()
         dn = dnodes[i].lower()
         datadir = "/mnt/corrdata/{}/{}_{}".format(dn, exp, ant)
         print("Antenna " + ant + " will get data from " + dn + ":/" + datadir)
         of = open("mountandlist.{0}.{1}.sh".format(ant, dn), "w")
-        of.write("# RUN THIS FILE ON {0}\n".format(dn.upper()))
-        of.write("fusermount -u {}\n".format(datadir))
-        of.write("mkdir -p {}\n".format(datadir))
-        of.write("vbs_fs -R '/mnt/disk*' -I '{0}_{1}*' {2}\n".format(exp, ant, datadir))
-        of.write("#NOTE: Will index all data with vsum. May take a few hours...\n")
+        of.write("# THIS FILE WILL BE RUN ON {0}\n".format(dn.upper()))
+        of.write("ssh {} 'fusermount -u {}'\n".format(dn, datadir))
+        of.write("ssh {} 'mkdir -p {}'\n".format(dn, datadir))
+        of.write("ssh {3} \"vbs_fs -R '/mnt/disk*' -I '{0}_{1}*' {2}\"\n".format(exp, ant, datadir, dn))
+        of.write("echo 'Will index all data with vsum. May take a few hours...'\n")
+        if not dn=="gyller":
+            of.write("ssh {} 'sshfs oper@gyller:/mnt/raidz0 /mnt/raidz0/'\n".format(dn))
         if ant=="on":
-            of.write("vsum -s {0}/{1}_on* > on.files \n".format(datadir, exp))
+            of.write("ssh {3} 'vsum -s {0}/{1}_on* > {2}/on.files'\n".format(datadir, exp, cwd, dn))
         elif ant in ["oe", "ow"]:
             if setup == "VGOS":
                 nmin = 0
@@ -862,13 +865,13 @@ def makedatascripts(exp, ants, dnodes, setup):
                 nmin = 6
                 nmax = 8
             for datastream in range(nmin, nmax):
-                of.write("vsum -s {0}/{1}_{3}*_{2} > {3}{2}.files \n".format(datadir, exp, datastream, ant))
+                of.write("ssh {5} 'vsum -s {0}/{1}_{3}*_{2} > {4}/{3}{2}.files'\n".format(datadir, exp, datastream, ant, cwd, dn))
         elif ant == "is":
             if setup == "VGOS":
                 nmin = 0
                 nmax = 4
             for datastream in range(nmin, nmax):
-                of.write("vsum -s {0}/{1}_{3}*_{2} > {3}{2}.files \n".format(datadir, exp, datastream, ant))
+                of.write("ssh {5} 'vsum -s {0}/{1}_{3}*_{2} > {4}/{3}{2}.files'\n".format(datadir, exp, datastream, ant, cwd, dn))
         of.close()
 
 def makeexfiles(hnode, dnodes, cnodes, cpuspern, antennas, setup):
