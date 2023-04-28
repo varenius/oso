@@ -147,7 +147,7 @@ elif selprc=="on1324":
 elif selprc=="on1325":
     cpcmd = "cp " + scriptpath + "/PRC/on1325ow.prc /usr2/proc/" + exp + tel + ".prc"
 elif selprc=="X-band from S/X R11091 (8x8 MHz overlap)":
-    cpcmd = "cp " + scriptpath + "/PRC/r11091_8x8MHz_xband_centered_32MHz_ow.prc_ow.prc /usr2/proc/" + exp + tel + ".prc"
+    cpcmd = "cp " + scriptpath + "/PRC/r11091_8x8MHz_xband_centered_32MHz_ow.prc /usr2/proc/" + exp + tel + ".prc"
 elif selprc=="X-band from S/X RV157 (4x16 MHz overlap)":
     cpcmd = "cp " + scriptpath + "/PRC/rv157_4x16MHz_xband_centered_32MHz_ow.prc /usr2/proc/" + exp + tel + ".prc"
 elif selprc=="X-band from S/X T2 (8x4 MHz overlap)":
