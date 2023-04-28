@@ -144,7 +144,7 @@ def fillmode(of, setup, antennas):
         of.write("    ref $BBC = BBC_OTT       : Oe : Ow ;\n")
         of.write("    ref $IF = IF_20m         : On ;\n")
         of.write("    ref $IF = OTT            : Oe : Ow ;\n")
-        of.write("    ref $TRACKS = vdif       : Oe : Ow : On ;\n")
+        of.write("    ref $TRACKS = VDIF       : Oe : Ow : On ;\n")
         of.write("    ref $PHASE_CAL_DETECT = Standard  : Oe : Ow : On ;\n")
         of.write("enddef;\n")
     elif setup=="r11089":
@@ -155,7 +155,7 @@ def fillmode(of, setup, antennas):
         of.write("    ref $BBC = BBC_OTT       : Oe : Ow ;\n")
         of.write("    ref $IF = IF_20m         : On ;\n")
         of.write("    ref $IF = OTT            : Oe : Ow ;\n")
-        of.write("    ref $TRACKS = vdif       : Oe : Ow : On ;\n")
+        of.write("    ref $TRACKS = VDIF       : Oe : Ow : On ;\n")
         of.write("    ref $PHASE_CAL_DETECT = Standard  : Oe : Ow : On ;\n")
         of.write("enddef;\n")
     elif setup=="rv157":
@@ -166,7 +166,7 @@ def fillmode(of, setup, antennas):
         of.write("    ref $BBC = BBC_OTT       : Oe : Ow ;\n")
         of.write("    ref $IF = IF_20m         : On ;\n")
         of.write("    ref $IF = OTT            : Oe : Ow ;\n")
-        of.write("    ref $TRACKS = vdif       : Oe : Ow : On ;\n")
+        of.write("    ref $TRACKS = VDIF       : Oe : Ow : On ;\n")
         of.write("    ref $PHASE_CAL_DETECT = Standard  : Oe : Ow : On ;\n")
         of.write("enddef;\n")
 
