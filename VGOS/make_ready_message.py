@@ -29,7 +29,7 @@ print "READY MESSAGE DATA FROM LOGFILE ", logfile
 print
 
 print "DBBC3 timing:"
-time = get_lines(lines, "#dbbcn#dbbc3/time/",26)
+time = get_lines(lines, "#dbbcn#dbbc3/time/",50)
 print_lines(time)
 print 
 
