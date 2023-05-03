@@ -927,35 +927,33 @@ def fixvex(exp, antennas, setup):
                 elif setup=="rv157":
                     of.write("        mode = rv157;\n")
                 doStation=True
-            elif "station =" in line:
-                if doStation:
-                    if setup=="r11089" or setup=="rv157":
-                        if "station = On" in line:
-                            if "On" in antennas:
-                                of.write(line)
-                            if "Oe" in antennas:
-                                of.write(line.replace("On", "Oe"))
-                            if "Ow" in antennas:
-                                of.write(line.replace("On", "Ow"))
-                        doStation=False
-                    elif setup=="VGOS":
-                        if ("Oe" in line) and doStation:
+            elif ("station =" in line) and doStation:
+                if setup=="r11089" or setup=="rv157":
+                    if "On" in line:
+                        if "On" in antennas:
                             of.write(line)
-                            of.write(line.replace("Oe", "Ow"))
-                            of.write(line.replace("Oe", "Is"))
-                            doStation=False
-                        if ("Ow" in line) and doStation:
-                            of.write(line)
-                            of.write(line.replace("Ow", "Oe"))
-                            of.write(line.replace("Ow", "Is"))
-                            doStation=False
-                        if ("Is" in line) and doStation:
-                            of.write(line)
-                            of.write(line.replace("Is", "Oe"))
-                            of.write(line.replace("Is", "Ow"))
-                            doStation=False
-                    else:
+                        if "Oe" in antennas:
+                            of.write(line.replace("On", "Oe"))
+                        if "Ow" in antennas:
+                            of.write(line.replace("On", "Ow"))
+                elif setup=="VGOS":
+                    if ("Oe" in line) and doStation:
                         of.write(line)
+                        of.write(line.replace("Oe", "Ow"))
+                        of.write(line.replace("Oe", "Is"))
+                        doStation=False
+                    if ("Ow" in line) and doStation:
+                        of.write(line)
+                        of.write(line.replace("Ow", "Oe"))
+                        of.write(line.replace("Ow", "Is"))
+                        doStation=False
+                    if ("Is" in line) and doStation:
+                        of.write(line)
+                        of.write(line.replace("Is", "Oe"))
+                        of.write(line.replace("Is", "Ow"))
+                        doStation=False
+                else:
+                    of.write(line)
             else:
                 of.write(line)
         if "$MODE;" in line:
