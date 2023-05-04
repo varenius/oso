@@ -954,6 +954,8 @@ def fixvex(exp, antennas, setup):
                         doStation=False
                 else:
                     of.write(line)
+            elif ("station =" in line) and not doStation:
+                pass
             else:
                 of.write(line)
         if "$MODE;" in line:
