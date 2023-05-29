@@ -615,10 +615,13 @@ def getfslogs(exp, antennas):
     print("Getting FS logs...")
     if "Oe" in antennas:
         run(['scp','fulla:/usr2/log/'+exp+'oe.log', '.'])
+        run(['scp','fulla:/usr2/log/'+exp+'oe_full.log', './'+exp+'oe.log'])
     if "Ow" in antennas:
         run(['scp','freja:/usr2/log/'+exp+'ow.log', '.'])
+        run(['scp','freja:/usr2/log/'+exp+'ow_full.log', './'+exp+'ow.log'])
     if "On" in antennas:
         run(['scp','fold:/usr2/log/'+exp+'on.log', '.'])
+        run(['scp','fold:/usr2/log/'+exp+'on_full.log', './'+exp+'on.log'])
     if "Is" in antennas:
         os.system('curl --ssl-reqd -u anonymous:anonymous ftp://ivs.bkg.bund.de/pub/vlbi/ivsdata/aux/'+year+'/'+exp+'/'+exp+'is.log -o'+exp+'is.log')
 
