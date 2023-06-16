@@ -586,7 +586,7 @@ def fillif(of, setup):
         of.write("  enddef;\n")
         of.write("  def IF_20m;\n")
         of.write("   if_def = &IF_A1 :  A1 : R : 8080.00 MHz : U : 1.00 MHz : 0.00 Hz; \n")
-        of.write("   if_def = &IF_A1 :  A1 : R : 8080.00 MHz : U : 1.00 MHz : 0.00 Hz; \n")
+        of.write("   if_def = &IF_B1 :  B1 : R : 8080.00 MHz : U : 1.00 MHz : 0.00 Hz; \n")
         of.write("  enddef;\n")
     elif setup=="r11089":
         of.write("  def OTT;\n")
