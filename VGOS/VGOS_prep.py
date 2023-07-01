@@ -170,7 +170,7 @@ wf = open(snpf, "w")
 for line in lines:
     wf.write(line)
     if "Rack=DBBC" in line:
-        wf.write("init_{0}\n".format(rec))
+        #Do not set recorded here, too late, instead set in PRC, see code later in this script
         wf.write("prepant\n")
         if a_off:
             wf.write("antenna=off\n")
@@ -186,4 +186,19 @@ if not nextexp=="":
 else:
     wf.write("antenna=off\n")
 wf.close()
+
+# Also edit PRC file to insert flexbuff_config command at start of exper_initi.
+# Previously we had this at start of SNP file, but this is after exper_initi,
+# so FS will set the "fb_mode" and similar commands first and THEN change
+# recorder, which means the recording would fail to record properly (since no mode set).
+prcf = "/usr2/proc/"+exp+tel+".prc"
+# Store lines in array
+plines = []
+for line in open(prcf):
+    plines.append(line)
+pf = open(prcf, "w")
+for line in plines:
+    pf.write(line)
+    if "define  exper_initi" in line:
+        pf.write("init_{0}\n".format(rec))
 print("INFO: All done. You may want to check the resulting /usr2/sched/{0}{1}.snp and /usr2/proc/{0}{1}.prc files.".format(exp,tel))
