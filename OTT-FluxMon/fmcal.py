@@ -3,12 +3,17 @@ import sys, os
 import datetime
 
 # NOTE: run with fits file as argument "casa -c fmcal.py fm3013.fits"
-e = sys.argv[1]
-infits = e
+infits = sys.argv[1]
+e = infits.split(".")[0]
+gainfile = e+"oe+ow.gain"
+antabfile = e+"oe+ow.antab"
 
 # Should not need to change anything below
 msn = e+".ms" # ms name
+gaint = e+".ct.gain"#gain
+tsyst = e+".ct.tsys" #tsys
 bpt = e+".ct.bandpass" # bandpass
+act = e+".ct.accor" # accor
 split1ms = msn+".split1" 
 split2ms = msn+".split2"
 split3ms = msn+".split3"
@@ -17,20 +22,23 @@ plotdir = "frscan_plots"
 if not os.path.exists(plotdir):
     os.makedirs(plotdir)
             
-whattodo = {'load_data': True,
+whattodo = {'prepare_fits':True,
+            'load_data': True,
             'listobs1': True,
+            'gencal': True,
             'pcflag': True,
             'edgeflag': True,
+            'accor': True,
             'rflag1': True,
             'extraflag': True,
-            'plotms1': True,
+            'plotms1': False,
             'fring1' : True,
             'bandpass' : True,
             'applycal1' :True,
             'rflag2': True,
             'split1' :True,
             'listobs2': True,
-            'plotms2': True,
+            'plotms2': False,
             'getflux': True,
             }
         
@@ -44,6 +52,35 @@ def pb_3c147(x):
 def pb_3c295(x):
     """Spectrum for 3c295, Perley and Butler (2017) """
     return 10**(1.4701-0.7658*np.log10(x)-0.2780*(np.log10(x))**2+0.0347*(np.log10(x))**3-0.0399*(np.log10(x))**4)
+
+if whattodo['prepare_fits']:
+    # ONLY NEEDED ONCE AS IT UPDATES THE ACTUAL INPUT FITS FILE!
+    # BUT DOES NOT HARM TO RUN TWICE, WILL JUST REPLACE
+    import pyfits as fits
+    hdul = fits.open(e+".fits", mode='update')
+    print("FITS Table structure before edit:")
+    hdul.info()
+    toremove = []
+    for i,tab in enumerate(hdul):
+        if tab.name=="SYSTEM_TEMPERATURE" or tab.name=="GAIN_CURVE":
+            toremove.append(i)
+    toremove.reverse()
+    for i in toremove:
+        print("INFO:: Removing FITS extension table " + hdul[i].name)
+        hdul.__delitem__(i)
+    hdul.flush()
+    print("FITS Table structure after edit:")
+    hdul.info()
+    hdul.close()
+    # Then, append the correct info using casa:
+    if not os.path.exists("../casa-vlbi.git"):
+        os.system("git clone https://github.com/jive-vlbi/casa-vlbi.git ../casa-vlbi.git")
+    os.system("casa --nologger -c ../casa-vlbi.git/gc.py "+ antabfile + " " + gainfile)
+    os.system("casa --nologger -c ../casa-vlbi.git/append_tsys.py " + antabfile + " " + infits)
+    hdul = fits.open(e+".fits", mode='update')
+    print("FITS Table structure after adding proper TSYS:")
+    hdul.info()
+    hdul.close()
 
 if whattodo['load_data']:
     rmtables(msn)
@@ -61,6 +98,10 @@ for i in range(1,len(mssum)):
         print("Using first scan of 3C286 to calibrate delays and bandpass, i.e. frscan="+frscan)
         break
 ms.done()
+
+if whattodo['gencal']:
+    gencal(vis=msn, caltype='gc', infile=gainfile, caltable=gaint)
+    gencal(vis=msn, caltype='tsys', caltable=tsyst)
 
 if whattodo['pcflag']:
     flagcmd = ""
@@ -86,6 +127,10 @@ if whattodo['pcflag']:
 
 if whattodo['edgeflag']:
     flagdata(vis=msn, mode="manual", spw="*:0~31;304~319", antenna="OE&&OW")
+
+if whattodo['accor']:
+    rmtables(act+"*")
+    accor(vis=msn, caltable = act, corrdepflags=True, solint="inf", combine="scan,field")
 
 if whattodo['rflag1']:
     for spw in range(32):
@@ -114,7 +159,8 @@ if whattodo['bandpass']:
     bandpass(vis=msn, gaintable=[frt,], scan=str(frscan), refant="OE", solnorm=True, caltable=bpt, solint = "120s", fillgaps=10, minblperant=1, corrdepflags=True)
 
 if whattodo['applycal1']:
-    applycal(vis = msn, gaintable=[frt,bpt])
+    #applycal(vis = msn, gaintable=[frt,bpt]) # No Tsys and gain
+    applycal(vis = msn, gaintable = [gaint, tsyst, act, frt, bpt], interp=["", ",nearest", "","",""])
 
 if whattodo['rflag2']:
     # Remove large peaks, mainly band A
