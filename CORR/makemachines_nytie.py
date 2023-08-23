@@ -5,10 +5,12 @@ ins = glob.glob("*.input")
 exp = ins[0].split(".")[0].split("_")[0]
 nodata = {}
 
-for line in open(exp+".nodata"):
-    ls = line.split(":")
-    job = ls[0].split()[-1]
-    nodata[job] = ls[1].split()
+nodatafile = exp+".nodata"
+if os.path.exists(nodatafile):
+    for line in open(exp+".nodata"):
+        ls = line.split(":")
+        job = ls[0].split()[-1]
+        nodata[job] = ls[1].split()
 
 for i in ins:
     b = i.split(".")[0]
