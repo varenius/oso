@@ -1,6 +1,7 @@
 import sys
 import datetime
 import numpy as np
+import os
 
 def get_tsys(fslog):
 #2021.266.12:20:01.38#dbtcn#tsys/ 001l, 71.0, 002l, 78.6, 003l, 77.8, 004l, 63.7, 005l, 74.3, 006l, 89.0, 007l, 76.2, 008l, 87.0, ia,155.2
@@ -35,7 +36,7 @@ def get_tsys(fslog):
 
 def write_antab(tsysdata, outfile, ant, exp):
     # HEADER
-    of = open(outfile,"w")
+    of = open(outfile,"a")
     of.write("!\n")
     of.write("!INFO: Amplitude calibration data for antenna {} in experiment {}.\n".format(ant, exp))
     of.write("!INFO: For use with AIPS task ANTAB. \n".format(ant, exp))
@@ -94,13 +95,24 @@ def write_antab(tsysdata, outfile, ant, exp):
     of.write("/\n")
     of.close()
 
-fslog = sys.argv[1]
-outfile = sys.argv[2]
+fslog1 = sys.argv[1]
+fslog2 = sys.argv[2]
+exp = fslog1.split("/")[-1][0:6]
+outfile = exp+"oe+ow.antab"
+print("Assuming experiment name '{}' from first logfile. Will create outfile '{}' to be read by fmcal.py.".format(exp,outfile))
 
-if "oe." in fslog:
-    ant="OE"
-elif "ow." in fslog:
-    ant="OW"
-exp = fslog.split("/")[-1][0:6]
-tsysdata = get_tsys(fslog)
-write_antab(tsysdata, outfile, ant, exp)
+if os.path.exists(outfile):
+    ans = input("ERROR: Outfile exists. Overwrite? [yes/y/Yes to proceed]")
+    if ans.lower() == "yes" or ans.lower() == "y":
+        os.system.remove(outfile)
+    else:
+        print("Aborting!")
+        sys.exit(1)
+
+for fslog in [fslog1, fslog2]:
+    if "oe." in fslog:
+        ant="OE"
+    elif "ow." in fslog:
+        ant="OW"
+    tsysdata = get_tsys(fslog)
+    write_antab(tsysdata, outfile, ant, exp)
