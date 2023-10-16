@@ -75,6 +75,12 @@ if (a_offans =="yes" or a_offans =="y"):
     a_off = True
 print("")
 ###########################
+a_calsour = input("QUESTION: Do you want 120 seconds observation on 3c286 at the end of the experiment?").lower().strip()
+a_cals = False
+if (a_calsour =="yes" or a_calsour =="y"):
+    a_cals = True
+print("")
+###########################
 # PRINT SUMMARY
 print("")
 print("###########################")
@@ -90,6 +96,7 @@ if mirror:
 print("Recorder: " + rec)
 print("Next exp after sched_end:" + nextexp)
 print("Put 'antenna=off' after prepant: " + a_offans)
+print("Observe 3c286 at the end of experiment: " + a_calsour)
 print("")
 print("###########################")
 print("")
@@ -166,16 +173,35 @@ for line in lines:
         break
 preptime = (starttime+datetime.timedelta(minutes=-10)).strftime("%Y.%j.%H:%M:%S")
 #print("starttime=", starttime, "preptime=", preptime)
+#find last timetag
+for line in reversed(lines):
+    if line.startswith("!20"):
+        stoptime = datetime.datetime.strptime(line.strip()[1:], "%Y.%j.%H:%M:%S")
+        break
+#calspreob 15 seconds after last scan,  calscan 15 minutes after preob
+calspreob = (stoptime+datetime.timedelta(seconds=+15))
+calstime = (calspreob+datetime.timedelta(seconds=+15))
+calsend = (calstime+datetime.timedelta(minutes=+2))
+
 wf = open(snpf, "w")
 for line in lines:
+    if a_cals:
+        if "sched_end" in line:
+            wf.write("scan_name="+calstime.strftime("%j-%H%M")+",ca"+exp[2:]+","+tel+",120,120\n")
+            wf.write("source=3c286,133108.29,303033.0,2000.0,neutral\n")
+            wf.write("!"+calspreob.strftime("%Y.%j.%H:%M:%S")+"\npreob\n")
+            wf.write("!"+calstime.strftime("%Y.%j.%H:%M:%S")+"\n")
+            wf.write("disk_record=on\ndisk_record\ndata_valid=on\nmidob\n")
+            wf.write("!"+calsend.strftime("%Y.%j.%H:%M:%S")+"\n")
+            wf.write("data_valid=off\ndisk_record=off\npostob\ncheckfb\n")
     wf.write(line)
     if "Rack=DBBC" in line:
         #Do not set recorded here, too late, instead set in PRC, see code later in this script
         wf.write("prepant\n")
         if a_off:
             wf.write("antenna=off\n")
-        wf.write("!"+preptime + "\n")
-        wf.write("antenna=run\n")
+            wf.write("!"+preptime + "\n")
+            wf.write("antenna=run\n")
 if exp.startswith("b2") or exp.startswith("c2"):
     #VGOSB/C session, include auto-transfer to ishioka
     print("INFO: This is a VGOSB or VGOSC experiment, so adding automatic data transfer to GSI after exp finish.")
@@ -184,7 +210,8 @@ if not nextexp=="":
     print("INFO: Adding schedule={0}{1},#1 as last line of SNP file.".format(nextexp, tel))
     wf.write("schedule={0}{1},#1\n".format(nextexp, tel))
 else:
-    wf.write("antenna=off\n")
+    wf.write("antenna=stow\n")
+#   wf.write("antenna=off\n")
 wf.close()
 
 # Also edit PRC file to insert flexbuff_config command at start of exper_initi.
