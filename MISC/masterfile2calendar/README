@@ -1,0 +1,21 @@
+This folder contains two useful files:
+
+master2ICS.py - script to generate iCal files for the OSO antennas, from IVS master schedule files. These can be used to add all experiments to the OSO outlook calendars. Steps to do this:
+0) Download the current mastefiles and intensive masterfiles, e.g. master2024.txt master2024-int.txt from the IVS.
+1) To create iCal files for each telescope from the mastereschedule, run the command:
+python3 master2ICS.py master2024.txt master2024-int.txt 2024
+This will generate one iCal file per telescope, see also the example-folder.
+2) To add the events in the respective file, open the Outlook client where you
+have the telescope calendars added, and then just drag the respective file
+(e.g. On.ics) to the respective calendar. This should add all events in the
+file to the calendar. You may want to edit the ics file to have only one event
+first, to verify that this works. You probably do not get any confirmation, and
+if you try multiple times you will end up with duplicate events in the
+calendar, which need to be removed manually.
+
+master2redmine.py - script to generate a redmine table, for the Geo-VLBI rota, from master schedule files. 
+Steps to do this:
+0) Download the current mastefiles and intensive masterfiles, e.g. master2024.txt master2024-int.txt from the IVS.
+1) Run the command
+python3 master2redmine.py master2024.txt master2024-int.txt 2024
+3) Paste the output in an empty Redmine wiki page. (Common practice to move the old "current" table to a separate page, to keep the history and unfinished records.)
