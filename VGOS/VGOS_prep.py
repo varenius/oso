@@ -213,6 +213,7 @@ for line in lines:
         #Do not set recorded here, too late, instead set in PRC, see code later in this script
         wf.write("prepant\n")
         if a_stow:
+            a_off = False
             wf.write("antenna=stow\n")
             wf.write("!"+preptime + "\n")
             wf.write("antenna=unstow\n")
