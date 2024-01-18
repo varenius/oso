@@ -222,8 +222,13 @@ for line in lines:
             wf.write("antenna=off\n")
             wf.write("!"+preptime + "\n")
             wf.write("antenna=run\n")
+        if a_off == False and a_stow == False:
+            wf.write("!"+preptime + "\n")
+
     if starttime.strftime("%Y.%j.%H:%M:%S") in line:
         wf.write("antenna=ivs start\n")
+if a_sendlog:
+    wf.write("sendlog\n")
 if exp.startswith("b2") or exp.startswith("c2"):
     #VGOSB/C session, include auto-transfer to ishioka
     print("INFO: This is a VGOSB or VGOSC experiment, so adding automatic data transfer to GSI after exp finish.")
@@ -234,8 +239,6 @@ if not nextexp=="":
 else:
     wf.write("antenna=stow\n")
 #   wf.write("antenna=off\n")
-if a_sendlog:
-    wf.write("sendlog\n")
 wf.close()
 
 # Also edit PRC file to insert flexbuff_config command at start of exper_initi.
