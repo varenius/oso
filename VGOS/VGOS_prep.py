@@ -226,6 +226,7 @@ for line in lines:
             wf.write("!"+preptime + "\n")
 
     if starttime.strftime("%Y.%j.%H:%M:%S") in line:
+        wf.write("collect\n")
         wf.write("antenna=ivs start\n")
 if a_sendlog:
     wf.write("sendlog\n")
